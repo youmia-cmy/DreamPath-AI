@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="page_title_index">DreamPath AI — 探梦造未来</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics-compat.js"></script>
+<style>
+/* === CSS VARIABLES === */
+:root {
+  --void: #050510;
+  --deep-navy: #0a0a2e;
+  --nebula-purple: #1a0a3e;
+  --cosmic-blue: #0d1b4a;
+  --star-cyan: #00e5ff;
+  --star-purple: #b388ff;
+  --star-pink: #ea80fc;
+  --nebula-glow: #7c4dff;
+  --accent-cyan: #00e5ff;
+  --accent-purple: #b388ff;
+  --glass-bg: rgba(15, 10, 40, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --text-primary: #e8e0ff;
+  --text-secondary: rgba(232, 224, 255, 0.6);
+  --text-dim: rgba(232, 224, 255, 0.35);
+  --font-display: 'Orbitron', 'Cinzel', sans-serif;
+  --font-cn: 'Noto Sans SC', sans-serif;
+  --glow-cyan: 0 0 20px rgba(0, 229, 255, 0.3), 0 0 60px rgba(0, 229, 255, 0.1);
+  --glow-purple: 0 0 20px rgba(179, 136, 255, 0.3), 0 0 60px rgba(179, 136, 255, 0.1);
+  --glow-pink: 0 0 20px rgba(234, 128, 252, 0.3), 0 0 60px rgba(234, 128, 252, 0.1);
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--nebula-glow) var(--void); }
+body {
+  font-family: var(--font-cn);
+  background: var(--void);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--nebula-glow); border-radius: 3px; }
+
+/* === STAR CANVAS === */
+#star-canvas {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* === NEBULA BACKGROUND LAYERS === */
+.nebula-bg {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(124, 77, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 90% 50% at 50% 80%, rgba(234, 128, 252, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 60% 50%, rgba(13, 27, 74, 0.4) 0%, transparent 70%),
+    linear-gradient(180deg, var(--void) 0%, var(--deep-navy) 30%, var(--nebula-purple) 60%, var(--void) 100%);
+}
+
+/* === FLOATING ORB DECORATIONS === */
+.orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px); opacity: 0.15; animation: orbFloat 20s ease-in-out infinite;
+}
+.orb-1 { width: 500px; height: 500px; background: var(--nebula-glow); top: -10%; left: -5%; animation-delay: 0s; }
+.orb-2 { width: 400px; height: 400px; background: var(--star-cyan); top: 40%; right: -8%; animation-delay: -7s; }
+.orb-3 { width: 600px; height: 600px; background: var(--star-pink); bottom: -15%; left: 30%; animation-delay: -14s; }
+
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 30px) scale(0.95); }
+}
+
+/* === HEADER === */
+.header {
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+  padding: 0 40px; height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(5, 5, 16, 0.6);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border-bottom: 1px solid var(--glass-border);
+  transition: all 0.4s ease;
+}
+.header.scrolled {
+  background: rgba(5, 5, 16, 0.85);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.logo-img {
+  width: 42px; height: 42px; border-radius: 12px; object-fit: contain;
+  border: none;
+  filter: drop-shadow(0 0 8px rgba(179, 136, 255, 0.4));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+.logo-img:hover { transform: scale(1.1) rotate(5deg); filter: drop-shadow(0 0 14px rgba(179, 136, 255, 0.6)); }
+.logo-text {
+  font-family: var(--font-display); font-size: 1.15rem; font-weight: 700;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple), var(--star-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-nav { display: flex; align-items: center; gap: 8px; }
+.nav-link {
+  font-size: 0.9rem; font-weight: 500; color: var(--text-secondary);
+  text-decoration: none; padding: 8px 18px; border-radius: 8px;
+  transition: all 0.3s ease; position: relative; letter-spacing: 1px;
+}
+.nav-link:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.05); }
+.nav-link.active { color: var(--accent-cyan); }
+.nav-link::after {
+  content: ''; position: absolute; bottom: 2px; left: 50%; width: 0; height: 2px;
+  background: var(--accent-cyan); transition: all 0.3s ease; transform: translateX(-50%);
+  border-radius: 1px; box-shadow: var(--glow-cyan);
+}
+.nav-link:hover::after, .nav-link.active::after { width: 60%; }
+.login-btn {
+  font-family: var(--font-cn); font-size: 0.85rem; font-weight: 600;
+  color: var(--void); padding: 8px 24px; border: none; border-radius: 20px;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  cursor: pointer; letter-spacing: 2px; transition: all 0.3s ease;
+  box-shadow: 0 2px 15px rgba(0, 229, 255, 0.3);
+}
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 25px rgba(0, 229, 255, 0.5);
+}
+
+/* === MAIN CONTENT === */
+.main-content { position: relative; z-index: 1; }
+
+/* === HERO === */
+.hero {
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  padding: 120px 40px 80px; position: relative;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 20px; border-radius: 20px;
+  background: rgba(124, 77, 255, 0.15); border: 1px solid rgba(124, 77, 255, 0.3);
+  font-size: 0.8rem; color: var(--star-purple); letter-spacing: 2px; font-weight: 500;
+  margin-bottom: 30px; animation: fadeInDown 1s ease 0.2s both;
+}
+.hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--star-cyan); animation: pulse 2s infinite; }
+.hero-title {
+  font-family: var(--font-cn); font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900; line-height: 1.2; margin-bottom: 24px;
+  animation: fadeInDown 1s ease 0.4s both;
+}
+.hero-title .gradient-text {
+  background: linear-gradient(135deg, var(--star-cyan) 0%, var(--star-purple) 50%, var(--star-pink) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.3rem); color: var(--text-secondary);
+  max-width: 600px; line-height: 1.8; font-weight: 300; margin-bottom: 50px;
+  animation: fadeInDown 1s ease 0.6s both;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 16px 40px; border: none; border-radius: 30px;
+  font-family: var(--font-cn); font-size: 1.05rem; font-weight: 600;
+  color: var(--void); cursor: pointer; letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple), var(--star-pink));
+  background-size: 200% 200%; animation: fadeInDown 1s ease 0.8s both, gradientShift 4s ease infinite;
+  box-shadow: 0 4px 30px rgba(0, 229, 255, 0.3), 0 0 60px rgba(124, 77, 255, 0.15);
+  transition: all 0.3s ease; text-decoration: none;
+}
+.hero-cta:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 40px rgba(0, 229, 255, 0.4), 0 0 80px rgba(124, 77, 255, 0.25);
+}
+.hero-cta svg { width: 20px; height: 20px; }
+.hero-scroll-hint {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--text-dim); font-size: 0.75rem; letter-spacing: 2px;
+  animation: fadeInDown 1s ease 1.2s both;
+}
+.scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--star-purple), transparent); animation: scrollPulse 2s ease infinite; }
+
+/* === SECTION COMMON === */
+.section {
+  min-height: 100vh; padding: 120px 40px 80px;
+  max-width: 1300px; margin: 0 auto; position: relative;
+}
+.section-header {
+  text-align: center; margin-bottom: 60px;
+}
+.section-tag {
+  font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 4px;
+  color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 12px;
+  display: block;
+}
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; margin-bottom: 16px;
+}
+.section-title .glow { text-shadow: 0 0 40px rgba(0, 229, 255, 0.3); }
+.section-desc {
+  font-size: 1.05rem; color: var(--text-secondary); max-width: 650px;
+  margin: 0 auto; line-height: 1.8; font-weight: 300;
+}
+
+/* === GLASS CARD === */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  overflow: hidden; position: relative;
+  transition: all 0.4s ease;
+}
+.glass-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+}
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: translateY(-4px);
+}
+
+/* === DREAMCANVAS SECTION === */
+.dreamcanvas-layout {
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; align-items: start;
+}
+.dc-input-panel { padding: 30px; }
+.dc-input-panel h3 { font-size: 1.1rem; margin-bottom: 20px; font-weight: 700; }
+.dc-textarea {
+  width: 100%; min-height: 120px; padding: 16px; border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+  color: var(--text-primary); font-family: var(--font-cn); font-size: 0.95rem;
+  resize: vertical; outline: none; transition: border-color 0.3s ease;
+  line-height: 1.7;
+}
+.dc-textarea:focus { border-color: var(--accent-cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); }
+.dc-textarea::placeholder { color: var(--text-dim); }
+.dc-styles { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.style-chip {
+  padding: 6px 16px; border-radius: 16px; font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary); cursor: pointer; transition: all 0.3s ease;
+  font-family: var(--font-cn);
+}
+.style-chip:hover, .style-chip.active {
+  border-color: var(--accent-cyan); color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.08); box-shadow: var(--glow-cyan);
+}
+.dc-generate-btn {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-family: var(--font-cn); font-size: 0.95rem; font-weight: 600;
+  color: var(--void); cursor: pointer; letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 15px rgba(0, 229, 255, 0.2);
+}
+.dc-generate-btn:hover { box-shadow: 0 4px 25px rgba(0, 229, 255, 0.4); transform: translateY(-2px); }
+.dc-output-panel { padding: 30px; }
+.dc-preview {
+  width: 100%; aspect-ratio: 4/3; border-radius: 16px;
+  background: rgba(0, 0, 0, 0.4); border: 1px dashed rgba(255, 255, 255, 0.1);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--text-dim); gap: 12px; margin-bottom: 20px;
+  position: relative; overflow: hidden;
+}
+.dc-preview-icon { font-size: 3rem; opacity: 0.3; }
+.dc-preview-text { font-size: 0.85rem; letter-spacing: 1px; }
+.dc-preview .shimmer {
+  position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(124, 77, 255, 0.05), transparent);
+  animation: shimmer 3s infinite;
+}
+.dc-history-label { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; letter-spacing: 1px; }
+.dc-history-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.dc-history-item {
+  aspect-ratio: 1; border-radius: 10px; background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border); cursor: pointer; transition: all 0.3s ease;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; color: var(--text-dim); opacity: 0.4;
+}
+.dc-history-item:hover { border-color: var(--accent-purple); opacity: 0.7; }
+
+/* === STORYBOARD SECTION === */
+.sb-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; align-items: start; }
+.sb-input-panel { padding: 30px; }
+.sb-input-panel h3 { font-size: 1.1rem; margin-bottom: 16px; font-weight: 700; }
+.sb-idea-input {
+  width: 100%; min-height: 100px; padding: 16px; border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+  color: var(--text-primary); font-family: var(--font-cn); font-size: 0.95rem;
+  resize: vertical; outline: none; transition: border-color 0.3s ease; line-height: 1.7;
+}
+.sb-idea-input:focus { border-color: var(--star-purple); box-shadow: 0 0 20px rgba(179, 136, 255, 0.1); }
+.sb-idea-input::placeholder { color: var(--text-dim); }
+.sb-controls { display: flex; gap: 10px; margin: 16px 0; flex-wrap: wrap; }
+.sb-ctrl-btn {
+  padding: 8px 18px; border-radius: 10px; font-size: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary); cursor: pointer; font-family: var(--font-cn);
+  transition: all 0.3s ease; display: flex; align-items: center; gap: 6px;
+}
+.sb-ctrl-btn:hover { border-color: var(--star-purple); color: var(--star-purple); background: rgba(179, 136, 255, 0.08); }
+.sb-generate-btn {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-family: var(--font-cn); font-size: 0.95rem; font-weight: 600;
+  color: var(--void); cursor: pointer; letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--star-purple), var(--star-pink));
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 15px rgba(179, 136, 255, 0.2);
+}
+.sb-generate-btn:hover { box-shadow: 0 4px 25px rgba(179, 136, 255, 0.4); transform: translateY(-2px); }
+.sb-projects { margin-top: 24px; }
+.sb-projects-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 1px; }
+.sb-project-item {
+  padding: 10px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border); margin-bottom: 8px; cursor: pointer;
+  transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center;
+}
+.sb-project-item:hover { border-color: var(--star-purple); background: rgba(179, 136, 255, 0.05); }
+.sb-project-name { font-size: 0.85rem; font-weight: 500; }
+.sb-project-date { font-size: 0.7rem; color: var(--text-dim); }
+
+/* Storyboard frames display */
+.sb-frames-panel { padding: 30px; }
+.sb-frames-panel h3 { font-size: 1.1rem; margin-bottom: 20px; font-weight: 700; }
+.sb-timeline {
+  position: relative; padding-left: 30px;
+}
+.sb-timeline::before {
+  content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(to bottom, var(--star-purple), var(--star-pink), transparent);
+}
+.sb-frame {
+  position: relative; margin-bottom: 24px; padding: 20px;
+  border-radius: 14px; background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+.sb-frame:hover { border-color: rgba(179, 136, 255, 0.2); background: rgba(0, 0, 0, 0.35); }
+.sb-frame::before {
+  content: ''; position: absolute; left: -26px; top: 24px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--star-purple); box-shadow: var(--glow-purple);
+}
+.sb-frame-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.sb-frame-num {
+  font-family: var(--font-display); font-size: 0.7rem;
+  padding: 3px 10px; border-radius: 6px;
+  background: rgba(179, 136, 255, 0.15); color: var(--star-purple);
+  letter-spacing: 2px;
+}
+.sb-frame-emotion {
+  font-size: 0.75rem; padding: 3px 10px; border-radius: 6px;
+  background: rgba(234, 128, 252, 0.1); color: var(--star-pink);
+}
+.sb-frame-pace {
+  font-size: 0.75rem; padding: 3px 10px; border-radius: 6px;
+  background: rgba(0, 229, 255, 0.1); color: var(--star-cyan); margin-left: auto;
+}
+.sb-frame-scene { font-size: 0.9rem; color: var(--text-primary); line-height: 1.7; margin-bottom: 10px; }
+.sb-frame-dialogue {
+  font-size: 0.85rem; color: var(--text-secondary); padding-left: 14px;
+  border-left: 2px solid rgba(234, 128, 252, 0.3); font-style: italic; line-height: 1.6;
+}
+
+/* === FUTURE ME SECTION === */
+.fm-layout { display: grid; grid-template-columns: 1fr 1.6fr; gap: 30px; align-items: start; }
+.fm-input-panel { padding: 30px; }
+.fm-input-panel h3 { font-size: 1.1rem; margin-bottom: 16px; font-weight: 700; }
+.fm-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 8px; display: block; letter-spacing: 1px; }
+.fm-input, .fm-textarea {
+  width: 100%; padding: 14px; border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+  color: var(--text-primary); font-family: var(--font-cn); font-size: 0.95rem;
+  outline: none; transition: border-color 0.3s ease; margin-bottom: 16px;
+}
+.fm-textarea { min-height: 100px; resize: vertical; line-height: 1.7; }
+.fm-input:focus, .fm-textarea:focus { border-color: var(--star-pink); box-shadow: 0 0 20px rgba(234, 128, 252, 0.1); }
+.fm-input::placeholder, .fm-textarea::placeholder { color: var(--text-dim); }
+.fm-simulate-btn {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-family: var(--font-cn); font-size: 0.95rem; font-weight: 600;
+  color: var(--void); cursor: pointer; letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--star-pink), var(--nebula-glow));
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 15px rgba(234, 128, 252, 0.2);
+}
+.fm-simulate-btn:hover { box-shadow: 0 4px 25px rgba(234, 128, 252, 0.4); transform: translateY(-2px); }
+.fm-history { margin-top: 24px; }
+.fm-history-label { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.fm-history-item {
+  padding: 10px 14px; border-radius: 10px; background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border); margin-bottom: 8px; cursor: pointer;
+  transition: all 0.3s ease; font-size: 0.85rem;
+}
+.fm-history-item:hover { border-color: var(--star-pink); background: rgba(234, 128, 252, 0.05); }
+
+/* Future Me timeline */
+.fm-timeline-panel { padding: 30px; }
+.fm-timeline-panel h3 { font-size: 1.1rem; margin-bottom: 24px; font-weight: 700; }
+.fm-timeline-bar {
+  display: flex; justify-content: space-between; margin-bottom: 30px;
+  position: relative; padding: 0 10px;
+}
+.fm-timeline-bar::before {
+  content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--star-cyan), var(--star-purple), var(--star-pink));
+  transform: translateY(-50%); border-radius: 1px;
+}
+.fm-year-node {
+  position: relative; z-index: 1; display: flex; flex-direction: column;
+  align-items: center; gap: 8px; cursor: pointer; transition: all 0.3s ease;
+}
+.fm-year-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--glass-bg); border: 2px solid var(--star-purple);
+  transition: all 0.3s ease;
+}
+.fm-year-node:hover .fm-year-dot, .fm-year-node.active .fm-year-dot {
+  background: var(--star-purple); box-shadow: var(--glow-purple);
+  transform: scale(1.3);
+}
+.fm-year-label { font-size: 0.75rem; color: var(--text-dim); font-weight: 600; letter-spacing: 1px; }
+.fm-year-node.active .fm-year-label { color: var(--star-purple); }
+
+.fm-report-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.fm-report-card {
+  padding: 20px; border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+.fm-report-card:hover { border-color: rgba(234, 128, 252, 0.2); }
+.fm-card-icon { font-size: 1.5rem; margin-bottom: 10px; }
+.fm-card-title { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
+.fm-card-text { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.7; }
+
+/* === TOAST === */
+.toast {
+  position: fixed; top: 90px; right: 30px; z-index: 3000;
+  padding: 14px 24px; border-radius: 12px;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  backdrop-filter: blur(16px); color: var(--text-primary);
+  font-size: 0.9rem; transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+.toast.show { transform: translateX(0); }
+.toast.success { border-color: rgba(0, 229, 255, 0.3); }
+.toast.error { border-color: rgba(255, 80, 80, 0.3); }
+
+/* === AUTH STATE UI === */
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; color: var(--void);
+}
+.user-email { font-size: 0.75rem; color: var(--text-secondary); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logout-btn {
+  font-family: var(--font-cn); font-size: 0.75rem; color: var(--text-dim);
+  background: none; border: 1px solid var(--glass-border); border-radius: 12px;
+  padding: 4px 12px; cursor: pointer; transition: all 0.3s;
+}
+.logout-btn:hover { border-color: var(--star-pink); color: var(--star-pink); }
+
+/* === PROFILE POPUP === */
+.user-info { position: relative; }
+.user-avatar { cursor: pointer; }
+.profile-popup {
+  display: none; position: absolute; top: 48px; right: 0; z-index: 1000;
+  min-width: 260px; padding: 24px 20px;
+  background: rgba(15, 10, 40, 0.92);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border); border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 60px rgba(124,77,255,0.08);
+  animation: profileFadeIn 0.25s ease;
+}
+.profile-popup.show { display: block; }
+@keyframes profileFadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.profile-popup-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; font-weight: 800; color: var(--void);
+  margin: 0 auto 12px;
+  box-shadow: 0 0 20px rgba(0,229,255,0.25);
+}
+.profile-popup-name {
+  text-align: center; font-family: var(--font-cn); font-size: 1rem;
+  font-weight: 700; color: var(--text-primary); margin-bottom: 6px;
+}
+.profile-popup-vip {
+  text-align: center; font-family: var(--font-cn); font-size: 0.8rem;
+  color: var(--text-secondary); margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.vip-badge {
+  display: inline-block; padding: 2px 10px; border-radius: 10px;
+  font-size: 0.72rem; font-weight: 700;
+}
+.vip-badge.active {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1a0a2e;
+}
+.vip-badge.free {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+}
+.upgrade-link {
+  color: #FFD700; font-size: 0.75rem; font-weight: 600;
+  text-decoration: none; cursor: pointer; transition: all 0.3s;
+}
+.upgrade-link:hover { color: #FFA500; text-decoration: underline; }
+.profile-popup-actions {
+  display: flex; flex-direction: column; gap: 8px;
+  border-top: 1px solid var(--glass-border); padding-top: 14px;
+}
+.profile-popup-actions button {
+  font-family: var(--font-cn); font-size: 0.8rem; padding: 8px 16px;
+  border-radius: 10px; cursor: pointer; transition: all 0.3s;
+  border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04);
+  color: var(--text-secondary); text-align: center;
+}
+.profile-popup-actions button:hover {
+  border-color: var(--star-pink); color: var(--star-pink);
+  background: rgba(234,128,252,0.06);
+}
+
+.modal-toggle { font-size: 0.8rem; color: var(--text-dim); text-align: center; margin-top: 16px; }
+.modal-toggle a { color: var(--accent-cyan); cursor: pointer; text-decoration: none; }
+.modal-toggle a:hover { text-decoration: underline; }
+.auth-required-msg {
+  font-size: 0.85rem; color: var(--star-pink); text-align: center;
+  padding: 12px; border-radius: 10px; background: rgba(234, 128, 252, 0.08);
+  border: 1px solid rgba(234, 128, 252, 0.15); margin-bottom: 16px; display: none;
+}
+
+/* === BUTTON STATES === */
+button:disabled {
+  opacity: 0.7; cursor: not-allowed; position: relative;
+}
+button:disabled::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  animation: shimmer 1.5s infinite;
+}
+.sb-ctrl-btn.active {
+  border-color: var(--star-purple); color: var(--star-purple);
+  background: rgba(179, 136, 255, 0.12);
+}
+
+/* === FOOTER === */
+.footer {
+  position: relative; z-index: 1;
+  padding: 40px;
+  border-top: 1px solid var(--glass-border);
+  text-align: center;
+}
+.footer-inner { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.footer-brand { display: flex; align-items: center; gap: 10px; }
+.footer-brand img { width: 28px; height: 28px; border-radius: 8px; object-fit: contain; }
+.footer-brand span { font-family: var(--font-display); font-size: 0.85rem; color: var(--text-dim); letter-spacing: 2px; }
+.footer-copy { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 1px; }
+.footer-links { display: flex; gap: 16px; }
+.footer-link {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(179, 136, 255, 0.4); background: rgba(179, 136, 255, 0.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(220, 200, 255, 0.9); font-size: 0.85rem; text-decoration: none;
+  transition: all 0.4s ease; cursor: pointer;
+  box-shadow: 0 0 12px rgba(179, 136, 255, 0.25), 0 0 4px rgba(100, 200, 255, 0.15);
+  animation: iconGlow 2.5s ease-in-out infinite alternate;
+}
+@keyframes iconGlow {
+  0% { box-shadow: 0 0 8px rgba(179, 136, 255, 0.2), 0 0 3px rgba(100, 200, 255, 0.1); }
+  100% { box-shadow: 0 0 18px rgba(179, 136, 255, 0.45), 0 0 8px rgba(100, 200, 255, 0.3); }
+}
+.footer-link:hover { border-color: var(--star-purple); color: #fff; box-shadow: 0 0 24px rgba(179, 136, 255, 0.6), 0 0 12px rgba(100, 200, 255, 0.4); transform: scale(1.1); }
+
+/* === SECTION DIVIDERS === */
+.section-divider {
+  width: 100%; height: 1px; position: relative; z-index: 1;
+  background: linear-gradient(90deg, transparent, rgba(124, 77, 255, 0.3), transparent);
+  margin: 0 auto; max-width: 1300px;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes shimmer { 0% { left: -100%; } 100% { left: 100%; } }
+@keyframes scrollPulse { 0%, 100% { opacity: 0.3; height: 40px; } 50% { opacity: 0.8; height: 50px; } }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* === LOGIN MODAL === */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;
+  background: rgba(5, 5, 16, 0.85); backdrop-filter: blur(10px);
+  display: none; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.modal-overlay.show { display: flex; opacity: 1; }
+.modal-box {
+  width: 400px; max-width: 90vw; padding: 40px;
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: 24px; backdrop-filter: blur(20px);
+  position: relative;
+}
+.modal-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+}
+.modal-close {
+  position: absolute; top: 16px; right: 20px; background: none; border: none;
+  color: var(--text-dim); font-size: 1.5rem; cursor: pointer; transition: color 0.3s;
+}
+.modal-close:hover { color: var(--text-primary); }
+.modal-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; text-align: center; }
+.modal-subtitle { font-size: 0.85rem; color: var(--text-dim); text-align: center; margin-bottom: 28px; }
+.modal-input {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid var(--glass-border);
+  color: var(--text-primary); font-family: var(--font-cn); font-size: 0.95rem;
+  outline: none; margin-bottom: 14px; transition: border-color 0.3s;
+}
+.modal-input:focus { border-color: var(--accent-cyan); }
+.modal-input::placeholder { color: var(--text-dim); }
+.modal-submit {
+  width: 100%; padding: 14px; border: none; border-radius: 12px;
+  font-family: var(--font-cn); font-size: 0.95rem; font-weight: 600;
+  color: var(--void); cursor: pointer; letter-spacing: 2px; margin-top: 8px;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  transition: all 0.3s ease;
+}
+.modal-submit:hover { box-shadow: 0 4px 25px rgba(0, 229, 255, 0.4); }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .dreamcanvas-layout, .sb-layout, .fm-layout { grid-template-columns: 1fr; }
+  .header { padding: 0 20px; }
+  .header-nav { gap: 2px; }
+  .nav-link { padding: 8px 10px; font-size: 0.8rem; }
+  .section { padding: 100px 20px 60px; }
+  .fm-report-cards { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .header-nav { display: none; }
+  .logo-text { font-size: 0.95rem; }
+  .hero-title { font-size: 2rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="nebula-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<canvas id="star-canvas"></canvas>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="header-left">
+    <img src="logo.jpg" alt="DreamPath AI" class="logo-img">
+    <span class="logo-text">DREAMPATH AI</span>
+  </div>
+  <nav class="header-nav">
+    <a href="#dreamcanvas" class="nav-link" data-i18n="nav_dreamcanvas">画梦工坊</a>
+    <a href="#storyboard" class="nav-link" data-i18n="nav_storyboard">故事板工厂</a>
+    <a href="#futureme" class="nav-link" data-i18n="nav_futureme">未来的我</a>
+    <button class="login-btn" id="loginBtn" data-i18n="nav_login">登录</button>
+  </nav>
+</header>
+
+<!-- Main content -->
+<main class="main-content">
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <h1 class="hero-title">
+      <span data-i18n="hero_title_1">探梦无界，</span><span class="gradient-text" data-i18n="hero_title_2">创造未来</span>
+    </h1>
+    <p class="hero-subtitle" data-i18n-html="hero_subtitle_html">
+      用 AI 的力量绘制梦想、编织故事、模拟未来。<br>
+      DreamPath AI 你的私人创意宇宙。
+    </p>
+    <a href="#dreamcanvas" class="hero-cta">
+      <span data-i18n="hero_cta">开始探索</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- DREAMCANVAS -->
+  <section class="section" id="dreamcanvas">
+    <div class="section-header reveal">
+      <span class="section-tag" data-i18n="dc_tag">DreamCanvas</span>
+      <h2 class="section-title" data-i18n-html="dc_title_html">画梦工坊 <span class="glow">AI 图像创作</span></h2>
+      <p class="section-desc" data-i18n="dc_desc">用文字描述你的想象，AI 即刻将其绘制成画。支持风格转换、迭代编辑，让每一次创作都更接近心中所想。</p>
+    </div>
+    <div class="dreamcanvas-layout">
+      <div class="glass-card dc-input-panel reveal">
+        <h3 data-i18n="dc_input_title">描述你的画面</h3>
+        <textarea class="dc-textarea" data-i18n-placeholder="dc_placeholder" placeholder="描述你想生成的图像...&#10;例如：「一只星空猫咪在紫色星云中漫步，身边漂浮着水晶碎片」"></textarea>
+        <div class="dc-styles">
+          <button class="style-chip active" data-i18n="dc_style_dream">梦幻</button>
+          <button class="style-chip" data-i18n="dc_style_cyber">赛博朋克</button>
+          <button class="style-chip" data-i18n="dc_style_watercolor">水彩</button>
+          <button class="style-chip" data-i18n="dc_style_oil">油画</button>
+          <button class="style-chip" data-i18n="dc_style_pixel">像素风</button>
+          <button class="style-chip" data-i18n="dc_style_ukiyo">浮世绘</button>
+          <button class="style-chip" data-i18n="dc_style_minimal">极简</button>
+        </div>
+        <button class="dc-generate-btn" data-i18n="dc_generate">✦ 生成图像</button>
+      </div>
+      <div class="glass-card dc-output-panel reveal">
+        <div class="dc-preview">
+          <div class="shimmer"></div>
+          <div class="dc-preview-icon">✦</div>
+          <div class="dc-preview-text" data-i18n="dc_preview_text">等待生成...</div>
+        </div>
+        <div class="dc-history-label" data-i18n="dc_history_label">生成历史</div>
+        <div class="dc-history-grid">
+          <div class="dc-history-item">✦</div>
+          <div class="dc-history-item">✦</div>
+          <div class="dc-history-item">✦</div>
+          <div class="dc-history-item">✦</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- STORYBOARD -->
+  <section class="section" id="storyboard">
+    <div class="section-header reveal">
+      <span class="section-tag" data-i18n="sb_tag">Storyboard Factory</span>
+      <h2 class="section-title" data-i18n-html="sb_title_html">故事板工厂 <span class="glow">AI 创意分镜</span></h2>
+      <p class="section-desc" data-i18n="sb_desc">输入你的创意灵感，AI 自动生成结构化故事板。每个帧包含场景、对话、情绪与节奏，支持持续迭代完善。</p>
+    </div>
+    <div class="sb-layout">
+      <div class="glass-card sb-input-panel reveal">
+        <h3 data-i18n="sb_input_title">输入创意想法</h3>
+        <textarea class="sb-idea-input" data-i18n-placeholder="sb_placeholder" placeholder="描述你的故事创意...&#10;例如：「一个失忆的机器人在废弃城市中寻找自己过去的记忆碎片」"></textarea>
+        <div class="sb-controls">
+          <button class="sb-ctrl-btn" data-i18n="sb_ctrl_5">5帧</button>
+          <button class="sb-ctrl-btn" data-i18n="sb_ctrl_10">10帧</button>
+          <button class="sb-ctrl-btn" data-i18n="sb_ctrl_image">含图像提示</button>
+          <button class="sb-ctrl-btn" data-i18n="sb_ctrl_save">保存项目</button>
+        </div>
+        <button class="sb-generate-btn" data-i18n="sb_generate">✦ 生成故事板</button>
+        <div class="sb-projects">
+          <div class="sb-projects-label" data-i18n="sb_projects_label">已保存的项目</div>
+          <div class="sb-project-item">
+            <span class="sb-project-name" data-i18n="sb_sample_1">失忆机器人</span>
+            <span class="sb-project-date" data-i18n="sb_sample_date_1">3月28日</span>
+          </div>
+          <div class="sb-project-item">
+            <span class="sb-project-name" data-i18n="sb_sample_2">星际旅行者</span>
+            <span class="sb-project-date" data-i18n="sb_sample_date_2">3月25日</span>
+          </div>
+        </div>
+      </div>
+      <div class="glass-card sb-frames-panel reveal">
+        <h3 data-i18n="sb_preview_title">故事板预览</h3>
+        <div class="sb-timeline">
+          <div class="sb-frame">
+            <div class="sb-frame-header">
+              <span class="sb-frame-num">FRAME 01</span>
+              <span class="sb-frame-emotion" data-i18n="sb_frame_emotion_1">孤独 / 好奇</span>
+              <span class="sb-frame-pace" data-i18n="sb_frame_pace_1">缓慢</span>
+            </div>
+            <div class="sb-frame-scene" data-i18n="sb_frame_scene_1">废弃城市的黎明。锈迹斑斑的高楼在晨雾中若隐若现，一个小型机器人从残垣断壁中缓缓苏醒，眼睛闪烁着微弱的蓝光。</div>
+            <div class="sb-frame-dialogue" data-i18n="sb_frame_dialogue_1">"我...是谁？这里是什么地方？"</div>
+          </div>
+          <div class="sb-frame">
+            <div class="sb-frame-header">
+              <span class="sb-frame-num">FRAME 02</span>
+              <span class="sb-frame-emotion" data-i18n="sb_frame_emotion_2">困惑 / 决意</span>
+              <span class="sb-frame-pace" data-i18n="sb_frame_pace_2">渐快</span>
+            </div>
+            <div class="sb-frame-scene" data-i18n="sb_frame_scene_2">机器人在废墟中发现一块破碎的全息投影卡。卡片上隐约显示着一段模糊的影像 — 一个笑着的人类正在组装什么东西。</div>
+            <div class="sb-frame-dialogue" data-i18n="sb_frame_dialogue_2">"这个人...好像认识我。我要找到更多线索。"</div>
+          </div>
+          <div class="sb-frame">
+            <div class="sb-frame-header">
+              <span class="sb-frame-num">FRAME 03</span>
+              <span class="sb-frame-emotion" data-i18n="sb_frame_emotion_3">紧张 / 希望</span>
+              <span class="sb-frame-pace" data-i18n="sb_frame_pace_3">中速</span>
+            </div>
+            <div class="sb-frame-scene" data-i18n="sb_frame_scene_3">穿越倒塌的地铁隧道。远处传来微弱的电子信号声。机器人加速前进，胸口的核心开始发出温暖的橙色光芒。</div>
+            <div class="sb-frame-dialogue" data-i18n="sb_frame_dialogue_3">"信号源...就在前方。也许那里有关于我的答案。"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- FUTURE ME -->
+  <section class="section" id="futureme">
+    <div class="section-header reveal">
+      <span class="section-tag" data-i18n="fm_tag">Future Me</span>
+      <h2 class="section-title" data-i18n-html="fm_title_html">未来的我 <span class="glow">人生模拟</span></h2>
+      <p class="section-desc" data-i18n="fm_desc">描述你的现状与选择，AI 模拟不同时间线上的人生路径。结构化报告 + 详细场景 + 实用建议，助你洞见未来可能。</p>
+    </div>
+    <div class="fm-layout">
+      <div class="glass-card fm-input-panel reveal">
+        <h3 data-i18n="fm_input_title">描述你的现状</h3>
+        <label class="fm-label" data-i18n="fm_label_identity">当前身份 / 职业</label>
+        <input class="fm-input" data-i18n-placeholder="fm_placeholder_identity" placeholder="例如：25岁，互联网产品经理" />
+        <label class="fm-label" data-i18n="fm_label_situation">当前状况描述</label>
+        <textarea class="fm-textarea" data-i18n-placeholder="fm_placeholder_situation" placeholder="描述你目前的生活、工作、感情状况..."></textarea>
+        <label class="fm-label" data-i18n="fm_label_choices">面临的人生选择</label>
+        <textarea class="fm-textarea" data-i18n-placeholder="fm_placeholder_choices" placeholder="例如：考虑辞职创业 vs 继续在大厂深耕..."></textarea>
+        <button class="fm-simulate-btn" data-i18n="fm_simulate">✦ 模拟未来</button>
+        <div class="fm-history">
+          <div class="fm-history-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            <span data-i18n="fm_history_label">历史模拟记录</span>
+          </div>
+          <div class="fm-history-item" data-i18n="fm_hist_1">2026-03-20 · 创业 vs 深耕</div>
+          <div class="fm-history-item" data-i18n="fm_hist_2">2026-02-14 · 出国留学 vs 国内发展</div>
+        </div>
+      </div>
+      <div class="glass-card fm-timeline-panel reveal">
+        <h3 data-i18n="fm_timeline_title">未来时间线</h3>
+        <div class="fm-timeline-bar">
+          <div class="fm-year-node active">
+            <div class="fm-year-dot"></div>
+            <span class="fm-year-label" data-i18n="fm_year_1">1 年后</span>
+          </div>
+          <div class="fm-year-node">
+            <div class="fm-year-dot"></div>
+            <span class="fm-year-label" data-i18n="fm_year_5">5 年后</span>
+          </div>
+          <div class="fm-year-node">
+            <div class="fm-year-dot"></div>
+            <span class="fm-year-label" data-i18n="fm_year_10">10 年后</span>
+          </div>
+          <div class="fm-year-node">
+            <div class="fm-year-dot"></div>
+            <span class="fm-year-label" data-i18n="fm_year_20">20 年后</span>
+          </div>
+        </div>
+        <div class="fm-report-cards">
+          <div class="fm-report-card">
+            <div class="fm-card-title" data-i18n="fm_card_career">职业发展</div>
+            <div class="fm-card-text" data-i18n="fm_card_career_text">路径A：创业初期，产品已上线但用户增长缓慢，需要持续融资。路径B：晋升为高级产品总监，管理10人团队。</div>
+          </div>
+          <div class="fm-report-card">
+            <div class="fm-card-title" data-i18n="fm_card_finance">财务状况</div>
+            <div class="fm-card-text" data-i18n="fm_card_finance_text">路径A：积蓄消耗约60%，月收入不稳定。路径B：年薪增长30%，有稳定储蓄计划。</div>
+          </div>
+          <div class="fm-report-card">
+            <div class="fm-card-title" data-i18n="fm_card_life">生活质量</div>
+            <div class="fm-card-text" data-i18n="fm_card_life_text">路径A：压力较大但充满激情，社交圈扩展到创业者群体。路径B：生活规律，开始考虑定居购房。</div>
+          </div>
+          <div class="fm-report-card">
+            <div class="fm-card-title" data-i18n="fm_card_advice">实用建议</div>
+            <div class="fm-card-text" data-i18n="fm_card_advice_text">无论选择哪条路径，建议保留至少12个月的生活备用金。同时持续提升跨领域技能以保持竞争力。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="logo.jpg" alt="DreamPath AI">
+      <span>DREAMPATH AI</span>
+    </div>
+    <div class="footer-copy" data-i18n="footer_copy">&copy; 2026 DreamPath AI. 探梦造未来。</div>
+    <div class="footer-links">
+      <a class="footer-link" title="Twitter/X" href="https://x.com/_StarryMiu" target="_blank" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+<!-- Login / Register Modal -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-title" id="authTitle" data-i18n="auth_title_login">欢迎回来</div>
+    <div class="modal-subtitle" id="authSubtitle" data-i18n="auth_subtitle_login">登录以保存你的创作与模拟记录</div>
+    <div id="authError" style="color:#ff5050;font-size:0.8rem;text-align:center;margin-bottom:12px;display:none;"></div>
+    <input class="modal-input" id="authName" type="text" data-i18n-placeholder="auth_placeholder_name" placeholder="昵称" style="display:none;" />
+    <input class="modal-input" id="authEmail" type="email" data-i18n-placeholder="auth_placeholder_email" placeholder="邮箱地址" />
+    <input class="modal-input" id="authPassword" type="password" data-i18n-placeholder="auth_placeholder_password" placeholder="密码" />
+    <button class="modal-submit" id="authSubmit" data-i18n="auth_submit_login">登 录</button>
+    <div class="modal-toggle">
+      <span id="authToggleText" data-i18n="auth_toggle_to_register">还没有账号？</span>
+      <a id="authToggleLink" data-i18n="auth_link_register" onclick="toggleAuthMode()">立即注册</a>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="i18n.js"></script>
+<script>
+// === EMBEDDED LOGO (base64) ===
+const LOGO_B64 = 'data:image/webp;base64,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';
+document.querySelectorAll('.logo-img, .footer-brand img').forEach(img => { img.src = LOGO_B64; });
+
+// === FIREBASE INIT (obfuscated config) ===
+const _fc = atob('eyJhcGlLZXkiOiJBSXphU3lCT3M0QVNBZ3RZazVaS2l4YkxFOE15bk9FRDZNZk9jeVkiLCJhdXRoRG9tYWluIjoiZHJlYW1wYXRoLWFpLWM1NTI1LmZpcmViYXNlYXBwLmNvbSIsInByb2plY3RJZCI6ImRyZWFtcGF0aC1haS1jNTUyNSIsInN0b3JhZ2VCdWNrZXQiOiJkcmVhbXBhdGgtYWktYzU1MjUuZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiODc5MDM4NzQ1NDI3IiwiYXBwSWQiOiIxOjg3OTAzODc0NTQyNzp3ZWI6Y2UyZjE3ZDk2Njg0OTkxNWZkZWZhNiIsIm1lYXN1cmVtZW50SWQiOiJHLVZNNDE5MzVNQk0ifQ==');
+const firebaseConfig = JSON.parse(_fc);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// === GEMINI API (obfuscated key) ===
+const _gk = atob('QUl6YVN5QUxsS1RneXFBM3FNejBfeUQyRW15REZycU54MGdENHpj');
+const GEMINI_PRO = 'gemini-2.5-pro-preview-05-06';
+const GEMINI_FLASH = 'gemini-2.5-flash-preview-04-17';
+
+async function callGemini(model, prompt, systemInstruction) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_gk}`;
+  const body = { contents: [{ parts: [{ text: prompt }] }] };
+  if (systemInstruction) {
+    body.systemInstruction = { parts: [{ text: systemInstruction }] };
+  }
+  body.generationConfig = { temperature: 0.9, maxOutputTokens: 4096 };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || t('api_call_fail')); }
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+async function callGeminiImage(prompt) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${_gk}`;
+  const body = {
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) { const err = await res.json(); throw new Error(err.error?.message || t('image_gen_fail')); }
+  const data = await res.json();
+  const parts = data.candidates?.[0]?.content?.parts || [];
+  let imageData = null, textData = '';
+  for (const p of parts) {
+    if (p.inlineData) imageData = p.inlineData;
+    if (p.text) textData = p.text;
+  }
+  return { imageData, textData };
+}
+
+// === TOAST ===
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.classList.remove('show'); }, 3000);
+}
+
+// === AUTH STATE ===
+let currentUser = null;
+let isRegisterMode = false;
+let userIsVip = false;
+
+// === USAGE LIMITS ===
+// Free: 画梦工坊 1次, 故事板工厂 5次, 未来的我 2次
+// VIP: 画梦工坊 200次, 故事板工厂 无限, 未来的我 无限
+async function checkUsageLimit(feature) {
+  if (!currentUser) return { allowed: false, msg: t('toast_please_login') };
+  const uid = currentUser.uid;
+  const limits = {
+    dreamcanvas: { free: 1, vip: 200 },
+    storyboards: { free: 5, vip: Infinity },
+    simulations: { free: 2, vip: Infinity }
+  };
+  const names = { dreamcanvas: t('nav_dreamcanvas'), storyboards: t('nav_storyboard'), simulations: t('nav_futureme') };
+  const limit = userIsVip ? limits[feature].vip : limits[feature].free;
+  if (limit === Infinity) return { allowed: true };
+  try {
+    const snap = await db.collection('users').doc(uid).collection(feature).get();
+    const used = snap.size;
+    if (used >= limit) {
+      const tag = userIsVip ? 'VIP' : t('usage_free');
+      return { allowed: false, msg: `${tag}${t('usage_limit_reached')}${names[feature]}${t('usage_limit_msg_1')}${limit}${t('usage_limit_msg_2')}${userIsVip ? t('usage_vip_exhausted') : t('usage_upgrade')}`, used, limit };
+    }
+    return { allowed: true, used, limit };
+  } catch(e) { return { allowed: true }; }
+}
+
+function toggleAuthMode() {
+  isRegisterMode = !isRegisterMode;
+  document.getElementById('authTitle').textContent = isRegisterMode ? t('auth_title_register') : t('auth_title_login');
+  document.getElementById('authTitle').setAttribute('data-i18n', isRegisterMode ? 'auth_title_register' : 'auth_title_login');
+  document.getElementById('authSubtitle').textContent = isRegisterMode ? t('auth_subtitle_register') : t('auth_subtitle_login');
+  document.getElementById('authSubtitle').setAttribute('data-i18n', isRegisterMode ? 'auth_subtitle_register' : 'auth_subtitle_login');
+  document.getElementById('authName').style.display = isRegisterMode ? 'block' : 'none';
+  document.getElementById('authSubmit').textContent = isRegisterMode ? t('auth_submit_register') : t('auth_submit_login');
+  document.getElementById('authSubmit').setAttribute('data-i18n', isRegisterMode ? 'auth_submit_register' : 'auth_submit_login');
+  document.getElementById('authToggleText').textContent = isRegisterMode ? t('auth_toggle_to_login') : t('auth_toggle_to_register');
+  document.getElementById('authToggleText').setAttribute('data-i18n', isRegisterMode ? 'auth_toggle_to_login' : 'auth_toggle_to_register');
+  document.getElementById('authToggleLink').textContent = isRegisterMode ? t('auth_link_login') : t('auth_link_register');
+  document.getElementById('authToggleLink').setAttribute('data-i18n', isRegisterMode ? 'auth_link_login' : 'auth_link_register');
+  document.getElementById('authError').style.display = 'none';
+}
+
+document.getElementById('authSubmit').addEventListener('click', async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const errEl = document.getElementById('authError');
+  errEl.style.display = 'none';
+  if (!email || !password) { errEl.textContent = t('toast_fill_email_pwd'); errEl.style.display = 'block'; return; }
+  if (password.length < 6) { errEl.textContent = t('toast_pwd_min6'); errEl.style.display = 'block'; return; }
+  try {
+    if (isRegisterMode) {
+      const name = document.getElementById('authName').value.trim() || '用户';
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      await cred.user.updateProfile({ displayName: name });
+      await db.collection('users').doc(cred.user.uid).set({
+        email, displayName: name, createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        balance: 0, vipLevel: 'none', vipExpiry: null, vipStartedAt: null
+      });
+      showToast(t('toast_register_success') + name);
+    } else {
+      await auth.signInWithEmailAndPassword(email, password);
+      showToast(t('toast_login_success'));
+    }
+    document.getElementById('loginModal').classList.remove('show');
+  } catch (e) {
+    const msgs = {
+      'auth/email-already-in-use': t('auth_err_email_in_use'),
+      'auth/invalid-email': t('auth_err_invalid_email'),
+      'auth/wrong-password': t('auth_err_wrong_pwd'),
+      'auth/user-not-found': t('auth_err_user_not_found'),
+      'auth/invalid-credential': t('auth_err_invalid_cred'),
+      'auth/weak-password': t('auth_err_weak_pwd'),
+      'auth/configuration-not-found': t('auth_err_config'),
+      'auth/network-request-failed': t('auth_err_network'),
+      'auth/too-many-requests': t('auth_err_too_many')
+    };
+    errEl.textContent = msgs[e.code] || t('auth_err_firebase') + `${e.code})`;
+    errEl.style.display = 'block';
+  }
+});
+
+auth.onAuthStateChanged(async user => {
+  currentUser = user;
+  const nav = document.querySelector('.header-nav');
+  const oldLogin = document.getElementById('loginBtn');
+  const oldInfo = document.getElementById('userInfo');
+  const oldPopup = document.getElementById('profilePopup');
+  if (oldInfo) oldInfo.remove();
+  if (oldPopup) oldPopup.remove();
+  if (user) {
+    oldLogin.style.display = 'none';
+    const info = document.createElement('div');
+    info.id = 'userInfo'; info.className = 'user-info';
+    const initial = (user.displayName || user.email)[0].toUpperCase();
+    const displayName = user.displayName || user.email;
+
+    // Check VIP status from Firestore
+    let vipLevel = 'none', vipExpiry = null, isVip = false;
+    userIsVip = false;
+    try {
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        const data = userDoc.data();
+        vipLevel = data.vipLevel || 'none';
+        vipExpiry = data.vipExpiry ? data.vipExpiry.toDate() : null;
+        if (vipExpiry && vipExpiry > new Date() && vipLevel !== 'none') {
+          isVip = true; userIsVip = true;
+        } else if (vipLevel !== 'none' && vipExpiry && vipExpiry <= new Date()) {
+          // Auto-downgrade expired VIP
+          await db.collection('users').doc(user.uid).update({ vipLevel: 'none' });
+          isVip = false; vipLevel = 'none';
+        }
+      }
+    } catch(e) { console.warn('VIP check error:', e); }
+
+    const vipBadgeClass = isVip ? 'active' : 'free';
+    const vipText = isVip ? t('profile_vip_user') : t('profile_free_user');
+    const upgradeHtml = isVip ? '' : '<a href="vip.html" class="upgrade-link">' + t('profile_upgrade') + '</a>';
+    const vipLabelMap = { monthly: t('vip_label_monthly'), quarterly: t('vip_label_quarterly'), yearly: t('vip_label_yearly') };
+    const vipDetailText = isVip ? (vipLabelMap[vipLevel] || t('profile_vip_user')) : '';
+    const expiryText = isVip && vipExpiry ? t('profile_expiry') + vipExpiry.toLocaleDateString(getCurrentLang() === 'zh' ? 'zh-CN' : 'en-US') : '';
+
+    info.innerHTML = `<div class="user-avatar" id="avatarBtn">${initial}</div><span class="user-email">${displayName}</span>`;
+
+    const popup = document.createElement('div');
+    popup.id = 'profilePopup'; popup.className = 'profile-popup';
+    popup.innerHTML = `
+      <div class="profile-popup-avatar">${initial}</div>
+      <div class="profile-popup-name">${displayName}</div>
+      <div class="profile-popup-vip">
+        <span class="vip-badge ${vipBadgeClass}">${vipText}</span>
+        ${upgradeHtml}
+      </div>
+      ${isVip ? '<div style="text-align:center;font-size:0.72rem;color:var(--text-dim);margin-bottom:12px;">' + vipDetailText + (expiryText ? ' · ' + expiryText : '') + '</div>' : ''}
+      <div class="profile-popup-actions">
+        <button onclick="auth.signOut().then(()=>{showToast(t('toast_logged_out'));document.getElementById('profilePopup').classList.remove('show');})">${t('profile_logout')}</button>
+      </div>
+    `;
+    info.appendChild(popup);
+    nav.appendChild(info);
+
+    // Toggle profile popup
+    document.getElementById('avatarBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      popup.classList.toggle('show');
+    });
+    popup.addEventListener('click', (e) => e.stopPropagation());
+    document.addEventListener('click', () => { popup.classList.remove('show'); });
+
+    loadUserData();
+  } else {
+    oldLogin.style.display = '';
+  }
+});
+
+// === LOAD USER DATA FROM FIRESTORE ===
+async function loadUserData() {
+  if (!currentUser) return;
+  const uid = currentUser.uid;
+  // Load DreamCanvas history
+  try {
+    const dcSnap = await db.collection('users').doc(uid).collection('dreamcanvas').orderBy('createdAt','desc').limit(8).get();
+    const grid = document.querySelector('.dc-history-grid');
+    if (!dcSnap.empty) {
+      grid.innerHTML = '';
+      dcSnap.forEach(doc => {
+        const d = doc.data();
+        const item = document.createElement('div');
+        item.className = 'dc-history-item';
+        item.title = d.prompt || '';
+        item.textContent = '✦';
+        item.style.opacity = '0.7';
+        grid.appendChild(item);
+      });
+    }
+  } catch(e) {}
+  // Load Storyboard projects
+  try {
+    const sbSnap = await db.collection('users').doc(uid).collection('storyboards').orderBy('updatedAt','desc').limit(5).get();
+    const container = document.querySelector('.sb-projects');
+    if (!sbSnap.empty) {
+      container.innerHTML = '<div class="sb-projects-label" data-i18n="sb_projects_label">' + t('sb_projects_label') + '</div>';
+      sbSnap.forEach(doc => {
+        const d = doc.data();
+        const item = document.createElement('div');
+        item.className = 'sb-project-item';
+        item.dataset.id = doc.id;
+        const date = d.updatedAt ? d.updatedAt.toDate().toLocaleDateString('zh-CN',{month:'long',day:'numeric'}) : '';
+        item.innerHTML = `<span class="sb-project-name">${d.title||t('unnamed')}</span><span class="sb-project-date">${date}</span>`;
+        item.addEventListener('click', () => loadStoryboard(doc.id));
+        container.appendChild(item);
+      });
+    }
+  } catch(e) {}
+  // Load Future Me simulations
+  try {
+    const fmSnap = await db.collection('users').doc(uid).collection('simulations').orderBy('createdAt','desc').limit(5).get();
+    const histContainer = document.querySelector('.fm-history');
+    if (!fmSnap.empty) {
+      histContainer.innerHTML = `<div class="fm-history-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ${t('fm_history_label')}</div>`;
+      fmSnap.forEach(doc => {
+        const d = doc.data();
+        const item = document.createElement('div');
+        item.className = 'fm-history-item';
+        const date = d.createdAt ? d.createdAt.toDate().toISOString().slice(0,10) : '';
+        item.textContent = date + ' · ' + (d.title || t('sim_record'));
+        item.addEventListener('click', () => loadSimulation(doc.id));
+        histContainer.appendChild(item);
+      });
+    }
+  } catch(e) {}
+}
+
+// === DREAMCANVAS — AI IMAGE GENERATION ===
+document.querySelector('.dc-generate-btn').addEventListener('click', async () => {
+  const prompt = document.querySelector('.dc-textarea').value.trim();
+  if (!prompt) { showToast(t('toast_enter_image_desc'), 'error'); return; }
+  const activeStyle = document.querySelector('.style-chip.active');
+  const style = activeStyle ? activeStyle.textContent : '';
+  if (!currentUser) { showToast(t('toast_login_first_generate'), 'error'); return; }
+  const dcUsage = await checkUsageLimit('dreamcanvas');
+  if (!dcUsage.allowed) { showToast(dcUsage.msg, 'error'); return; }
+  const btn = document.querySelector('.dc-generate-btn');
+  const preview = document.querySelector('.dc-preview');
+  btn.disabled = true; btn.textContent = t('toast_optimizing');
+  try {
+    // Step 1: Use Gemini Pro to optimize the prompt
+    const optimizedPrompt = await callGemini(GEMINI_PRO,
+      `用户想生成一张图像，描述是：「${prompt}」，风格要求：${style || '默认'}。请将这段描述优化为一段高质量的英文图像生成 prompt（约100词），确保画面细节丰富、风格明确、构图专业。只输出优化后的英文 prompt，不要其他内容。`,
+      '你是专业的 AI 图像 prompt 工程师，擅长将中文描述转化为高质量的英文图像生成提示词。');
+    btn.textContent = t('toast_generating_image');
+    // Step 2: Use Gemini image generation
+    const result = await callGeminiImage(
+      `Generate a high-quality image based on this description: ${optimizedPrompt}. Style: ${style || 'dreamlike'}. Make it visually stunning and artistic.`
+    );
+    if (result.imageData) {
+      preview.innerHTML = `<img src="data:${result.imageData.mimeType};base64,${result.imageData.data}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;" />`;
+    } else {
+      preview.innerHTML = `<div style="padding:20px;text-align:center;"><div class="dc-preview-icon">✦</div><div class="dc-preview-text" style="margin-top:12px;">${result.textData || t('dc_no_image_data')}</div></div>`;
+    }
+    // Save to Firestore
+    await db.collection('users').doc(currentUser.uid).collection('dreamcanvas').add({
+      prompt, style, optimizedPrompt: optimizedPrompt.slice(0, 500),
+      hasImage: !!result.imageData,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(t('toast_creation_done'));
+    loadUserData();
+  } catch(e) {
+    showToast(t('toast_generate_fail') + e.message, 'error');
+    preview.innerHTML = `<div class="shimmer"></div><div class="dc-preview-icon">✦</div><div class="dc-preview-text">${t('toast_generate_fail_retry')}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = t('dc_generate');
+  }
+});
+
+// === STORYBOARD — AI GENERATION / SAVE / LOAD ===
+document.querySelector('.sb-generate-btn').addEventListener('click', async () => {
+  const idea = document.querySelector('.sb-idea-input').value.trim();
+  if (!idea) { showToast(t('toast_enter_story'), 'error'); return; }
+  if (!currentUser) { showToast(t('toast_login_first_story'), 'error'); return; }
+  const sbUsage = await checkUsageLimit('storyboards');
+  if (!sbUsage.allowed) { showToast(sbUsage.msg, 'error'); return; }
+  const btn = document.querySelector('.sb-generate-btn');
+  const timeline = document.querySelector('.sb-timeline');
+  btn.disabled = true; btn.textContent = t('toast_ai_creating');
+  timeline.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim);">' + t('toast_sb_generating') + '</div>';
+  // Determine frame count
+  const frameCtrlBtns = document.querySelectorAll('.sb-ctrl-btn');
+  let frameCount = 5;
+  frameCtrlBtns.forEach(b => { if (b.classList.contains('active') && b.textContent.includes('10')) frameCount = 10; });
+  const wantImagePrompts = Array.from(frameCtrlBtns).some(b => b.classList.contains('active') && (b.textContent.includes('图像') || b.textContent.includes('Image')));
+  try {
+    const systemPrompt = `你是一位专业的故事板编剧和分镜师。你需要根据用户的创意想法，生成结构化的文字故事板。
+每个帧必须包含：帧号(num)、场景描述(scene)、对话(dialogue)、情绪提示(emotion)、节奏控制(pace)。
+${wantImagePrompts ? '同时为每帧生成一段详细的图像生成 prompt (imagePrompt)。' : ''}
+输出严格 JSON 格式，不要 markdown 代码块标记，直接输出 JSON 数组：
+[{"num":1,"scene":"...","dialogue":"...","emotion":"...","pace":"缓慢/渐快/中速/快速/高潮","imagePrompt":"..."},...]`;
+
+    const result = await callGemini(GEMINI_PRO,
+      `请为以下创意生成 ${frameCount} 帧故事板：\n「${idea}」\n\n要求：场景描述要生动具体（50-80字），对话要有角色性格，情绪提示要精准，节奏控制要有起伏变化。`,
+      systemPrompt);
+    // Parse JSON from response
+    let frames;
+    try {
+      const jsonStr = result.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+      frames = JSON.parse(jsonStr);
+    } catch(pe) {
+      const match = result.match(/\[[\s\S]*\]/);
+      if (match) frames = JSON.parse(match[0]);
+      else throw new Error(t('ai_parse_fail'));
+    }
+    // Render frames
+    timeline.innerHTML = '';
+    frames.forEach(f => {
+      timeline.innerHTML += `<div class="sb-frame">
+        <div class="sb-frame-header">
+          <span class="sb-frame-num">FRAME ${String(f.num).padStart(2,'0')}</span>
+          ${f.emotion ? `<span class="sb-frame-emotion">${f.emotion}</span>` : ''}
+          ${f.pace ? `<span class="sb-frame-pace">${f.pace}</span>` : ''}
+        </div>
+        <div class="sb-frame-scene">${f.scene}</div>
+        ${f.dialogue ? `<div class="sb-frame-dialogue">"${f.dialogue}"</div>` : ''}
+        ${f.imagePrompt ? `<div style="font-size:0.75rem;color:var(--text-dim);margin-top:8px;padding:8px;background:rgba(0,0,0,0.2);border-radius:8px;">Image Prompt: ${f.imagePrompt}</div>` : ''}
+      </div>`;
+    });
+    // Save to Firestore
+    await db.collection('users').doc(currentUser.uid).collection('storyboards').add({
+      title: idea.slice(0, 20), idea, frames,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(t('toast_sb_done'));
+    loadUserData();
+  } catch(e) {
+    showToast(t('toast_generate_fail') + e.message, 'error');
+    timeline.innerHTML = '<div style="text-align:center;padding:40px;color:var(--star-pink);">' + t('toast_sb_fail_retry') + '</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = t('sb_generate');
+  }
+});
+
+// Storyboard control button toggles
+document.querySelectorAll('.sb-ctrl-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.textContent.includes('5') || btn.textContent.includes('10')) {
+      document.querySelectorAll('.sb-ctrl-btn').forEach(b => {
+        if (b.textContent.includes('5') || b.textContent.includes('10')) b.classList.remove('active');
+      });
+    }
+    btn.classList.toggle('active');
+  });
+});
+
+async function loadStoryboard(docId) {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).collection('storyboards').doc(docId).get();
+    if (doc.exists) {
+      const d = doc.data();
+      document.querySelector('.sb-idea-input').value = d.idea || '';
+      if (d.frames && d.frames.length) {
+        const timeline = document.querySelector('.sb-timeline');
+        timeline.innerHTML = '';
+        d.frames.forEach(f => {
+          timeline.innerHTML += `<div class="sb-frame"><div class="sb-frame-header"><span class="sb-frame-num">FRAME ${String(f.num).padStart(2,'0')}</span>${f.emotion?`<span class="sb-frame-emotion">${f.emotion}</span>`:''} ${f.pace?`<span class="sb-frame-pace">${f.pace}</span>`:''}</div><div class="sb-frame-scene">${f.scene}</div>${f.dialogue?`<div class="sb-frame-dialogue">"${f.dialogue}"</div>`:''}</div>`;
+        });
+      }
+      showToast(t('toast_project_loaded'));
+    }
+  } catch(e) { showToast(t('toast_load_fail'), 'error'); }
+}
+
+// === FUTURE ME — AI LIFE SIMULATION ===
+document.querySelector('.fm-simulate-btn').addEventListener('click', async () => {
+  const identity = document.querySelector('.fm-input').value.trim();
+  const situation = document.querySelectorAll('.fm-textarea')[0].value.trim();
+  const choices = document.querySelectorAll('.fm-textarea')[1].value.trim();
+  if (!identity && !situation && !choices) { showToast(t('toast_fill_info'), 'error'); return; }
+  if (!currentUser) { showToast(t('toast_login_first_sim'), 'error'); return; }
+  const fmUsage = await checkUsageLimit('simulations');
+  if (!fmUsage.allowed) { showToast(fmUsage.msg, 'error'); return; }
+  const btn = document.querySelector('.fm-simulate-btn');
+  const cardsContainer = document.querySelector('.fm-report-cards');
+  btn.disabled = true; btn.textContent = t('toast_simulating');
+  cardsContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-dim);">' + t('toast_sim_calculating') + '</div>';
+  // Load previous simulations for context
+  let previousContext = '';
+  try {
+    const prevSnap = await db.collection('users').doc(currentUser.uid).collection('simulations').orderBy('createdAt','desc').limit(3).get();
+    if (!prevSnap.empty) {
+      previousContext = t('prev_sim_context');
+      prevSnap.forEach(doc => {
+        const d = doc.data();
+        previousContext += `- ${d.identity || ''}：${d.choices || d.situation || ''}\n`;
+      });
+    }
+  } catch(e) {}
+  // Get selected year
+  const activeYear = document.querySelector('.fm-year-node.active .fm-year-label');
+  const yearLabel = activeYear ? activeYear.textContent : '1 年后';
+  const yearNum = parseInt(yearLabel) || 1;
+  try {
+    const systemPrompt = `你是一位拥有深厚人生阅历的 AI 人生模拟师和战略顾问。你需要根据用户的当前状况和面临的选择，模拟不同人生路径在 ${yearNum} 年后的可能结果。
+输出严格 JSON 格式（不要 markdown 代码块标记），包含4个维度的分析：
+[
+  {"title":"职业发展","text":"路径A：...。路径B：..."},
+  {"title":"财务状况","text":"路径A：...。路径B：..."},
+  {"title":"生活质量","text":"路径A：...。路径B：..."},
+  {"title":"实用建议","text":"综合建议..."}
+]
+每个 text 字段 80-120 字，内容要具体、有数据感、有洞察力。如果有历史记录，请参考并保持建议的一致性和连续性。`;
+
+    const userPrompt = `【当前身份】${identity || '未提供'}
+【当前状况】${situation || '未提供'}
+【面临选择】${choices || '未提供'}
+【模拟时间】${yearNum} 年后${previousContext}
+
+请模拟这个人在 ${yearNum} 年后不同选择路径下的人生状况。`;
+
+    const result = await callGemini(GEMINI_PRO, userPrompt, systemPrompt);
+    let reports;
+    try {
+      const jsonStr = result.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+      reports = JSON.parse(jsonStr);
+    } catch(pe) {
+      const match = result.match(/\[[\s\S]*\]/);
+      if (match) reports = JSON.parse(match[0]);
+      else throw new Error(t('ai_parse_fail'));
+    }
+    // Render report cards
+    cardsContainer.innerHTML = '';
+    reports.forEach(r => {
+      cardsContainer.innerHTML += `<div class="fm-report-card">
+        <div class="fm-card-title">${r.title}</div>
+        <div class="fm-card-text">${r.text}</div>
+      </div>`;
+    });
+    // Save to Firestore
+    const title = choices.slice(0, 20) || situation.slice(0, 20) || identity;
+    await db.collection('users').doc(currentUser.uid).collection('simulations').add({
+      identity, situation, choices, title, yearNum, reports,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(t('toast_sim_done'));
+    loadUserData();
+  } catch(e) {
+    showToast(t('toast_sim_fail') + e.message, 'error');
+    cardsContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--star-pink);">' + t('toast_sim_fail_retry') + '</div>';
+  } finally {
+    btn.disabled = false; btn.textContent = t('fm_simulate');
+  }
+});
+
+async function loadSimulation(docId) {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).collection('simulations').doc(docId).get();
+    if (doc.exists) {
+      const d = doc.data();
+      document.querySelector('.fm-input').value = d.identity || '';
+      document.querySelectorAll('.fm-textarea')[0].value = d.situation || '';
+      document.querySelectorAll('.fm-textarea')[1].value = d.choices || '';
+      // Restore year selection
+      if (d.yearNum) {
+        document.querySelectorAll('.fm-year-node').forEach(n => {
+          n.classList.remove('active');
+          if (n.querySelector('.fm-year-label').textContent.includes(d.yearNum)) n.classList.add('active');
+        });
+      }
+      // Restore report cards
+      if (d.reports && d.reports.length) {
+        const cardsContainer = document.querySelector('.fm-report-cards');
+        cardsContainer.innerHTML = '';
+        d.reports.forEach(r => {
+          cardsContainer.innerHTML += `<div class="fm-report-card"><div class="fm-card-title">${r.title}</div><div class="fm-card-text">${r.text}</div></div>`;
+        });
+      }
+      showToast(t('toast_record_loaded'));
+      document.getElementById('futureme').scrollIntoView({ behavior: 'smooth' });
+    }
+  } catch(e) { showToast(t('toast_load_fail'), 'error'); }
+}
+
+// === STAR CANVAS ===
+(function() {
+  const canvas = document.getElementById('star-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, stars = [], shootingStars = [];
+  function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for (let i = 0; i < 300; i++) {
+    stars.push({ x: Math.random()*2000-200, y: Math.random()*2000-200, r: Math.random()*1.5+0.3,
+      a: Math.random(), speed: Math.random()*0.003+0.001, phase: Math.random()*Math.PI*2,
+      color: ['#ffffff','#b388ff','#00e5ff','#ea80fc'][Math.floor(Math.random()*4)] });
+  }
+  function spawnShootingStar() {
+    if (shootingStars.length < 2 && Math.random() < 0.008) {
+      shootingStars.push({ x: Math.random()*w, y: Math.random()*h*0.4,
+        vx: (Math.random()*4+3)*(Math.random()>0.5?1:-1), vy: Math.random()*2+1,
+        life: 1, decay: Math.random()*0.015+0.01, len: Math.random()*60+40 });
+    }
+  }
+  function drawStar(s, t) {
+    const tw = Math.sin(t*s.speed*1000+s.phase)*0.4+0.6;
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.color; ctx.globalAlpha=s.a*tw; ctx.fill();
+    if(s.r>1){ctx.globalAlpha=s.a*tw*0.15;ctx.beginPath();ctx.arc(s.x,s.y,s.r*4,0,Math.PI*2);ctx.fill();}
+  }
+  function drawShootingStar(ss) {
+    const g=ctx.createLinearGradient(ss.x,ss.y,ss.x-ss.vx*ss.len/5,ss.y-ss.vy*ss.len/5);
+    g.addColorStop(0,`rgba(255,255,255,${ss.life})`);g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.strokeStyle=g;ctx.lineWidth=1.5;ctx.globalAlpha=1;ctx.beginPath();
+    ctx.moveTo(ss.x,ss.y);ctx.lineTo(ss.x-ss.vx*ss.len/5,ss.y-ss.vy*ss.len/5);ctx.stroke();
+  }
+  function animate(t) {
+    ctx.clearRect(0,0,w,h); stars.forEach(s=>drawStar(s,t/1000)); spawnShootingStar();
+    shootingStars.forEach(ss=>{ss.x+=ss.vx;ss.y+=ss.vy;ss.life-=ss.decay;drawShootingStar(ss);});
+    shootingStars=shootingStars.filter(ss=>ss.life>0); ctx.globalAlpha=1; requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+})();
+
+// === HEADER SCROLL ===
+window.addEventListener('scroll', () => {
+  document.getElementById('header').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// === SCROLL REVEAL ===
+const revealEls = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+// === STYLE CHIPS ===
+document.querySelectorAll('.style-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.style-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+  });
+});
+
+// === TIMELINE YEAR NODES ===
+document.querySelectorAll('.fm-year-node').forEach(node => {
+  node.addEventListener('click', () => {
+    document.querySelectorAll('.fm-year-node').forEach(n => n.classList.remove('active'));
+    node.classList.add('active');
+  });
+});
+
+// === NAV ACTIVE STATE ===
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 200) current = s.getAttribute('id'); });
+  navLinks.forEach(l => { l.classList.remove('active'); if (l.getAttribute('href') === '#' + current) l.classList.add('active'); });
+});
+
+// === LOGIN MODAL ===
+const loginBtn = document.getElementById('loginBtn');
+const loginModal = document.getElementById('loginModal');
+const modalClose = document.getElementById('modalClose');
+loginBtn.addEventListener('click', () => { loginModal.classList.add('show'); });
+modalClose.addEventListener('click', () => { loginModal.classList.remove('show'); });
+loginModal.addEventListener('click', (e) => { if (e.target === loginModal) loginModal.classList.remove('show'); });
+
+// === SMOOTH NAV ===
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+
+</body>
+</html>
