@@ -944,8 +944,8 @@ const db = firebase.firestore();
 
 // === GEMINI API (obfuscated key) ===
 const _gk = atob('QUl6YVN5QUxsS1RneXFBM3FNejBfeUQyRW15REZycU54MGdENHpj');
-const GEMINI_PRO = 'gemini-2.5-pro-preview-05-06';
-const GEMINI_FLASH = 'gemini-2.5-flash-preview-04-17';
+const GEMINI_PRO = 'gemini-3.1-pro-preview';
+const GEMINI_FLASH = 'gemini-3-flash-preview';
 
 async function callGemini(model, prompt, systemInstruction) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${_gk}`;
@@ -965,7 +965,7 @@ async function callGemini(model, prompt, systemInstruction) {
 }
 
 async function callGeminiImage(prompt) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${_gk}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${_gk}`;
   const body = {
     contents: [{ parts: [{ text: prompt }] }],
     generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
