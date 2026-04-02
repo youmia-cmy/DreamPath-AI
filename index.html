@@ -1238,14 +1238,13 @@ document.querySelector('.dc-generate-btn').addEventListener('click', async () =>
     } else {
       preview.innerHTML = `<div style="padding:20px;text-align:center;"><div class="dc-preview-icon">✦</div><div class="dc-preview-text" style="margin-top:12px;">${result.textData || t('dc_no_image_data')}</div></div>`;
     }
-    // Save to Firestore
-    await db.collection('users').doc(currentUser.uid).collection('dreamcanvas').add({
+    showToast(t('toast_creation_done'));
+    // Save to Firestore (non-blocking)
+    db.collection('users').doc(currentUser.uid).collection('dreamcanvas').add({
       prompt, style, optimizedPrompt: optimizedPrompt.slice(0, 500),
       hasImage: !!result.imageData,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast(t('toast_creation_done'));
-    loadUserData();
+    }).then(() => loadUserData()).catch(e => console.warn('Save failed:', e));
   } catch(e) {
     showToast(t('toast_generate_fail') + e.message, 'error');
     preview.innerHTML = `<div class="shimmer"></div><div class="dc-preview-icon">✦</div><div class="dc-preview-text">${t('toast_generate_fail_retry')}</div>`;
@@ -1304,14 +1303,13 @@ ${wantImagePrompts ? '同时为每帧生成一段详细的图像生成 prompt (i
         ${f.imagePrompt ? `<div style="font-size:0.75rem;color:var(--text-dim);margin-top:8px;padding:8px;background:rgba(0,0,0,0.2);border-radius:8px;">Image Prompt: ${f.imagePrompt}</div>` : ''}
       </div>`;
     });
-    // Save to Firestore
-    await db.collection('users').doc(currentUser.uid).collection('storyboards').add({
+    showToast(t('toast_sb_done'));
+    // Save to Firestore (non-blocking)
+    db.collection('users').doc(currentUser.uid).collection('storyboards').add({
       title: idea.slice(0, 20), idea, frames,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast(t('toast_sb_done'));
-    loadUserData();
+    }).then(() => loadUserData()).catch(e => console.warn('Save failed:', e));
   } catch(e) {
     showToast(t('toast_generate_fail') + e.message, 'error');
     timeline.innerHTML = '<div style="text-align:center;padding:40px;color:var(--star-pink);">' + t('toast_sb_fail_retry') + '</div>';
@@ -1416,14 +1414,13 @@ document.querySelector('.fm-simulate-btn').addEventListener('click', async () =>
         <div class="fm-card-text">${r.text}</div>
       </div>`;
     });
-    // Save to Firestore
+    showToast(t('toast_sim_done'));
+    // Save to Firestore (non-blocking)
     const title = choices.slice(0, 20) || situation.slice(0, 20) || identity;
-    await db.collection('users').doc(currentUser.uid).collection('simulations').add({
+    db.collection('users').doc(currentUser.uid).collection('simulations').add({
       identity, situation, choices, title, yearNum, reports,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast(t('toast_sim_done'));
-    loadUserData();
+    }).then(() => loadUserData()).catch(e => console.warn('Save failed:', e));
   } catch(e) {
     showToast(t('toast_sim_fail') + e.message, 'error');
     cardsContainer.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--star-pink);">' + t('toast_sim_fail_retry') + '</div>';
