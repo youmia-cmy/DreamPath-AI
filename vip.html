@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="page_title_vip">DreamPath AI — VIP会员中心</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<style>
+/* === CSS VARIABLES (same as main site) === */
+:root {
+  --void: #050510;
+  --deep-navy: #0a0a2e;
+  --nebula-purple: #1a0a3e;
+  --cosmic-blue: #0d1b4a;
+  --star-cyan: #00e5ff;
+  --star-purple: #b388ff;
+  --star-pink: #ea80fc;
+  --nebula-glow: #7c4dff;
+  --accent-cyan: #00e5ff;
+  --accent-purple: #b388ff;
+  --glass-bg: rgba(15, 10, 40, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: rgba(255, 255, 255, 0.12);
+  --text-primary: #e8e0ff;
+  --text-secondary: rgba(232, 224, 255, 0.6);
+  --text-dim: rgba(232, 224, 255, 0.35);
+  --font-display: 'Orbitron', 'Cinzel', sans-serif;
+  --font-cn: 'Noto Sans SC', sans-serif;
+  --glow-cyan: 0 0 20px rgba(0, 229, 255, 0.3), 0 0 60px rgba(0, 229, 255, 0.1);
+  --glow-purple: 0 0 20px rgba(179, 136, 255, 0.3), 0 0 60px rgba(179, 136, 255, 0.1);
+}
+
+/* === RESET & BASE === */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-cn);
+  background: var(--void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* === BACKGROUND EFFECTS === */
+.nebula-bg {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(26, 10, 62, 0.6) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(13, 27, 74, 0.4) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, rgba(124, 77, 255, 0.1) 0%, transparent 50%);
+  z-index: -2; pointer-events: none;
+}
+.orb {
+  position: fixed; border-radius: 50%; filter: blur(80px); z-index: -1;
+  pointer-events: none; animation: orbFloat 20s ease-in-out infinite;
+}
+.orb-1 { width: 400px; height: 400px; top: -100px; left: -100px; background: rgba(0, 229, 255, 0.06); }
+.orb-2 { width: 500px; height: 500px; bottom: -150px; right: -150px; background: rgba(124, 77, 255, 0.06); animation-delay: -10s; }
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(30px, -30px); }
+}
+
+/* === HEADER === */
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 64px;
+  background: rgba(5, 5, 16, 0.85);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+}
+.header-left { display: flex; align-items: center; gap: 14px; }
+.logo-text {
+  font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  letter-spacing: 2px;
+}
+.header-nav { display: flex; align-items: center; gap: 16px; }
+.nav-link {
+  font-family: var(--font-cn); font-size: 0.85rem; color: var(--text-secondary);
+  text-decoration: none; padding: 6px 14px; border-radius: 10px; transition: all 0.3s;
+}
+.nav-link:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+.user-status { font-size: 0.8rem; color: var(--text-dim); }
+
+/* === PAGE LAYOUT === */
+.vip-main { padding-top: 84px; padding-bottom: 60px; }
+.vip-container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+.vip-hero { text-align: center; margin-bottom: 40px; }
+.vip-title {
+  font-family: var(--font-display); font-size: 2.2rem; font-weight: 900;
+  color: var(--text-primary); margin-bottom: 10px;
+}
+.gradient-text {
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple), var(--star-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.vip-subtitle { font-size: 1rem; color: var(--text-secondary); }
+.section-title {
+  font-family: var(--font-cn); font-size: 1.3rem; font-weight: 700;
+  color: var(--text-primary); margin: 40px 0 20px; text-align: center;
+}
+
+/* === BALANCE SECTION === */
+.balance-card {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 28px 32px; text-align: center;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+.balance-label { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 8px; }
+.balance-amount { font-family: var(--font-display); font-size: 2.4rem; font-weight: 900; color: var(--star-cyan); }
+.balance-unit { font-size: 1rem; color: var(--text-secondary); font-weight: 400; }
+.vip-status-line { font-size: 0.85rem; color: var(--text-secondary); margin-top: 10px; }
+
+/* === MEMBERSHIP CARDS === */
+.tier-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px;
+}
+.tier-card {
+  position: relative; background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 32px 24px; text-align: center;
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  transition: all 0.4s ease; cursor: default;
+}
+.tier-card:hover {
+  border-color: var(--star-purple); transform: translateY(-4px);
+  box-shadow: 0 8px 40px rgba(124,77,255,0.15);
+}
+.tier-card.popular {
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.08);
+}
+.tier-popular-badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #FFD700, #FFA500); color: #1a0a2e;
+  font-size: 0.7rem; font-weight: 800; padding: 4px 16px; border-radius: 20px;
+}
+.tier-icon { font-size: 2rem; margin-bottom: 12px; }
+.tier-name { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 16px; }
+.tier-price { margin-bottom: 20px; }
+.price-num {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 900;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.price-unit { font-size: 0.8rem; color: var(--text-dim); }
+.tier-features {
+  list-style: none; text-align: left; margin-bottom: 24px;
+  font-size: 0.82rem; color: var(--text-secondary);
+}
+.tier-features li { padding: 5px 0; padding-left: 16px; position: relative; }
+.tier-features li::before {
+  content: '✓'; position: absolute; left: 0; color: var(--star-cyan); font-weight: 700;
+}
+.tier-btn {
+  width: 100%; padding: 12px 0; border: none; border-radius: 12px;
+  font-family: var(--font-cn); font-size: 0.9rem; font-weight: 700;
+  color: var(--void); cursor: pointer; transition: all 0.3s;
+  background: linear-gradient(135deg, var(--star-cyan), var(--star-purple));
+}
+.tier-btn:hover { box-shadow: 0 0 20px rgba(0,229,255,0.3); transform: scale(1.02); }
+
+/* === RECHARGE SECTION === */
+.recharge-card {
+  background: var(--glass-bg); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 32px; backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.recharge-row { margin-bottom: 24px; }
+.recharge-row:last-child { margin-bottom: 0; }
+.recharge-label {
+  display: block; font-size: 0.85rem; font-weight: 600;
+  color: var(--text-primary); margin-bottom: 8px;
+}
+.recharge-input {
+  width: 100%; padding: 12px 16px; border-radius: 12px;
+  border: 1px solid var(--glass-border); background: rgba(255,255,255,0.04);
+  color: var(--text-primary); font-family: var(--font-cn); font-size: 1rem;
+  outline: none; transition: border-color 0.3s;
+}
+.recharge-input:focus { border-color: var(--star-cyan); }
+.recharge-hint { display: block; font-size: 0.75rem; color: var(--text-dim); margin-top: 6px; }
+.chain-selector { display: flex; gap: 10px; }
+.chain-btn {
+  flex: 1; padding: 10px 0; border-radius: 12px; border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.04); color: var(--text-secondary);
+  font-family: var(--font-cn); font-size: 0.85rem; cursor: pointer; transition: all 0.3s;
+}
+.chain-btn.active {
+  border-color: var(--star-cyan); color: var(--star-cyan);
+  background: rgba(0, 229, 255, 0.08);
+}
+.chain-btn:hover { border-color: var(--star-cyan); }
+.wallet-address {
+  padding: 12px 16px; border-radius: 12px; border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.04); color: var(--accent-cyan);
+  font-family: monospace; font-size: 0.78rem; word-break: break-all;
+  margin-bottom: 8px;
+}
+.copy-btn {
+  padding: 6px 16px; border-radius: 10px; border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.04); color: var(--text-secondary);
+  font-family: var(--font-cn); font-size: 0.78rem; cursor: pointer; transition: all 0.3s;
+}
+.copy-btn:hover { border-color: var(--star-cyan); color: var(--star-cyan); }
+.wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wallet-btn {
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+  padding: 14px 12px; border-radius: 14px; border: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.04); color: var(--text-primary);
+  font-family: var(--font-cn); font-size: 0.85rem; cursor: pointer; transition: all 0.3s;
+}
+.wallet-btn:hover {
+  border-color: var(--star-purple); background: rgba(179,136,255,0.08);
+  box-shadow: 0 0 20px rgba(179,136,255,0.1);
+}
+.wallet-icon { font-size: 1.2rem; }
+
+/* === TOAST === */
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  padding: 12px 28px; border-radius: 14px; font-family: var(--font-cn);
+  font-size: 0.85rem; z-index: 9999; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s; backdrop-filter: blur(12px);
+}
+.toast.show { opacity: 1; pointer-events: auto; }
+.toast.success { background: rgba(0, 229, 255, 0.15); color: var(--star-cyan); border: 1px solid rgba(0,229,255,0.2); }
+.toast.error { background: rgba(234, 128, 252, 0.15); color: var(--star-pink); border: 1px solid rgba(234,128,252,0.2); }
+.toast.warning { background: rgba(255, 215, 0, 0.15); color: #FFD700; border: 1px solid rgba(255,215,0,0.2); }
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .tier-grid { grid-template-columns: 1fr; max-width: 360px; margin: 0 auto 20px; }
+  .wallet-grid { grid-template-columns: 1fr; }
+  .header { padding: 0 16px; }
+  .vip-title { font-size: 1.6rem; }
+}
+@media (max-width: 600px) {
+  .header-nav { gap: 8px; }
+  .chain-selector { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="nebula-bg"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <a href="index.html" style="display:flex;align-items:center;gap:14px;text-decoration:none;">
+      <span class="logo-text">DREAMPATH AI</span>
+    </a>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="nav-link" data-i18n="nav_back_home">返回首页</a>
+    <span id="headerUser" class="user-status"></span>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main class="vip-main">
+  <div class="vip-container">
+
+    <div class="vip-hero">
+      <h1 class="vip-title"><span data-i18n="vip_title_1">VIP</span><span class="gradient-text" data-i18n="vip_title_2">会员中心</span></h1>
+      <p class="vip-subtitle" data-i18n="vip_subtitle">解锁全部高级功能，畅享无限创作</p>
+    </div>
+
+    <!-- Balance Display -->
+    <div class="balance-card" id="balanceCard">
+      <div class="balance-label" data-i18n="vip_balance_label">当前余额</div>
+      <div class="balance-amount"><span id="balanceValue">0.00</span> <span class="balance-unit">USDT</span></div>
+      <div class="vip-status-line" id="vipStatusLine" data-i18n="vip_status_free">当前状态：免费用户</div>
+    </div>
+
+    <!-- Membership Tiers -->
+    <h2 class="section-title" data-i18n="vip_section_tiers">选择会员套餐</h2>
+    <div class="tier-grid">
+      <div class="tier-card" data-tier="monthly" data-price="9.9">
+        <div class="tier-icon">&#9790;</div>
+        <h3 class="tier-name" data-i18n="vip_tier_monthly">月度会员</h3>
+        <div class="tier-price"><span class="price-num">9.9</span> <span class="price-unit" data-i18n="vip_price_monthly">USDT/月</span></div>
+        <ul class="tier-features">
+          <li data-i18n="vip_feature_unlimited">全部AI工具无限使用</li>
+          <li data-i18n="vip_feature_priority">高优先级生成队列</li>
+          <li data-i18n="vip_feature_badge">专属会员标识</li>
+        </ul>
+        <button class="tier-btn" onclick="subscribeTier('monthly', 9.9)" data-i18n="vip_subscribe">立即订阅</button>
+      </div>
+      <div class="tier-card popular" data-tier="quarterly" data-price="29.9">
+        <div class="tier-popular-badge" data-i18n="vip_popular">最受欢迎</div>
+        <div class="tier-icon">&#9733;</div>
+        <h3 class="tier-name" data-i18n="vip_tier_quarterly">季度会员</h3>
+        <div class="tier-price"><span class="price-num">29.9</span> <span class="price-unit" data-i18n="vip_price_quarterly">USDT/季</span></div>
+        <ul class="tier-features">
+          <li data-i18n="vip_feature_unlimited">全部AI工具无限使用</li>
+          <li data-i18n="vip_feature_priority">高优先级生成队列</li>
+          <li data-i18n="vip_feature_badge">专属会员标识</li>
+          <li data-i18n-html="vip_feature_quarterly_save">比月度节省 <b>-0.17%</b></li>
+        </ul>
+        <button class="tier-btn" onclick="subscribeTier('quarterly', 29.9)" data-i18n="vip_subscribe">立即订阅</button>
+      </div>
+      <div class="tier-card" data-tier="yearly" data-price="39">
+        <div class="tier-icon">&#9830;</div>
+        <h3 class="tier-name" data-i18n="vip_tier_yearly">年度会员</h3>
+        <div class="tier-price"><span class="price-num">39</span> <span class="price-unit" data-i18n="vip_price_yearly">USDT/年</span></div>
+        <ul class="tier-features">
+          <li data-i18n="vip_feature_unlimited">全部AI工具无限使用</li>
+          <li data-i18n="vip_feature_priority">高优先级生成队列</li>
+          <li data-i18n="vip_feature_badge">专属会员标识</li>
+          <li data-i18n-html="vip_feature_yearly_save">最高性价比 <b>节省67%</b></li>
+        </ul>
+        <button class="tier-btn" onclick="subscribeTier('yearly', 39)" data-i18n="vip_subscribe">立即订阅</button>
+      </div>
+    </div>
+
+    <!-- Recharge Section -->
+    <h2 class="section-title" data-i18n="vip_recharge_title">USDT 充值</h2>
+    <div class="recharge-card">
+      <div class="recharge-row">
+        <label class="recharge-label" data-i18n="vip_recharge_label">充值金额 (USDT)</label>
+        <input type="number" id="rechargeAmount" class="recharge-input" data-i18n-placeholder="vip_recharge_placeholder" placeholder="输入充值金额" min="1" step="0.01">
+        <span class="recharge-hint" data-i18n="vip_recharge_hint">1 USDT = 1 USDT (1:1)</span>
+      </div>
+
+      <div class="recharge-row">
+        <label class="recharge-label" data-i18n="vip_select_chain">选择链</label>
+        <div class="chain-selector">
+          <button class="chain-btn active" data-chain="bsc" onclick="selectChain('bsc')">BSC (BEP20)</button>
+          <button class="chain-btn" data-chain="solana" onclick="selectChain('solana')">Solana</button>
+        </div>
+      </div>
+
+      <div class="recharge-row" style="display:none;">
+        <label class="recharge-label" data-i18n="vip_wallet_label">收款钱包地址</label>
+        <div class="wallet-address" id="walletAddress">0x454b6f0485a0fc8a3c7a73fd192e3de7d24d887f</div>
+        <button class="copy-btn" onclick="copyAddress()" data-i18n="vip_copy_address">复制地址</button>
+      </div>
+
+      <div class="recharge-row">
+        <label class="recharge-label" data-i18n="vip_select_wallet">选择钱包支付</label>
+        <div class="wallet-grid">
+          <button class="wallet-btn" onclick="connectWallet('okx')">
+            OKX Wallet
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('tokenpocket')">
+            TokenPocket
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('metamask')">
+            <span data-i18n="vip_metamask">MetaMask</span>
+          </button>
+          <button class="wallet-btn" onclick="connectWallet('binance')">
+            Binance Wallet
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="i18n.js"></script>
+<script>
+// === FIREBASE INIT (same obfuscated config) ===
+const _fc = atob('eyJhcGlLZXkiOiJBSXphU3lCT3M0QVNBZ3RZazVaS2l4YkxFOE15bk9FRDZNZk9jeVkiLCJhdXRoRG9tYWluIjoiZHJlYW1wYXRoLWFpLWM1NTI1LmZpcmViYXNlYXBwLmNvbSIsInByb2plY3RJZCI6ImRyZWFtcGF0aC1haS1jNTUyNSIsInN0b3JhZ2VCdWNrZXQiOiJkcmVhbXBhdGgtYWktYzU1MjUuZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiODc5MDM4NzQ1NDI3IiwiYXBwSWQiOiIxOjg3OTAzODc0NTQyNzp3ZWI6Y2UyZjE3ZDk2Njg0OTkxNWZkZWZhNiIsIm1lYXN1cmVtZW50SWQiOiJHLVZNNDE5MzVNQk0ifQ==');
+const firebaseConfig = JSON.parse(_fc);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// === TOAST ===
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.classList.remove('show'); }, 3500);
+}
+
+// === CHAIN / WALLET CONFIG ===
+const WALLETS = {
+  bsc: '0x454b6f0485a0fc8a3c7a73fd192e3de7d24d887f',
+  solana: '8PHJFMp2WDujgs1xQJZtoYVcPPxy6cC5QHoaePaMnHrX'
+};
+let selectedChain = 'bsc';
+let currentUser = null;
+let userBalance = 0;
+
+function selectChain(chain) {
+  selectedChain = chain;
+  document.querySelectorAll('.chain-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.chain === chain);
+  });
+  document.getElementById('walletAddress').textContent = WALLETS[chain];
+}
+
+function copyAddress() {
+  const addr = WALLETS[selectedChain];
+  navigator.clipboard.writeText(addr).then(() => showToast(t('toast_address_copied')));
+}
+
+// === AUTH STATE ===
+auth.onAuthStateChanged(async user => {
+  currentUser = user;
+  const userEl = document.getElementById('headerUser');
+  if (user) {
+    userEl.textContent = user.displayName || user.email;
+    await loadUserVipData();
+  } else {
+    userEl.innerHTML = '<a href="index.html" style="color:var(--star-cyan);text-decoration:none;font-size:0.85rem;">' + t('vip_please_login') + '</a>';
+    document.getElementById('balanceValue').textContent = '0.00';
+    document.getElementById('vipStatusLine').textContent = t('vip_status_login_first');
+  }
+});
+
+async function loadUserVipData() {
+  if (!currentUser) return;
+  try {
+    const doc = await db.collection('users').doc(currentUser.uid).get();
+    if (doc.exists) {
+      const data = doc.data();
+      userBalance = data.balance || 0;
+      document.getElementById('balanceValue').textContent = userBalance.toFixed(2);
+
+      let vipLevel = data.vipLevel || 'none';
+      const vipExpiry = data.vipExpiry ? data.vipExpiry.toDate() : null;
+      let isVip = false;
+      if (vipExpiry && vipExpiry > new Date() && vipLevel !== 'none') {
+        isVip = true;
+      } else if (vipLevel !== 'none' && vipExpiry && vipExpiry <= new Date()) {
+        await db.collection('users').doc(currentUser.uid).update({ vipLevel: 'none' });
+        vipLevel = 'none';
+      }
+
+      const labelMap = { monthly: t('vip_label_monthly'), quarterly: t('vip_label_quarterly'), yearly: t('vip_label_yearly') };
+      if (isVip) {
+        const expStr = vipExpiry.toLocaleDateString(getCurrentLang() === 'zh' ? 'zh-CN' : 'en-US');
+        document.getElementById('vipStatusLine').innerHTML =
+          t('vip_status_prefix') + '<span style="color:#FFD700;font-weight:700;">' + t('vip_status_vip') + (labelMap[vipLevel] || t('profile_vip_user')) + '</span>' + t('vip_status_expiry') + expStr;
+      } else {
+        document.getElementById('vipStatusLine').textContent = t('vip_status_free');
+      }
+    } else {
+      // Create user doc if missing
+      await db.collection('users').doc(currentUser.uid).set({
+        email: currentUser.email,
+        displayName: currentUser.displayName || '',
+        balance: 0, vipLevel: 'none',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+  } catch(e) {
+    console.error(t('load_user_fail'), e);
+  }
+}
+
+// === SUBSCRIBE ===
+async function subscribeTier(tier, price) {
+  if (!currentUser) { showToast(t('toast_please_login'), 'error'); return; }
+  await loadUserVipData();
+  if (userBalance < price) {
+    showToast(t('toast_balance_insufficient') + userBalance.toFixed(2) + ' USDT', 'warning');
+    document.querySelector('.recharge-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const tierNames = { monthly: t('vip_label_monthly'), quarterly: t('vip_label_quarterly'), yearly: t('vip_label_yearly') };
+  if (!confirm(t('toast_subscribe_confirm') + price + t('toast_subscribe_confirm_2') + tierNames[tier] + t('toast_subscribe_confirm_3'))) return;
+
+  const durationDays = { monthly: 30, quarterly: 90, yearly: 365 };
+  const now = new Date();
+  const expiry = new Date(now.getTime() + durationDays[tier] * 24 * 60 * 60 * 1000);
+
+  try {
+    await db.collection('users').doc(currentUser.uid).update({
+      balance: firebase.firestore.FieldValue.increment(-price),
+      vipLevel: tier,
+      vipExpiry: firebase.firestore.Timestamp.fromDate(expiry),
+      vipStartedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(t('toast_subscribe_success') + { monthly: t('vip_label_monthly'), quarterly: t('vip_label_quarterly'), yearly: t('vip_label_yearly') }[tier]);
+    await loadUserVipData();
+  } catch(e) {
+    showToast(t('toast_subscribe_fail') + e.message, 'error');
+  }
+}
+
+// === WALLET CONNECTION ===
+// No pre-detection gate. User clicks = user has wallet installed.
+// Directly attempt to connect; catch errors gracefully.
+
+const WALLET_NAMES = {
+  okx: 'OKX Wallet',
+  tokenpocket: 'TokenPocket',
+  metamask: 'MetaMask',
+  binance: 'Binance Wallet'
+};
+
+// Get the best available EVM provider for the requested wallet type.
+// Tries dedicated namespace -> providers array -> window.ethereum as final fallback.
+function getEvmProvider(type) {
+  // Dedicated namespaces (most wallets inject these)
+  if (type === 'okx' && window.okxwallet) return window.okxwallet;
+  if (type === 'tokenpocket' && window.tokenpocket && window.tokenpocket.ethereum) return window.tokenpocket.ethereum;
+  if (type === 'binance' && window.BinanceChain) return window.BinanceChain;
+
+  // Check providers array (EIP-5749: multiple wallets coexisting)
+  if (window.ethereum && Array.isArray(window.ethereum.providers)) {
+    var flagMap = { okx: 'isOkxWallet', tokenpocket: 'isTokenPocket', metamask: 'isMetaMask', binance: 'isBinance' };
+    var flag = flagMap[type];
+    if (flag) {
+      var found = window.ethereum.providers.find(function(p) { return p[flag]; });
+      if (found) return found;
+    }
+  }
+
+  // Final fallback: window.ethereum (the single global provider)
+  if (window.ethereum) return window.ethereum;
+
+  return null;
+}
+
+async function connectWallet(type) {
+  if (!currentUser) { showToast(t('toast_please_login'), 'error'); return; }
+  const amount = parseFloat(document.getElementById('rechargeAmount').value);
+  if (!amount || amount <= 0) { showToast(t('toast_enter_amount'), 'error'); return; }
+
+  const walletName = WALLET_NAMES[type] || type;
+
+  if (selectedChain === 'bsc') {
+    const provider = getEvmProvider(type);
+
+    if (!provider) {
+      showToast(t('toast_wallet_not_found') + walletName + t('toast_wallet_install'), 'error');
+      return;
+    }
+
+    try {
+      showToast(t('toast_connecting') + walletName + '...', 'success');
+      const accounts = await provider.request({ method: 'eth_requestAccounts' });
+      if (!accounts || !accounts.length) { showToast(t('toast_wallet_connect_fail'), 'error'); return; }
+
+      // Switch to BSC network (chainId 56 = 0x38)
+      try {
+        await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0x38' }] });
+      } catch(switchErr) {
+        if (switchErr.code === 4902) {
+          await provider.request({
+            method: 'wallet_addEthereumChain',
+            params: [{ chainId: '0x38', chainName: 'BNB Smart Chain', nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
+              rpcUrls: ['https://bsc-dataseed.binance.org/'], blockExplorerUrls: ['https://bscscan.com'] }]
+          });
+        }
+      }
+
+      // USDT on BSC: 0x55d398326f99059fF775485246999027B3197955
+      const usdtContract = '0x55d398326f99059fF775485246999027B3197955';
+      const recipient = WALLETS.bsc;
+
+      // ERC20 transfer: transfer(address,uint256)
+      const transferData = '0xa9059cbb' +
+        recipient.slice(2).padStart(64, '0') +
+        BigInt(Math.round(amount * 1e18)).toString(16).padStart(64, '0');
+
+      const txHash = await provider.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: accounts[0],
+          to: usdtContract,
+          data: transferData,
+          value: '0x0'
+        }]
+      });
+
+      showToast(t('toast_tx_submitted') + txHash.slice(0, 16) + '...', 'success');
+      await db.collection('users').doc(currentUser.uid).update({
+        balance: firebase.firestore.FieldValue.increment(amount)
+      });
+      showToast(t('toast_recharge_success') + amount + ' USDT', 'success');
+      await loadUserVipData();
+
+    } catch(err) {
+      if (err.code === 4001) { showToast(t('toast_tx_cancelled'), 'warning'); }
+      else { showToast(t('toast_tx_fail') + (err.message || err), 'error'); }
+    }
+
+  } else if (selectedChain === 'solana') {
+    if (type === 'metamask') {
+      showToast(t('toast_metamask_no_solana'), 'warning');
+      return;
+    }
+
+    // Get Solana provider
+    let solProvider = null;
+    if (type === 'okx' && window.okxwallet && window.okxwallet.solana) solProvider = window.okxwallet.solana;
+    else if (type === 'tokenpocket' && window.tokenpocket && window.tokenpocket.solana) solProvider = window.tokenpocket.solana;
+    else if (type === 'binance' && window.BinanceChain && window.BinanceChain.solana) solProvider = window.BinanceChain.solana;
+
+    // Fallback: any available Solana provider
+    if (!solProvider && window.solana) solProvider = window.solana;
+
+    if (!solProvider) {
+      showToast(t('toast_solana_not_found') + walletName + t('toast_solana_install'), 'error');
+      return;
+    }
+
+    try {
+      showToast(t('toast_connecting') + walletName + ' (Solana)...', 'success');
+      const resp = await solProvider.connect();
+      showToast(t('toast_solana_connected') + resp.publicKey.toString().slice(0, 8) + t('toast_solana_manual'), 'success');
+      alert(t('toast_solana_alert') + amount + t('toast_solana_alert_2') + WALLETS.solana + t('toast_solana_alert_3'));
+    } catch(err) {
+      showToast(t('toast_solana_fail') + (err.message || err), 'error');
+    }
+  }
+}
+</script>
+
+</body>
+</html>
