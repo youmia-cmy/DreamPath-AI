@@ -684,12 +684,11 @@ main { position: relative; z-index: 1; }
   .star-node__ripple { inset: -4px; }
   .star-node__img { inset: 2px; }
 }
-}
 
 /* About social icons */
 .about-socials {
-  display: flex; justify-content: center; gap: 20px;
-  margin-top: 28px;
+  display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20px;
+  width: 100%; margin: 28px auto 0;
 }
 .about-socials__link {
   display: flex; align-items: center; justify-content: center;
@@ -867,8 +866,8 @@ main { position: relative; z-index: 1; }
     <span class="section__label" data-i18n="about_label">04 / About</span>
     <h2 class="section__title" data-i18n="about_title">About Cute Kitten</h2>
     <p class="section__desc" data-i18n="about_desc">Born from a love of pixel art and cosmic dreams, Cute Kitten is a space where creativity meets community. We believe every pixel tells a story.</p>
-    <div class="about-socials">
-      <a class="about-socials__link" href="https://x.com/_StarryMiu" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+    <div class="about-socials" style="display:flex;flex-direction:row;justify-content:center;align-items:center;gap:20px;width:100%;margin:28px auto 0;">
+      <a class="about-socials__link" href="https://x.com/_StarryMiu" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" style="display:inline-flex;align-items:center;justify-content:center;">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       </a>
       <a class="about-socials__link" href="https://t.me/StarryMiu" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
@@ -1139,19 +1138,18 @@ main { position: relative; z-index: 1; }
   // Big Dipper star positions (% of container) — 勺子形状
   // Stars 0-3: the "bowl", Stars 4-6: the "handle"
   const starPositions = [
-    { x: 10, y: 65 },  // 0 - bowl bottom-left
-    { x: 22, y: 30 },  // 1 - bowl top-left
-    { x: 38, y: 25 },  // 2 - bowl top-right
-    { x: 42, y: 62 },  // 3 - bowl bottom-right
-    { x: 58, y: 52 },  // 4 - handle start
-    { x: 74, y: 38 },  // 5 - handle mid
-    { x: 90, y: 28 },  // 6 - handle end
+    { x: 10, y: 65 },  // 0 - bottom-left
+    { x: 22, y: 30 },  // 1 - top-left
+    { x: 38, y: 25 },  // 2 - top-center
+    { x: 42, y: 62 },  // 3 - center
+    { x: 55, y: 78 },  // 4 - lower-center (moved down)
+    { x: 72, y: 78 },  // 5 - lower-right (moved down)
+    { x: 90, y: 28 },  // 6 - far-right top
   ];
 
-  // Connection lines (index pairs) — bowl + handle
+  // Connection lines (index pairs) — sequential chain
   const connections = [
-    [0, 1], [1, 2], [2, 3], [3, 0], // bowl
-    [2, 4], [4, 5], [5, 6]           // handle from top-right of bowl
+    [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6]
   ];
 
   // Placeholder images (user can replace)
