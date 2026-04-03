@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DreamPath AI - Cute Kitten</title>
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABhSURBVFhH7c0xDQAgEATBo/5VYAQLSCDBwDa3yb0AANjKe5/X7uf1AwBgI/8HAIBf+D8AAP7i/wAA+Iv/AwDgL/4PAIC/+D8AAP7i/wAA+Iv/AwDgL/4PAIB9MjsA4F4ZC0qBRivf6FkAAAAASUVORK5CYII=">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --void: #0e0618;
+    --pink-glow: #ff6ec7;
+    --purple-glow: #b44aff;
+    --text-primary: #f0e6ff;
+  }
+  html, body { height: 100%; overflow: hidden; background: var(--void); font-family: 'Segoe UI', sans-serif; }
+  .app-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; height: 48px;
+    background: linear-gradient(135deg, rgba(14,6,24,0.98), rgba(30,15,50,0.98));
+    border-bottom: 1px solid rgba(255,110,199,0.15);
+    backdrop-filter: blur(12px);
+    position: relative; z-index: 10;
+  }
+  .app-bar__title {
+    font-size: 1rem; font-weight: 700; letter-spacing: 0.5px;
+    background: linear-gradient(135deg, var(--pink-glow), var(--purple-glow));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .app-bar__back {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--pink-glow); background: none;
+    border: 1px solid rgba(255,110,199,0.25);
+    border-radius: 18px; padding: 5px 14px; cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    text-decoration: none;
+  }
+  .app-bar__back:hover {
+    background: rgba(255,110,199,0.1);
+    box-shadow: 0 0 14px rgba(255,110,199,0.25);
+    transform: translateX(-2px);
+  }
+  .app-frame {
+    width: 100%; height: calc(100vh - 48px); border: none; display: block;
+  }
+  /* Loading animation */
+  .app-loader {
+    position: absolute; top: 48px; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--void); z-index: 5;
+    transition: opacity 0.4s ease;
+  }
+  .app-loader.hidden { opacity: 0; pointer-events: none; }
+  .app-loader__spinner {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 3px solid rgba(255,110,199,0.15);
+    border-top-color: var(--pink-glow);
+    animation: spin 0.8s linear infinite;
+  }
+  .app-loader__text {
+    margin-top: 16px; color: rgba(240,230,255,0.5);
+    font-size: 0.85rem; letter-spacing: 1px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="app-bar">
+  <a class="app-bar__back" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    返回首页
+  </a>
+  <span class="app-bar__title">DreamPath AI</span>
+  <span style="width:72px"></span>
+</div>
+
+<div class="app-loader" id="loader">
+  <div class="app-loader__spinner"></div>
+  <div class="app-loader__text">Loading...</div>
+</div>
+
+<iframe class="app-frame" id="appFrame" src="https://cute-kitten.top/" allow="fullscreen; clipboard-write; autoplay; microphone; camera" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation allow-popups-to-escape-sandbox"></iframe>
+
+<script>
+  const frame = document.getElementById('appFrame');
+  const loader = document.getElementById('loader');
+  frame.addEventListener('load', () => {
+    loader.classList.add('hidden');
+  });
+  // Fallback: hide loader after 6s even if load event doesn't fire
+  setTimeout(() => { loader.classList.add('hidden'); }, 6000);
+</script>
+</body>
+</html>
