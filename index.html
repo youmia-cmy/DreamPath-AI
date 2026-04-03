@@ -537,6 +537,12 @@ main { position: relative; z-index: 1; }
   transform-style: preserve-3d;
   cursor: pointer;
   backface-visibility: visible;
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+.nft-node--culled {
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 @media (min-width: 768px) { .nft-node { width: 85px; height: 85px; } }
 .nft-node__frame {
@@ -547,6 +553,13 @@ main { position: relative; z-index: 1; }
               0 0 40px color-mix(in srgb, var(--node-glow-color, #ff6ec7) 20%, transparent);
   background: rgba(10,5,20,0.8);
   transition: border-color 0.3s, box-shadow 0.3s, transform 0.25s;
+}
+@media (max-width: 768px) {
+  .nft-node__frame {
+    box-shadow: 0 0 10px var(--node-glow-color, rgba(255,110,199,0.12));
+    transition: none;
+  }
+  .nft-node__id { transition: none; }
 }
 .nft-node:hover .nft-node__frame {
   border-color: var(--node-glow-color, rgba(255,110,199,0.5));
@@ -582,6 +595,12 @@ main { position: relative; z-index: 1; }
   box-shadow: 0 0 35px var(--node-glow-color, rgba(255,110,199,0.5)),
               0 0 80px color-mix(in srgb, var(--node-glow-color, #ff6ec7) 40%, transparent),
               0 0 120px color-mix(in srgb, var(--node-glow-color, #ff6ec7) 15%, transparent) !important;
+}
+@media (max-width: 768px) {
+  .nft-node--center .nft-node__frame {
+    animation: none;
+    box-shadow: 0 0 20px var(--node-glow-color, rgba(255,110,199,0.4)) !important;
+  }
 }
 @keyframes nftHeartbeat {
   0%,100% { transform: scale(1); }
@@ -1220,7 +1239,14 @@ main { position: relative; z-index: 1; }
 
   // === 3D Universe Configuration ===
   const SPHERE_RADIUS = 650;
-  const NODE_SIZE = window.innerWidth < 768 ? 70 : 85;
+  const isMobile = window.innerWidth < 768;
+  const NODE_SIZE = isMobile ? 70 : 85;
+
+  // === Mobile optimization: limit displayed NFTs ===
+  const MAX_MOBILE_NODES = 60;
+  const displayData = isMobile
+    ? [...nftData].sort((a, b) => a.rank - b.rank).slice(0, MAX_MOBILE_NODES)
+    : nftData;
 
   const viewport = document.getElementById('cosmosViewport');
   const scene = document.getElementById('cosmosScene');
@@ -1244,7 +1270,8 @@ main { position: relative; z-index: 1; }
 
   // === Star field (canvas-based for performance) ===
   const stars = [];
-  for (let i = 0; i < 600; i++) {
+  const STAR_COUNT = isMobile ? 200 : 600;
+  for (let i = 0; i < STAR_COUNT; i++) {
     stars.push({
       x: Math.random(),
       y: Math.random(),
@@ -1336,14 +1363,17 @@ main { position: relative; z-index: 1; }
       mCtx.fill();
     }
     // Randomly spawn new meteors
-    if (Math.random() < 0.025) spawnMeteor();
+    const meteorSpawnRate = isMobile ? 0.01 : 0.025;
+    if (Math.random() < meteorSpawnRate) spawnMeteor();
   }
 
   // === Distribute NFTs on a sphere using Fibonacci lattice ===
   const nodeEls = [];
   const nodeData = [];
-  const shuffled = [...nftData].sort(() => Math.random() - 0.5);
+  const shuffled = [...displayData].sort(() => Math.random() - 0.5);
   const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const CULL_THRESHOLD = 0.18;   // depthNorm below this → fully hidden
+  const LOAD_THRESHOLD = 0.12;   // depthNorm below this → unload image src
 
   shuffled.forEach((nft, i) => {
     const theta = goldenAngle * i;
@@ -1356,14 +1386,26 @@ main { position: relative; z-index: 1; }
     const node = document.createElement('div');
     node.className = 'nft-node';
     node.style.cssText = `--node-glow-color:${glowColor};`;
-    node.innerHTML = `<div class="nft-node__frame"><img class="nft-node__img" src="nft-gallery/${nft.id}.png" alt="#${nft.id}" loading="lazy"><span class="nft-node__rarity-pip"></span></div><div class="nft-node__id">#${nft.id}</div>`;
+    // Start with empty src; images loaded dynamically based on depth
+    node.innerHTML = `<div class="nft-node__frame"><img class="nft-node__img" data-src="nft-gallery/${nft.id}.png" alt="#${nft.id}"><span class="nft-node__rarity-pip"></span></div><div class="nft-node__id">#${nft.id}</div>`;
     node.addEventListener('click', (e) => {
       if (didDrag) return;
       openLightbox(nft);
     });
     scene.appendChild(node);
+    const imgEl = node.querySelector('.nft-node__img');
+    // Image error retry (max 2 retries)
+    let retries = 0;
+    imgEl.addEventListener('error', () => {
+      if (retries < 2 && imgEl.src) {
+        retries++;
+        const base = imgEl.getAttribute('data-src');
+        imgEl.src = '';
+        setTimeout(() => { imgEl.src = base; }, 800 * retries);
+      }
+    });
     nodeEls.push(node);
-    nodeData.push({ x, y, z, el: node, nft });
+    nodeData.push({ x, y, z, el: node, nft, imgEl, loaded: false });
   });
 
   // === Rotation state ===
@@ -1399,6 +1441,33 @@ main { position: relative; z-index: 1; }
 
       // Depth-based scaling and opacity
       const depthNorm = (rz2 + SPHERE_RADIUS) / (2 * SPHERE_RADIUS); // 0=far, 1=near
+
+      // === Back-face culling: hide nodes behind sphere ===
+      if (depthNorm < CULL_THRESHOLD) {
+        if (!nd.el.classList.contains('nft-node--culled')) {
+          nd.el.classList.add('nft-node--culled');
+        }
+        // Unload image to free memory
+        if (nd.loaded && nd.imgEl) {
+          nd.imgEl.removeAttribute('src');
+          nd.loaded = false;
+        }
+        continue;
+      } else {
+        if (nd.el.classList.contains('nft-node--culled')) {
+          nd.el.classList.remove('nft-node--culled');
+        }
+      }
+
+      // === Depth-based image loading ===
+      if (depthNorm >= LOAD_THRESHOLD && !nd.loaded && nd.imgEl) {
+        nd.imgEl.src = nd.imgEl.getAttribute('data-src');
+        nd.loaded = true;
+      } else if (depthNorm < LOAD_THRESHOLD && nd.loaded && nd.imgEl) {
+        nd.imgEl.removeAttribute('src');
+        nd.loaded = false;
+      }
+
       const scale = 0.35 + depthNorm * 0.65;
       const opacity = 0.15 + depthNorm * 0.85;
       const zIdx = Math.round(depthNorm * 200);
