@@ -85,7 +85,7 @@ body {
 
 /* === HEADER === */
 .header {
-  position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 1060;
   padding: 0 40px; height: 72px;
   display: flex; align-items: center; justify-content: space-between;
   background: rgba(5, 5, 16, 0.6);
@@ -657,6 +657,36 @@ button:disabled::after {
 }
 .modal-submit:hover { box-shadow: 0 4px 25px rgba(0, 229, 255, 0.4); }
 
+/* === HAMBURGER MENU === */
+.hamburger-btn {
+  display: none; background: none; border: none; cursor: pointer;
+  width: 36px; height: 36px; position: relative; z-index: 1060;
+  flex-shrink: 0;
+}
+.hamburger-btn span {
+  display: block; width: 22px; height: 2px; margin: 5px auto;
+  background: var(--text-primary); border-radius: 2px;
+  transition: all 0.3s ease;
+}
+.hamburger-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger-btn.active span:nth-child(2) { opacity: 0; }
+.hamburger-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.mobile-menu-overlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(5, 5, 16, 0.95); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px); z-index: 1050;
+  flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.mobile-menu-overlay.show { display: flex; opacity: 1; }
+.mobile-menu-overlay .nav-link {
+  font-size: 1.2rem; padding: 14px 32px; display: block; text-align: center;
+}
+.mobile-menu-overlay .nav-link::after { display: none; }
+.mobile-menu-overlay .login-btn {
+  font-size: 1rem; padding: 12px 36px; margin-top: 10px;
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 900px) {
   .dreamcanvas-layout, .sb-layout, .fm-layout { grid-template-columns: 1fr; }
@@ -668,6 +698,7 @@ button:disabled::after {
 }
 @media (max-width: 600px) {
   .header-nav { display: none; }
+  .hamburger-btn { display: block; }
   .logo-text { font-size: 0.95rem; }
   .hero-title { font-size: 2rem; }
 }
@@ -694,7 +725,19 @@ button:disabled::after {
     <a href="#futureme" class="nav-link" data-i18n="nav_futureme">未来的我</a>
     <button class="login-btn" id="loginBtn" data-i18n="nav_login">登录</button>
   </nav>
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobileMenu">
+  <a href="#dreamcanvas" class="nav-link" data-i18n="nav_dreamcanvas">画梦工坊</a>
+  <a href="#storyboard" class="nav-link" data-i18n="nav_storyboard">故事板工厂</a>
+  <a href="#futureme" class="nav-link" data-i18n="nav_futureme">未来的我</a>
+  <button class="login-btn" id="mobileLoginBtn" data-i18n="nav_login">登录</button>
+  <button id="mobileLangToggle" style="font-family:var(--font-cn);font-size:0.85rem;font-weight:700;padding:8px 24px;border-radius:20px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text-secondary);cursor:pointer;margin-top:10px;letter-spacing:1px;">EN</button>
+</div>
 
 <!-- Main content -->
 <main class="main-content">
@@ -994,6 +1037,48 @@ function showToast(msg, type = 'success') {
   setTimeout(() => { t.classList.remove('show'); }, 3000);
 }
 
+// === HAMBURGER MOBILE MENU ===
+(function() {
+  const hamburger = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+  if (hamburger && mobileMenu) {
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('active');
+      mobileMenu.classList.toggle('show');
+      document.body.style.overflow = mobileMenu.classList.contains('show') ? 'hidden' : '';
+    });
+    // Close menu when a link is clicked
+    mobileMenu.querySelectorAll('.nav-link').forEach(function(link) {
+      link.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        mobileMenu.classList.remove('show');
+        document.body.style.overflow = '';
+      });
+    });
+    // Mobile login button mirrors desktop login button
+    if (mobileLoginBtn) {
+      mobileLoginBtn.addEventListener('click', function() {
+        hamburger.classList.remove('active');
+        mobileMenu.classList.remove('show');
+        document.body.style.overflow = '';
+        var modal = document.getElementById('loginModal');
+        if (modal) modal.classList.add('show');
+      });
+    }
+    // Mobile language toggle
+    var mobileLangBtn = document.getElementById('mobileLangToggle');
+    if (mobileLangBtn) {
+      mobileLangBtn.textContent = (localStorage.getItem('dp_lang') || 'zh') === 'zh' ? 'EN' : '\u4E2D\u6587';
+      mobileLangBtn.addEventListener('click', function() {
+        var desktopBtn = document.getElementById('langToggle');
+        if (desktopBtn) desktopBtn.click();
+        mobileLangBtn.textContent = (localStorage.getItem('dp_lang') || 'zh') === 'zh' ? 'EN' : '\u4E2D\u6587';
+      });
+    }
+  }
+})();
+
 // === AUTH STATE ===
 let currentUser = null;
 let isRegisterMode = false;
@@ -1089,6 +1174,9 @@ auth.onAuthStateChanged(async user => {
   if (oldPopup) oldPopup.remove();
   if (user) {
     oldLogin.style.display = 'none';
+    // Sync mobile menu login button
+    var mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    if (mobileLoginBtn) mobileLoginBtn.style.display = 'none';
     const info = document.createElement('div');
     info.id = 'userInfo'; info.className = 'user-info';
     const initial = (user.displayName || user.email)[0].toUpperCase();
@@ -1150,6 +1238,8 @@ auth.onAuthStateChanged(async user => {
     loadUserData();
   } else {
     oldLogin.style.display = '';
+    var mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    if (mobileLoginBtn) mobileLoginBtn.style.display = '';
   }
 });
 
@@ -1225,9 +1315,13 @@ document.querySelector('.dc-generate-btn').addEventListener('click', async () =>
   btn.disabled = true; btn.textContent = t('toast_optimizing');
   try {
     // Step 1: Use Gemini Pro to optimize the prompt
-    const optimizedPrompt = await callGemini(GEMINI_PRO,
-      `用户想生成一张图像，描述是：「${prompt}」，风格要求：${style || '默认'}。请将这段描述优化为一段高质量的英文图像生成 prompt（约100词），确保画面细节丰富、风格明确、构图专业。只输出优化后的英文 prompt，不要其他内容。`,
-      '你是专业的 AI 图像 prompt 工程师，擅长将中文描述转化为高质量的英文图像生成提示词。');
+    const isEn = getCurrentLang() === 'en';
+    const optimizeMsg = isEn
+      ? `The user wants to generate an image with description: "${prompt}", style: ${style || 'default'}. Please optimize this into a high-quality English image generation prompt (~100 words), ensuring rich visual details, clear style, and professional composition. Only output the optimized English prompt, nothing else.`
+      : `用户想生成一张图像，描述是：「${prompt}」，风格要求：${style || '默认'}。请将这段描述优化为一段高质量的英文图像生成 prompt（约100词），确保画面细节丰富、风格明确、构图专业。只输出优化后的英文 prompt，不要其他内容。`;
+    const optimizedPrompt = await callGemini(GEMINI_PRO, optimizeMsg,
+      isEn ? 'You are a professional AI image prompt engineer, skilled at turning descriptions into high-quality English image generation prompts.'
+           : '你是专业的 AI 图像 prompt 工程师，擅长将中文描述转化为高质量的英文图像生成提示词。');
     btn.textContent = t('toast_generating_image');
     // Step 2: Use Gemini image generation
     const result = await callGeminiImage(
@@ -1270,15 +1364,24 @@ document.querySelector('.sb-generate-btn').addEventListener('click', async () =>
   frameCtrlBtns.forEach(b => { if (b.classList.contains('active') && b.textContent.includes('10')) frameCount = 10; });
   const wantImagePrompts = Array.from(frameCtrlBtns).some(b => b.classList.contains('active') && (b.textContent.includes('图像') || b.textContent.includes('Image')));
   try {
-    const systemPrompt = `你是一位专业的故事板编剧和分镜师。你需要根据用户的创意想法，生成结构化的文字故事板。
+    const isEn = getCurrentLang() === 'en';
+    const systemPrompt = isEn
+      ? `You are a professional storyboard screenwriter and shot designer. Based on the user's creative idea, generate a structured text storyboard.
+Each frame must include: frame number(num), scene description(scene), dialogue(dialogue), emotion hint(emotion), pace control(pace).
+${wantImagePrompts ? 'Also generate a detailed image generation prompt (imagePrompt) for each frame.' : ''}
+Output strict JSON format, no markdown code block tags, output JSON array directly:
+[{"num":1,"scene":"...","dialogue":"...","emotion":"...","pace":"slow/accelerating/medium/fast/climax","imagePrompt":"..."},...]`
+      : `你是一位专业的故事板编剧和分镜师。你需要根据用户的创意想法，生成结构化的文字故事板。
 每个帧必须包含：帧号(num)、场景描述(scene)、对话(dialogue)、情绪提示(emotion)、节奏控制(pace)。
 ${wantImagePrompts ? '同时为每帧生成一段详细的图像生成 prompt (imagePrompt)。' : ''}
 输出严格 JSON 格式，不要 markdown 代码块标记，直接输出 JSON 数组：
 [{"num":1,"scene":"...","dialogue":"...","emotion":"...","pace":"缓慢/渐快/中速/快速/高潮","imagePrompt":"..."},...]`;
 
-    const result = await callGemini(GEMINI_PRO,
-      `请为以下创意生成 ${frameCount} 帧故事板：\n「${idea}」\n\n要求：场景描述要生动具体（50-80字），对话要有角色性格，情绪提示要精准，节奏控制要有起伏变化。`,
-      systemPrompt);
+    const userMsg = isEn
+      ? `Please generate a ${frameCount}-frame storyboard for the following idea:\n"${idea}"\n\nRequirements: Scene descriptions should be vivid and specific (50-80 words), dialogue should reflect character personality, emotion hints should be precise, pace should have rising and falling dynamics.`
+      : `请为以下创意生成 ${frameCount} 帧故事板：\n「${idea}」\n\n要求：场景描述要生动具体（50-80字），对话要有角色性格，情绪提示要精准，节奏控制要有起伏变化。`;
+
+    const result = await callGemini(GEMINI_PRO, userMsg, systemPrompt);
     // Parse JSON from response
     let frames;
     try {
@@ -1379,7 +1482,18 @@ document.querySelector('.fm-simulate-btn').addEventListener('click', async () =>
   const yearLabel = activeYear ? activeYear.textContent : '1 年后';
   const yearNum = parseInt(yearLabel) || 1;
   try {
-    const systemPrompt = `你是一位拥有深厚人生阅历的 AI 人生模拟师和战略顾问。你需要根据用户的当前状况和面临的选择，模拟不同人生路径在 ${yearNum} 年后的可能结果。
+    const isEn = getCurrentLang() === 'en';
+    const systemPrompt = isEn
+      ? `You are an AI life simulator and strategic advisor with deep life experience. Based on the user's current situation and choices, simulate possible outcomes of different life paths after ${yearNum} year(s).
+Output strict JSON format (no markdown code block tags), containing analysis across 4 dimensions:
+[
+  {"title":"Career Development","text":"Path A: ... Path B: ..."},
+  {"title":"Financial Status","text":"Path A: ... Path B: ..."},
+  {"title":"Quality of Life","text":"Path A: ... Path B: ..."},
+  {"title":"Practical Advice","text":"Comprehensive advice..."}
+]
+Each text field 80-120 words, content should be specific, data-oriented, and insightful. If there are historical records, reference them and maintain consistency.`
+      : `你是一位拥有深厚人生阅历的 AI 人生模拟师和战略顾问。你需要根据用户的当前状况和面临的选择，模拟不同人生路径在 ${yearNum} 年后的可能结果。
 输出严格 JSON 格式（不要 markdown 代码块标记），包含4个维度的分析：
 [
   {"title":"职业发展","text":"路径A：...。路径B：..."},
@@ -1389,7 +1503,14 @@ document.querySelector('.fm-simulate-btn').addEventListener('click', async () =>
 ]
 每个 text 字段 80-120 字，内容要具体、有数据感、有洞察力。如果有历史记录，请参考并保持建议的一致性和连续性。`;
 
-    const userPrompt = `【当前身份】${identity || '未提供'}
+    const userPrompt = isEn
+      ? `【Current Identity】${identity || 'Not provided'}
+【Current Situation】${situation || 'Not provided'}
+【Choices Facing】${choices || 'Not provided'}
+【Simulation Period】${yearNum} year(s) later${previousContext}
+
+Please simulate this person's life situation across different choice paths after ${yearNum} year(s).`
+      : `【当前身份】${identity || '未提供'}
 【当前状况】${situation || '未提供'}
 【面临选择】${choices || '未提供'}
 【模拟时间】${yearNum} 年后${previousContext}
