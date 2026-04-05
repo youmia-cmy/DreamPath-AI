@@ -1011,7 +1011,6 @@ main { position: relative; z-index: 1; }
       e.preventDefault();
       const id = l.getAttribute('href').replace('#', '');
       showPage(id);
-      history.replaceState(null, '', '#' + id);
     });
   });
 
@@ -1020,7 +1019,6 @@ main { position: relative; z-index: 1; }
     cta.addEventListener('click', e => {
       e.preventDefault();
       showPage('explore');
-      history.replaceState(null, '', '#explore');
     });
   }
 
@@ -1029,21 +1027,10 @@ main { position: relative; z-index: 1; }
     brand.addEventListener('click', e => {
       e.preventDefault();
       showPage('home');
-      history.replaceState(null, '', '#home');
     });
   }
 
-  const hash = location.hash.replace('#', '');
-  if (hash && pageIds.includes(hash)) {
-    showPage(hash);
-  } else {
-    showPage('home');
-  }
-
-  window.addEventListener('hashchange', () => {
-    const h = location.hash.replace('#', '');
-    if (h && pageIds.includes(h)) showPage(h);
-  });
+  showPage('home');
 })();
 
 /* === MOBILE MENU === */
