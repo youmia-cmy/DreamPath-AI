@@ -48,7 +48,7 @@ body {
 nav {
   position: fixed; top: 0; left: 0; right: 0;
   z-index: 100;
-  padding: 0.8rem 1rem;
+  padding: 0.6rem 0.8rem;
   display: flex; justify-content: space-between; align-items: center;
   backdrop-filter: blur(12px);
   background: rgba(6, 5, 14, 0.75);
@@ -56,21 +56,24 @@ nav {
 }
 nav .logo {
   font-family: var(--pixel-font);
-  font-size: 0.7rem;
-  letter-spacing: 2px;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
   color: var(--accent-pink);
   text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 nav .logo span { color: var(--accent-gold); }
-nav .nav-right { display: flex; align-items: center; gap: 0.8rem; }
-nav .nav-links { display: flex; gap: 0.8rem; list-style: none; }
+nav .nav-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 1; min-width: 0; }
+nav .nav-links { display: flex; gap: 0.5rem; list-style: none; flex-shrink: 0; }
 nav .nav-links a {
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   font-family: var(--pixel-font);
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 nav .nav-links a:hover { color: var(--accent-pink); }
 .lang-toggle {
@@ -80,12 +83,13 @@ nav .nav-links a:hover { color: var(--accent-pink); }
   border-radius: 999px; padding: 2px;
   cursor: pointer;
   font-family: var(--pixel-font);
-  font-size: 0.5rem;
-  letter-spacing: 1px;
+  font-size: 0.45rem;
+  letter-spacing: 0.5px;
   user-select: none;
+  flex-shrink: 0;
 }
 .lang-toggle .lang-opt {
-  padding: 0.25rem 0.55rem;
+  padding: 0.2rem 0.45rem;
   border-radius: 999px;
   color: var(--text-muted);
   transition: all 0.3s;
@@ -162,27 +166,29 @@ section {
 .hero-social {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.7rem;
+  gap: 0.6rem;
   width: 100%;
-  max-width: 340px;
+  padding: 0 0.5rem;
   margin: 0 auto;
 }
 .hero-social a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.7rem 0.5rem;
+  gap: 0.35rem;
+  padding: 0.65rem 0.3rem;
   border: 1px solid rgba(184, 160, 232, 0.2);
   border-radius: 12px;
   color: var(--text-primary);
   text-decoration: none;
   font-family: var(--pixel-font);
-  font-size: 0.58rem;
-  letter-spacing: 1px;
+  font-size: 0.5rem;
+  letter-spacing: 0.5px;
   background: rgba(16, 13, 36, 0.5);
   backdrop-filter: blur(8px);
   transition: all 0.3s;
+  overflow: hidden;
+  white-space: nowrap;
 }
 .hero-social a:active {
   border-color: var(--accent-pink);
