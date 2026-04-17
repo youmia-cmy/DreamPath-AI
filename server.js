@@ -1,98 +1,119 @@
 const express = require('express');
 const https = require('https');
-const http = require('http');
 const path = require('path');
 
 const app = express();
 const PORT = 3000;
 
-// Cache stats for 5 minutes to avoid hammering nitter
-let statsCache = { tweets: '6,656', followers: '3,606', following: '217' };
-let lastFetch = 0;
-const CACHE_TTL = 5 * 60 * 1000;
+const SCREEN_NAME = '_StarryMiu';
+const BEARER = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA';
+const GRAPHQL_ENDPOINT = 'https://x.com/i/api/graphql/G3KGOASz96M-Qu0nwmGXNg/UserByScreenName';
 
-function fetchPage(url) {
+// Cache stats for 5 minutes
+let statsCache = { tweets: '6,656', followers: '3,604', following: '216' };
+let lastFetch = 0;
+let guestToken = null;
+let guestTokenTime = 0;
+const CACHE_TTL = 5 * 60 * 1000;
+const GUEST_TOKEN_TTL = 30 * 60 * 1000; // refresh guest token every 30 min
+
+function httpsRequest(url, options = {}) {
   return new Promise((resolve, reject) => {
-    const client = url.startsWith('https') ? https : http;
-    const req = client.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-      // Follow redirects
-      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-        return fetchPage(res.headers.location).then(resolve).catch(reject);
-      }
+    const urlObj = new URL(url);
+    const opts = {
+      hostname: urlObj.hostname,
+      path: urlObj.pathname + urlObj.search,
+      method: options.method || 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        ...options.headers,
+      },
+    };
+    const req = https.request(opts, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
-      res.on('end', () => resolve(data));
+      res.on('end', () => resolve({ status: res.statusCode, body: data }));
     });
     req.on('error', reject);
-    req.setTimeout(10000, () => { req.destroy(); reject(new Error('timeout')); });
+    req.setTimeout(15000, () => { req.destroy(); reject(new Error('timeout')); });
+    req.end();
   });
 }
 
-async function scrapeStats() {
+async function getGuestToken() {
+  const now = Date.now();
+  if (guestToken && now - guestTokenTime < GUEST_TOKEN_TTL) return guestToken;
+
+  const res = await httpsRequest('https://api.twitter.com/1.1/guest/activate.json', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${decodeURIComponent(BEARER)}` },
+  });
+  const json = JSON.parse(res.body);
+  if (json.guest_token) {
+    guestToken = json.guest_token;
+    guestTokenTime = now;
+    console.log('[Twitter] Got guest token:', guestToken);
+    return guestToken;
+  }
+  throw new Error('Failed to get guest token');
+}
+
+async function fetchTwitterStats() {
   const now = Date.now();
   if (now - lastFetch < CACHE_TTL) return statsCache;
 
-  const nitterInstances = [
-    'https://nitter.net/_StarryMiu',
-    'https://nitter.privacydev.net/_StarryMiu',
-  ];
+  try {
+    const token = await getGuestToken();
 
-  for (const url of nitterInstances) {
-    try {
-      const html = await fetchPage(url);
+    const variables = JSON.stringify({
+      screen_name: SCREEN_NAME,
+      withSafetyModeUserFields: true,
+    });
+    const features = JSON.stringify({
+      hidden_profile_subscriptions_enabled: true,
+      responsive_web_graphql_exclude_directive_enabled: true,
+      verified_phone_label_enabled: false,
+      responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
+      responsive_web_graphql_timeline_navigation_enabled: true,
+    });
 
-      // Extract stats from nitter HTML
-      // Pattern: Tweets\s*</span>\s*<span class="...">NUMBER
-      // Or from the stat list items
-      const tweetsMatch = html.match(/Tweets[\s\S]*?<span[^>]*>([\d,]+)<\/span>/i)
-        || html.match(/(\d[\d,]+)\s*<\/span>\s*[\s\S]*?Tweets/i);
-      const followersMatch = html.match(/Followers[\s\S]*?<span[^>]*>([\d,]+)<\/span>/i)
-        || html.match(/(\d[\d,]+)\s*<\/span>\s*[\s\S]*?Followers/i);
-      const followingMatch = html.match(/Following[\s\S]*?<span[^>]*>([\d,]+)<\/span>/i)
-        || html.match(/(\d[\d,]+)\s*<\/span>\s*[\s\S]*?Following/i);
+    const url = `${GRAPHQL_ENDPOINT}?variables=${encodeURIComponent(variables)}&features=${encodeURIComponent(features)}`;
 
-      // Alternative: look for the profile stat list items
-      // <li class="..."><span class="...">NUMBER</span>Label</li>
-      const statPattern = /<li[^>]*>[\s\S]*?<span[^>]*>([\d,]+)<\/span>\s*<span[^>]*>(Tweets|Following|Followers|Likes)<\/span>[\s\S]*?<\/li>/gi;
-      let m;
-      const parsed = {};
-      while ((m = statPattern.exec(html)) !== null) {
-        parsed[m[2].toLowerCase()] = m[1];
-      }
+    const res = await httpsRequest(url, {
+      headers: {
+        'Authorization': `Bearer ${decodeURIComponent(BEARER)}`,
+        'x-guest-token': token,
+      },
+    });
 
-      // Also try simpler nitter format: "Tweets6,656" etc from our scraped data pattern
-      const simplePattern = /(Tweets|Followers|Following|Likes)([\d,]+)/g;
-      while ((m = simplePattern.exec(html)) !== null) {
-        parsed[m[1].toLowerCase()] = m[2];
-      }
+    const json = JSON.parse(res.body);
+    const legacy = json?.data?.user?.result?.legacy;
 
-      const tweets = parsed.tweets || (tweetsMatch && tweetsMatch[1]);
-      const followers = parsed.followers || (followersMatch && followersMatch[1]);
-      const following = parsed.following || (followingMatch && followingMatch[1]);
-
-      if (tweets || followers || following) {
-        statsCache = {
-          tweets: tweets || statsCache.tweets,
-          followers: followers || statsCache.followers,
-          following: following || statsCache.following
-        };
-        lastFetch = now;
-        console.log(`[Stats] Updated from ${url}:`, statsCache);
-        return statsCache;
-      }
-    } catch (err) {
-      console.error(`[Stats] Failed to fetch from ${url}:`, err.message);
+    if (legacy) {
+      statsCache = {
+        tweets: Number(legacy.statuses_count).toLocaleString('en-US'),
+        followers: Number(legacy.followers_count).toLocaleString('en-US'),
+        following: Number(legacy.friends_count).toLocaleString('en-US'),
+      };
+      lastFetch = now;
+      console.log('[Twitter] Stats updated:', statsCache);
+    } else {
+      // Token might be expired, reset it to force refresh next time
+      console.error('[Twitter] Unexpected response, resetting guest token');
+      guestToken = null;
     }
+  } catch (err) {
+    console.error('[Twitter] Failed to fetch stats:', err.message);
+    guestToken = null; // force token refresh on next attempt
   }
 
-  console.log('[Stats] All instances failed, using cached values');
   return statsCache;
 }
 
 // API endpoint
 app.get('/api/stats', async (req, res) => {
   try {
-    const stats = await scrapeStats();
+    const stats = await fetchTwitterStats();
     res.json(stats);
   } catch (err) {
     res.json(statsCache);
@@ -103,7 +124,7 @@ app.get('/api/stats', async (req, res) => {
 app.use(express.static(path.join(__dirname)));
 
 // Fetch stats on startup
-scrapeStats();
+fetchTwitterStats();
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
