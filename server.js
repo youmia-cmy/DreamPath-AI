@@ -6,56 +6,43 @@ const app = express();
 const PORT = 3000;
 
 const SCREEN_NAME = '_StarryMiu';
-const BEARER = 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA';
-const GRAPHQL_ENDPOINT = 'https://x.com/i/api/graphql/G3KGOASz96M-Qu0nwmGXNg/UserByScreenName';
 
 // Cache stats for 5 minutes
 let statsCache = { tweets: '6,656', followers: '3,604', following: '216' };
 let lastFetch = 0;
-let guestToken = null;
-let guestTokenTime = 0;
 const CACHE_TTL = 5 * 60 * 1000;
-const GUEST_TOKEN_TTL = 30 * 60 * 1000; // refresh guest token every 30 min
 
-function httpsRequest(url, options = {}) {
+/**
+ * Fetch the x.com profile page and extract stats from embedded JSON data.
+ * The HTML contains "followers_count":N, "friends_count":N, "statuses_count":N
+ * embedded in the server-rendered script payload.
+ */
+function httpsGet(url) {
   return new Promise((resolve, reject) => {
     const urlObj = new URL(url);
     const opts = {
       hostname: urlObj.hostname,
       path: urlObj.pathname + urlObj.search,
-      method: options.method || 'GET',
+      method: 'GET',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        ...options.headers,
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
       },
     };
     const req = https.request(opts, (res) => {
+      // Follow redirects (301/302/307/308)
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        return httpsGet(res.headers.location).then(resolve).catch(reject);
+      }
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => resolve({ status: res.statusCode, body: data }));
     });
     req.on('error', reject);
-    req.setTimeout(15000, () => { req.destroy(); reject(new Error('timeout')); });
+    req.setTimeout(20000, () => { req.destroy(); reject(new Error('timeout')); });
     req.end();
   });
-}
-
-async function getGuestToken() {
-  const now = Date.now();
-  if (guestToken && now - guestTokenTime < GUEST_TOKEN_TTL) return guestToken;
-
-  const res = await httpsRequest('https://api.twitter.com/1.1/guest/activate.json', {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${decodeURIComponent(BEARER)}` },
-  });
-  const json = JSON.parse(res.body);
-  if (json.guest_token) {
-    guestToken = json.guest_token;
-    guestTokenTime = now;
-    console.log('[Twitter] Got guest token:', guestToken);
-    return guestToken;
-  }
-  throw new Error('Failed to get guest token');
 }
 
 async function fetchTwitterStats() {
@@ -63,48 +50,38 @@ async function fetchTwitterStats() {
   if (now - lastFetch < CACHE_TTL) return statsCache;
 
   try {
-    const token = await getGuestToken();
+    const profileUrl = `https://x.com/${SCREEN_NAME}`;
+    const res = await httpsGet(profileUrl);
 
-    const variables = JSON.stringify({
-      screen_name: SCREEN_NAME,
-      withSafetyModeUserFields: true,
-    });
-    const features = JSON.stringify({
-      hidden_profile_subscriptions_enabled: true,
-      responsive_web_graphql_exclude_directive_enabled: true,
-      verified_phone_label_enabled: false,
-      responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
-      responsive_web_graphql_timeline_navigation_enabled: true,
-    });
+    if (res.status !== 200) {
+      console.error(`[Twitter] Profile page returned status ${res.status}`);
+      return statsCache;
+    }
 
-    const url = `${GRAPHQL_ENDPOINT}?variables=${encodeURIComponent(variables)}&features=${encodeURIComponent(features)}`;
+    const html = res.body;
 
-    const res = await httpsRequest(url, {
-      headers: {
-        'Authorization': `Bearer ${decodeURIComponent(BEARER)}`,
-        'x-guest-token': token,
-      },
-    });
+    // Extract counts from embedded JSON in the HTML
+    const followersMatch = html.match(/"followers_count":(\d+)/);
+    const friendsMatch = html.match(/"friends_count":(\d+)/);
+    const statusesMatch = html.match(/"statuses_count":(\d+)/);
 
-    const json = JSON.parse(res.body);
-    const legacy = json?.data?.user?.result?.legacy;
-
-    if (legacy) {
+    if (followersMatch && friendsMatch && statusesMatch) {
       statsCache = {
-        tweets: Number(legacy.statuses_count).toLocaleString('en-US'),
-        followers: Number(legacy.followers_count).toLocaleString('en-US'),
-        following: Number(legacy.friends_count).toLocaleString('en-US'),
+        tweets: Number(statusesMatch[1]).toLocaleString('en-US'),
+        followers: Number(followersMatch[1]).toLocaleString('en-US'),
+        following: Number(friendsMatch[1]).toLocaleString('en-US'),
       };
       lastFetch = now;
       console.log('[Twitter] Stats updated:', statsCache);
     } else {
-      // Token might be expired, reset it to force refresh next time
-      console.error('[Twitter] Unexpected response, resetting guest token');
-      guestToken = null;
+      console.error('[Twitter] Could not parse stats from profile page');
+      // Log what we found for debugging
+      if (followersMatch) console.log('  followers_count found:', followersMatch[1]);
+      if (friendsMatch) console.log('  friends_count found:', friendsMatch[1]);
+      if (statusesMatch) console.log('  statuses_count found:', statusesMatch[1]);
     }
   } catch (err) {
     console.error('[Twitter] Failed to fetch stats:', err.message);
-    guestToken = null; // force token refresh on next attempt
   }
 
   return statsCache;
