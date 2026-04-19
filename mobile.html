@@ -410,7 +410,6 @@ section {
   font-style: italic;
   max-width: 100%;
   line-height: 1.6;
-  white-space: nowrap;
   background: linear-gradient(135deg, var(--accent-pink), var(--accent-lilac), var(--accent-gold));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -518,9 +517,9 @@ footer .footer-pixel-cat {
       <span class="lang-opt" data-lang="zh">CN</span>
     </div>
     <ul class="nav-links">
-      <li><a href="#projects" data-i18n="nav.projects">Projects</a></li>
-      <li><a href="#about" data-i18n="nav.about">About</a></li>
-      <li><a href="#galaxy" data-i18n="nav.galaxy">Galaxy</a></li>
+      <li><a href="javascript:void(0)" data-scroll="projects" data-i18n="nav.projects">Projects</a></li>
+      <li><a href="javascript:void(0)" data-scroll="about" data-i18n="nav.about">About</a></li>
+      <li><a href="javascript:void(0)" data-scroll="galaxy" data-i18n="nav.galaxy">Galaxy</a></li>
     </ul>
   </div>
 </nav>
@@ -809,6 +808,15 @@ window.copyAddr = function(id) {
     setTimeout(() => { btn.textContent = orig; btn.style.borderColor = ''; btn.style.color = ''; }, 1500);
   });
 };
+
+/* ---- NAV SCROLL WITHOUT HASH ---- */
+document.querySelectorAll('a[data-scroll]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.getElementById(this.getAttribute('data-scroll'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
 
 /* ---- SHOOTING STARS ---- */
 (function() {
