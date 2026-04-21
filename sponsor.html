@@ -1012,10 +1012,25 @@ function copyAddr(id) {
   });
 }
 
-/* ---- BACK BUTTON ---- */
+/* ---- BACK BUTTON & SPONSOR LINK (file:// compatible) ---- */
+function goHome(hash) {
+  if (location.protocol === 'file:') {
+    var base = location.href.replace(/[^/]*$/, '');
+    window.location.href = base + 'desktop.html' + (hash || '');
+  } else {
+    window.location.href = '/' + (hash || '');
+  }
+}
 document.getElementById('backBtn').addEventListener('click', function() {
-  window.location.href = '/';
+  goHome();
 });
+var sponsorBtn = document.querySelector('.become-sponsor-btn');
+if (sponsorBtn) {
+  sponsorBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    goHome('#sponsor-me');
+  });
+}
 
 /* ---- AVATAR GRID GENERATION ---- */
 (function() {

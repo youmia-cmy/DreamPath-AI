@@ -726,6 +726,31 @@ footer .footer-pixel-cat {
 <div class="shooting-star" id="ss2"></div>
 
 <script>
+/* ---- CLEAN HASH: scroll to anchor then remove hash from URL ---- */
+(function() {
+  if (location.hash) {
+    var target = document.querySelector(location.hash);
+    if (target) {
+      setTimeout(function() {
+        target.scrollIntoView({ behavior: 'smooth' });
+        history.replaceState(null, '', location.pathname);
+      }, 100);
+    } else {
+      history.replaceState(null, '', location.pathname);
+    }
+  }
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+})();
+
 /* ---- STARFIELD (lighter for mobile) ---- */
 (function() {
   const canvas = document.getElementById('starfield');
