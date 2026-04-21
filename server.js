@@ -15,6 +15,11 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, file));
 });
 
+// Clean URL for sponsor page
+app.get('/sponsor', (req, res) => {
+  res.sendFile(path.join(__dirname, 'sponsor.html'));
+});
+
 // Also allow direct access
 app.get('/mobile.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'mobile.html'));
