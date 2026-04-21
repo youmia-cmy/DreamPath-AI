@@ -442,6 +442,30 @@ section {
   color: var(--accent-pink);
   box-shadow: 0 0 12px var(--glow-pink);
 }
+.sponsor-contact-note {
+  display: inline;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  margin-top: 0.8rem;
+  font-family: var(--body-font);
+}
+.sponsor-goto-btn {
+  display: inline;
+  font-family: var(--pixel-font);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  color: var(--accent-pink);
+  text-decoration: none;
+  margin-left: 0.4rem;
+  border-bottom: 1px solid var(--accent-pink);
+  padding-bottom: 1px;
+  transition: color 0.3s, border-color 0.3s;
+}
+.sponsor-goto-btn:hover {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
 
 /* ---- PIXEL GALAXY ---- */
 .galaxy-section {
@@ -798,9 +822,9 @@ footer .footer-pixel-cat {
       <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       CuteKitten
     </a>
-    <a href="https://cutekitten.lol" target="_blank" rel="noopener">
-      <img src="data:image/jpeg;base64,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" alt="Cute Kitten" style="width:18px;height:18px;border-radius:50%;object-fit:cover;">
-      cutekitten
+    <a href="/sponsor.html">
+      <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      Sponsor
     </a>
     <a href="https://t.me/StarryMiuCuteKitten" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.479.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
@@ -857,7 +881,7 @@ footer .footer-pixel-cat {
       <p class="about-role" data-i18n="about.role">MOD / Community Operations / Growth Operations</p>
       <p class="about-note" data-i18n="about.note">I'm a hidden gem, always uncovering new skills. If you have a relevant position, feel free to reach out!</p>
     </div>
-    <div class="about-card reveal reveal-delay-3">
+    <div class="about-card reveal reveal-delay-3" id="sponsor-me">
       <span class="about-label" data-i18n="about.sponsorTag">Sponsor Me</span>
       <div class="wallet-row">
         <span class="wallet-chain">BSC</span>
@@ -874,6 +898,7 @@ footer .footer-pixel-cat {
         <span class="wallet-addr" id="addr-doge">DGniKC2pgvnS5mvc2ACmAL29iDimBzN3cr</span>
         <button class="wallet-copy" onclick="copyAddr('addr-doge')">Copy</button>
       </div>
+      <p class="sponsor-contact-note" data-i18n="about.sponsorNote">If you sponsor through here, please contact me via X account or TG group.</p><a class="sponsor-goto-btn" href="#hero" data-i18n="about.sponsorGoto">Go</a>
     </div>
     <div class="about-card reveal reveal-delay-4">
       <span class="about-label" data-i18n="about.serviceTag">Service Categories</span>
@@ -1005,6 +1030,8 @@ footer .footer-pixel-cat {
       'about.role': 'MOD / Community Operations / Growth Operations',
       'about.note': 'I\'m a hidden gem, always uncovering new skills. If you have a relevant position, feel free to reach out!',
       'about.sponsorTag': 'Sponsor Me',
+      'about.sponsorNote': 'If you sponsor through here, please contact me via X account or TG group.',
+      'about.sponsorGoto': 'Go',
       'about.serviceTag': 'Service Categories',
       'about.services': 'TG Bot Development / Group Management / Copywriting / Event Planning / Video Production / User Growth',
       'about.serviceNote': 'If you need any of these services, feel free to reach out. Pay a reasonable fee and enjoy the service.',
@@ -1036,6 +1063,8 @@ footer .footer-pixel-cat {
       'about.role': 'MOD / \u793E\u533A\u8FD0\u8425 / \u589E\u957F\u8FD0\u8425',
       'about.note': '\u6211\u662F\u4E00\u9897\u9690\u85CF\u7684\u5B9D\u77F3\uFF0C\u603B\u662F\u5728\u53D1\u6398\u65B0\u6280\u80FD\u3002\u5982\u679C\u60A8\u6709\u76F8\u5173\u804C\u4F4D\uFF0C\u6B22\u8FCE\u8054\u7CFB\u6211\uFF01',
       'about.sponsorTag': '\u8D5E\u52A9\u6211',
+      'about.sponsorNote': '\u5982\u679C\u60A8\u901A\u8FC7\u6B64\u5904\u8FDB\u884C\u8D5E\u52A9\uFF0C\u8BF7\u5728X\u8D26\u53F7\u6216\u8005TG\u793E\u7FA4\u4E2D\u8054\u7CFB\u6211\u3002',
+      'about.sponsorGoto': '\u524D\u5F80',
       'about.serviceTag': '\u670D\u52A1\u7C7B\u522B',
       'about.services': 'TG Bot \u5F00\u53D1 / \u7FA4\u7EC4\u7BA1\u7406 / \u6587\u6848\u64B0\u5199 / \u6D3B\u52A8\u7B56\u5212 / \u89C6\u9891\u5236\u4F5C / \u7528\u6237\u589E\u957F',
       'about.serviceNote': '\u5982\u679C\u60A8\u9700\u8981\u4EE5\u4E0A\u4EFB\u4F55\u670D\u52A1\uFF0C\u6B22\u8FCE\u8054\u7CFB\u6211\u3002\u5408\u7406\u6536\u8D39\uFF0C\u7545\u4EAB\u670D\u52A1\u3002',
