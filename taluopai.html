@@ -1916,8 +1916,6 @@ function applyLang() {
     const card = CARD_DATA.find(c => c.name === lbl.textContent || c.en === lbl.textContent);
     if (card) lbl.textContent = getCardDisplayName(card);
   });
-  // Update page title
-  document.title = currentLang === 'en' ? 'Mystic Tarot - Tarot Card Reading' : '神秘塔罗 - 塔罗牌占卜';
   // Credit lines
   document.querySelectorAll('.credit-line').forEach(el => { el.innerHTML = t('creditLine'); });
 }
