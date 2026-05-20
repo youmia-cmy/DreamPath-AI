@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChainBadge — Decode Any Wallet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;700&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* === CSS RESET & VARIABLES === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#D4AF37;--gold-light:#FFD700;--gold-dim:#8B7536;
+  --bg-deep:#06060b;--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:#16161f;--bg-card-hover:#1c1c28;
+  --text-primary:#f0ece4;--text-secondary:#8a8594;--text-muted:#5a5565;
+  --glass:rgba(22,22,31,0.65);--glass-border:rgba(212,175,55,0.12);
+  --accent-green:#22c55e;--accent-red:#ef4444;--accent-blue:#3b82f6;
+  --radius:12px;--radius-lg:20px;
+  --font-display:'Playfair Display',serif;--font-body:'DM Sans','Noto Sans SC',sans-serif;--font-mono:'JetBrains Mono',monospace;
+  --nav-height:72px;
+}
+html{scroll-behavior:smooth;background:var(--bg-deep)}
+body{font-family:var(--font-body);background:var(--bg-deep);color:var(--text-primary);overflow-x:hidden;min-height:100vh}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+a{color:var(--gold);text-decoration:none}
+button{cursor:pointer;font-family:var(--font-body);border:none;outline:none}
+input{font-family:var(--font-body);outline:none}
+
+/* === ANIMATED BACKGROUND === */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.4}
+
+/* === NAVIGATION === */
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-height);z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(6,6,11,0.82);backdrop-filter:blur(24px) saturate(1.2);border-bottom:1px solid var(--glass-border);transition:background .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold-light);letter-spacing:1px}
+.nav-logo .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--bg-deep);font-weight:900}
+.nav-links{display:flex;gap:6px;background:linear-gradient(135deg,rgba(22,22,31,0.8),rgba(12,12,18,0.9));border-radius:40px;padding:5px;border:1.5px solid rgba(212,175,55,0.35);box-shadow:0 0 20px rgba(212,175,55,0.08),inset 0 1px 1px rgba(255,255,255,0.03)}
+.nav-link{position:relative;padding:10px 22px;border-radius:36px;font-size:13px;font-weight:500;color:var(--text-secondary);transition:all .4s cubic-bezier(.4,0,.2,1);white-space:nowrap;letter-spacing:0.3px;border:1.5px solid transparent;background:linear-gradient(180deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0) 50%,rgba(0,0,0,0.15) 100%);overflow:hidden}
+.nav-link::before{content:'';position:absolute;top:0;left:10%;right:10%;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.08),transparent);border-radius:36px 36px 50% 50%;pointer-events:none;transition:opacity .3s}
+.nav-link:hover{color:var(--gold-light);border-color:rgba(212,175,55,0.4);background:linear-gradient(180deg,rgba(212,175,55,0.1) 0%,rgba(212,175,55,0.03) 40%,rgba(0,0,0,0.2) 100%);box-shadow:0 0 15px rgba(212,175,55,0.1),inset 0 1px 1px rgba(255,215,0,0.1)}
+.nav-link:hover::before{opacity:0.7}
+.nav-link.active{background:linear-gradient(180deg,rgba(255,215,0,0.35) 0%,rgba(212,175,55,0.2) 35%,rgba(139,117,54,0.25) 70%,rgba(100,80,30,0.4) 100%);color:#fff;font-weight:700;border-color:var(--gold);box-shadow:0 0 24px rgba(212,175,55,0.25),0 2px 12px rgba(0,0,0,0.4),inset 0 1px 2px rgba(255,215,0,0.3),inset 0 -1px 2px rgba(0,0,0,0.3);text-shadow:0 0 12px rgba(255,215,0,0.4)}
+.nav-link.active::before{opacity:1;background:linear-gradient(180deg,rgba(255,255,255,0.18),transparent)}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.lang-toggle{padding:8px 16px;border-radius:20px;background:var(--bg-secondary);border:1px solid var(--glass-border);color:var(--text-secondary);font-size:12px;font-weight:500;transition:all .3s;letter-spacing:0.5px}
+.lang-toggle:hover{border-color:var(--gold-dim);color:var(--gold)}
+
+/* === SECTIONS === */
+.section{display:none;min-height:100vh;padding-top:calc(var(--nav-height) + 40px);padding-bottom:60px;position:relative;z-index:1}
+.section.active{display:block;animation:fadeSection .5s ease}
+@keyframes fadeSection{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.container{max-width:1200px;margin:0 auto;padding:0 32px}
+
+/* === GLASS CARD === */
+.glass-card{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:32px;transition:all .35s}
+.glass-card:hover{border-color:rgba(212,175,55,0.25);box-shadow:0 8px 40px rgba(212,175,55,0.06)}
+.glass-card-sm{background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:20px;transition:all .3s}
+
+/* === BUTTONS === */
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--bg-deep);padding:14px 32px;border-radius:40px;font-weight:700;font-size:14px;letter-spacing:0.5px;transition:all .3s;box-shadow:0 4px 24px rgba(212,175,55,0.25)}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(212,175,55,0.4)}
+.btn-outline{background:transparent;border:1px solid var(--gold-dim);color:var(--gold);padding:12px 24px;border-radius:40px;font-weight:500;font-size:13px;transition:all .3s}
+.btn-outline:hover{background:rgba(212,175,55,0.08);border-color:var(--gold)}
+.btn-sm{padding:8px 18px;font-size:12px;border-radius:20px}
+
+/* === BADGES === */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.5px}
+.badge-gold{background:rgba(212,175,55,0.12);color:var(--gold-light);border:1px solid rgba(212,175,55,0.2)}
+.badge-green{background:rgba(34,197,94,0.1);color:var(--accent-green);border:1px solid rgba(34,197,94,0.2)}
+.badge-red{background:rgba(239,68,68,0.1);color:var(--accent-red);border:1px solid rgba(239,68,68,0.2)}
+
+/* === HOME SECTION === */
+.hero{text-align:center;padding:80px 0 60px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 20px;border-radius:40px;background:rgba(212,175,55,0.06);border:1px solid rgba(212,175,55,0.15);font-size:12px;color:var(--gold);margin-bottom:32px;letter-spacing:1px;text-transform:uppercase}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1{font-family:var(--font-display);font-size:clamp(40px,6vw,72px);font-weight:900;line-height:1.1;margin-bottom:20px;background:linear-gradient(135deg,var(--text-primary) 0%,var(--gold-light) 50%,var(--gold) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:18px;color:var(--text-secondary);max-width:560px;margin:0 auto 48px;line-height:1.7;font-weight:300}
+.hero-input-wrap{max-width:640px;margin:0 auto 60px;position:relative}
+.hero-input{width:100%;padding:20px 160px 20px 24px;border-radius:16px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-primary);font-size:15px;font-family:var(--font-mono);transition:all .3s}
+.hero-input::placeholder{color:var(--text-muted)}
+.hero-input:focus{border-color:var(--gold-dim);box-shadow:0 0 40px rgba(212,175,55,0.08)}
+.hero-input-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%)}
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:60px}
+.feature-card{text-align:left}
+.feature-card .icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px;background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(212,175,55,0.02));border:1px solid rgba(212,175,55,0.1)}
+.feature-card h3{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--text-primary)}
+.feature-card p{font-size:13px;color:var(--text-secondary);line-height:1.6}
+.sample-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:40px}
+.sample-badge{padding:10px 22px;border-radius:40px;background:var(--bg-card);border:1px solid var(--glass-border);font-size:13px;color:var(--text-secondary);transition:all .4s;cursor:default}
+.sample-badge:hover{border-color:var(--gold);color:var(--gold-light);transform:translateY(-2px);box-shadow:0 4px 20px rgba(212,175,55,0.1)}
+
+/* === TITLE GENERATOR === */
+.gen-input-section{text-align:center;margin-bottom:40px}
+.gen-input-section h2{font-family:var(--font-display);font-size:32px;margin-bottom:12px}
+.gen-input-section p{color:var(--text-secondary);margin-bottom:28px;font-size:14px}
+.chain-tabs{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+.chain-tab{padding:10px 24px;border-radius:24px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-secondary);font-size:13px;font-weight:500;transition:all .3s}
+.chain-tab.active{background:rgba(212,175,55,0.1);border-color:var(--gold-dim);color:var(--gold)}
+.gen-input-wrap{max-width:600px;margin:0 auto;position:relative}
+.gen-input{width:100%;padding:18px 140px 18px 20px;border-radius:14px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-primary);font-family:var(--font-mono);font-size:14px;transition:all .3s}
+.gen-input:focus{border-color:var(--gold-dim);box-shadow:0 0 30px rgba(212,175,55,0.06)}
+.gen-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%)}
+
+/* Analysis Steps */
+.analysis-steps{max-width:500px;margin:0 auto 40px;display:none}
+.analysis-steps.show{display:block}
+.step{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.04);opacity:0.3;transition:all .4s}
+.step.active{opacity:1}
+.step.done{opacity:0.6}
+.step-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;background:var(--bg-card);border:1px solid var(--glass-border);flex-shrink:0}
+.step.active .step-icon{border-color:var(--gold);color:var(--gold);animation:spinIcon 1s linear infinite}
+.step.done .step-icon{background:var(--gold);color:var(--bg-deep);border-color:var(--gold)}
+@keyframes spinIcon{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.step-text{font-size:13px;color:var(--text-secondary)}
+.step.active .step-text{color:var(--text-primary)}
+
+/* Result Card */
+.result-area{display:none}
+.result-area.show{display:block;animation:fadeSection .6s ease}
+.result-card{max-width:800px;margin:0 auto;overflow:hidden}
+.result-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.result-chain{font-size:12px;color:var(--text-muted);font-family:var(--font-mono)}
+.result-title-area{text-align:center;margin-bottom:36px}
+.result-title{font-family:var(--font-display);font-size:36px;font-weight:900;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.result-subtitle{color:var(--text-secondary);font-size:13px}
+.result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg-card);border-radius:var(--radius);padding:20px;text-align:center;border:1px solid rgba(255,255,255,0.04)}
+.stat-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.stat-value{font-size:22px;font-weight:700;font-family:var(--font-mono)}
+.stat-value.green{color:var(--accent-green)}
+.stat-value.red{color:var(--accent-red)}
+.result-charts{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.chart-wrap{background:var(--bg-card);border-radius:var(--radius);padding:20px;border:1px solid rgba(255,255,255,0.04)}
+.chart-wrap h4{font-size:13px;color:var(--text-secondary);margin-bottom:16px;font-weight:500}
+.chart-wrap canvas{max-height:200px}
+.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+
+/* === TRACKER === */
+.tracker-header{display:flex;justify-content:center;align-items:center;margin-bottom:28px}
+.tracker-header h2{font-family:var(--font-display);font-size:28px}
+.add-address-form{display:flex;gap:8px;max-width:500px}
+.add-input{flex:1;padding:12px 16px;border-radius:10px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-primary);font-family:var(--font-mono);font-size:13px}
+.watchlist{display:grid;gap:16px;margin-bottom:32px}
+.watch-item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;padding:20px 24px;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.04);transition:all .3s}
+.watch-item:hover{border-color:var(--glass-border)}
+.watch-addr{font-family:var(--font-mono);font-size:13px;color:var(--text-primary);margin-bottom:4px}
+.watch-label{font-size:12px;color:var(--text-muted)}
+.watch-actions{display:flex;gap:8px}
+.tx-feed{margin-top:20px}
+.tx-feed h3{font-size:16px;margin-bottom:16px;color:var(--text-secondary);text-align:center}
+.tx-item{display:grid;grid-template-columns:auto 1fr auto auto;gap:16px;align-items:center;padding:16px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.03);margin-bottom:8px}
+.tx-type{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.tx-type.buy{background:rgba(34,197,94,0.1);color:var(--accent-green)}
+.tx-type.sell{background:rgba(239,68,68,0.1);color:var(--accent-red)}
+.tx-type.transfer{background:rgba(59,130,246,0.1);color:var(--accent-blue)}
+.tx-type.swap{background:rgba(212,175,55,0.1);color:var(--gold)}
+.tx-detail{font-size:13px}
+.tx-detail .tx-desc{color:var(--text-primary);margin-bottom:2px}
+.tx-detail .tx-addr{font-family:var(--font-mono);font-size:11px;color:var(--text-muted)}
+.tx-pnl{font-family:var(--font-mono);font-size:14px;font-weight:600}
+.tx-time{font-size:11px;color:var(--text-muted);text-align:right}
+.tg-toggle{display:inline-flex;align-items:center;gap:12px;padding:12px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.04);margin-bottom:24px}
+.tg-toggle label{font-size:13px;color:var(--text-secondary)}
+.toggle-switch{position:relative;width:44px;height:24px;border-radius:12px;background:var(--bg-secondary);border:1px solid var(--glass-border);cursor:pointer;transition:all .3s}
+.toggle-switch.on{background:var(--gold);border-color:var(--gold)}
+.toggle-switch::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--text-primary);transition:all .3s}
+.toggle-switch.on::after{left:23px}
+
+/* === LEADERBOARD === */
+.lb-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:16px}
+.lb-header h2{font-family:var(--font-display);font-size:28px}
+.lb-filters{display:flex;gap:8px}
+.lb-filter{padding:8px 18px;border-radius:20px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-secondary);font-size:12px;transition:all .3s}
+.lb-filter.active{background:rgba(212,175,55,0.08);border-color:var(--gold-dim);color:var(--gold)}
+.lb-section{margin-bottom:40px}
+.lb-section h3{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.lb-section h3 span{font-size:20px}
+.lb-table{width:100%;border-collapse:collapse}
+.lb-table th{text-align:left;padding:12px 16px;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid rgba(255,255,255,0.05);font-weight:500}
+.lb-table td{padding:14px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,0.03);vertical-align:middle}
+.lb-table tr:hover td{background:rgba(212,175,55,0.02)}
+.lb-rank{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--gold)}
+.lb-addr-cell{display:flex;align-items:center;gap:12px}
+.lb-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold-dim),var(--gold));display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--bg-deep);font-weight:700}
+.lb-addr{font-family:var(--font-mono);font-size:12px;color:var(--text-primary)}
+.lb-title{font-size:11px;color:var(--gold)}
+.follow-btn{padding:6px 16px;border-radius:16px;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-size:11px;transition:all .3s}
+.follow-btn:hover{background:rgba(212,175,55,0.1)}
+.follow-btn.following{background:rgba(212,175,55,0.1);border-color:var(--gold)}
+
+/* === DASHBOARD === */
+.dash-profile{display:flex;align-items:center;gap:24px;margin-bottom:36px}
+.dash-avatar{width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--bg-deep);font-weight:900;font-family:var(--font-display)}
+.dash-info h2{font-size:22px;margin-bottom:4px}
+.dash-info p{color:var(--text-secondary);font-size:13px}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.dash-stat{padding:24px;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.04);text-align:center}
+.dash-stat .label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.dash-stat .value{font-size:28px;font-weight:700;font-family:var(--font-mono)}
+.dash-addresses{margin-bottom:32px}
+.dash-addresses h3{font-size:16px;margin-bottom:16px;color:var(--text-secondary)}
+.addr-item{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.04);margin-bottom:8px}
+.addr-info{display:flex;align-items:center;gap:12px}
+.addr-chain{padding:4px 10px;border-radius:8px;font-size:10px;font-weight:600;letter-spacing:0.5px}
+.addr-chain.bsc{background:rgba(243,186,47,0.1);color:#F3BA2F}
+.addr-chain.sol{background:rgba(153,69,255,0.1);color:#9945FF}
+.addr-mono{font-family:var(--font-mono);font-size:13px}
+.addr-tags{display:flex;gap:6px;flex-wrap:wrap}
+.addr-tag{padding:4px 10px;border-radius:12px;font-size:10px;background:rgba(212,175,55,0.08);color:var(--gold);border:1px solid rgba(212,175,55,0.12)}
+.dash-chart-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+
+/* === COMMUNITY === */
+.comm-rankings{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px}
+.ranking-card h3{font-size:18px;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.ranking-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.ranking-left{display:flex;align-items:center;gap:12px}
+.ranking-num{font-family:var(--font-display);font-weight:900;font-size:20px;color:var(--gold);width:28px}
+.ranking-info .r-addr{font-family:var(--font-mono);font-size:12px}
+.ranking-info .r-title{font-size:11px;color:var(--gold)}
+.ranking-score{font-family:var(--font-mono);font-size:13px;font-weight:600}
+.share-gen{margin-bottom:40px}
+.share-gen h3{font-size:18px;margin-bottom:16px}
+.share-preview{width:100%;max-width:480px;aspect-ratio:16/9;border-radius:var(--radius-lg);background:linear-gradient(135deg,#12121a,#1a1a2e);border:1px solid var(--glass-border);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.share-preview::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 40%,rgba(212,175,55,0.08),transparent 60%);pointer-events:none}
+.share-preview .sp-title{font-family:var(--font-display);font-size:28px;font-weight:900;color:var(--gold-light);margin-bottom:4px}
+.share-preview .sp-addr{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-bottom:16px}
+.share-preview .sp-stats{display:flex;gap:24px;font-size:12px;color:var(--text-secondary)}
+.share-preview .sp-watermark{position:absolute;bottom:10px;right:14px;font-size:10px;color:var(--text-muted);opacity:0.5}
+.voting-section h3{font-size:18px;margin-bottom:16px}
+.vote-items{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.vote-item{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.04)}
+.vote-title{font-size:14px;font-weight:600}
+.vote-count{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary)}
+.vote-btn{width:32px;height:32px;border-radius:50%;background:rgba(212,175,55,0.08);border:1px solid var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .3s}
+.vote-btn:hover{background:var(--gold);color:var(--bg-deep)}
+
+/* === LOADING SPINNER === */
+.loading-spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spinIcon 0.8s linear infinite;vertical-align:middle;margin-right:6px}
+.loading-overlay{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--text-secondary);font-size:14px;gap:10px}
+
+/* === RESPONSIVE === */
+@media(max-width:900px){
+  .features-grid,.result-stats,.result-charts,.comm-rankings,.dash-stats,.dash-chart-row,.vote-items{grid-template-columns:1fr 1fr}
+  .nav-links{display:none}
+  .mobile-menu-btn{display:flex !important}
+}
+@media(max-width:600px){
+  .features-grid,.result-stats,.result-charts,.comm-rankings,.dash-stats,.dash-chart-row,.vote-items{grid-template-columns:1fr}
+  .hero h1{font-size:32px}
+  .container{padding:0 16px}
+  .nav{padding:0 16px}
+}
+.mobile-menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center;border-radius:10px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-primary);font-size:18px}
+.mobile-nav{display:none;position:fixed;top:var(--nav-height);left:0;right:0;background:var(--bg-primary);border-bottom:1px solid var(--glass-border);padding:16px;z-index:999;flex-direction:column;gap:4px}
+.mobile-nav.show{display:flex}
+.mobile-nav .nav-link{display:block;text-align:center}
+
+/* Section titles */
+.section-title{font-family:var(--font-display);font-size:32px;font-weight:900;margin-bottom:8px}
+.section-subtitle{color:var(--text-secondary);font-size:14px;margin-bottom:32px}
+
+/* Glow effect */
+.glow{position:absolute;width:300px;height:300px;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.glow-gold{background:rgba(212,175,55,0.06)}
+.glow-purple{background:rgba(153,69,255,0.04)}
+
+/* === LIVE SMART MONEY === */
+.live-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding:12px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--glass-border);flex-wrap:wrap;gap:8px}
+.live-dot-wrap{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary)}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 8px var(--accent-green);animation:livePulse 1.5s infinite}
+.live-dot.disconnected{background:var(--accent-red);box-shadow:0 0 8px var(--accent-red)}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.live-stats{display:flex;gap:16px;font-size:12px;color:var(--text-muted);font-family:var(--font-mono)}
+.live-stats span{display:flex;align-items:center;gap:4px}
+.live-count{color:var(--gold);font-weight:600}
+.sm-action-tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.sm-action-tag.buy{background:rgba(34,197,94,0.1);color:var(--accent-green)}
+.sm-action-tag.sell{background:rgba(239,68,68,0.1);color:var(--accent-red)}
+.sm-action-tag.snipe{background:rgba(212,175,55,0.12);color:var(--gold-light)}
+.sm-token{display:flex;align-items:center;gap:6px}
+.sm-token-icon{width:22px;height:22px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;font-size:10px;border:1px solid var(--glass-border)}
+.sm-value{font-family:var(--font-mono);font-weight:600}
+.sm-time{font-size:11px;color:var(--text-muted);font-family:var(--font-mono)}
+.sm-new-row{animation:rowFlash .8s ease}
+@keyframes rowFlash{0%{background:rgba(212,175,55,0.08)}100%{background:transparent}}
+.lb-table td.sm-pnl-up{color:var(--accent-green)}
+.lb-table td.sm-pnl-down{color:var(--accent-red)}
+.ws-status{font-size:11px;padding:4px 10px;border-radius:10px;font-weight:500}
+.ws-status.connected{background:rgba(34,197,94,0.1);color:var(--accent-green)}
+.ws-status.connecting{background:rgba(212,175,55,0.1);color:var(--gold)}
+.ws-status.error{background:rgba(239,68,68,0.1);color:var(--accent-red)}
+.chain-badge-sm{padding:3px 8px;border-radius:8px;font-size:10px;font-weight:600;letter-spacing:.3px}
+.chain-badge-sm.bsc{background:rgba(243,186,47,0.12);color:#F3BA2F}
+.chain-badge-sm.sol{background:rgba(153,69,255,0.12);color:#9945FF}
+.chain-badge-sm.eth{background:rgba(98,126,234,0.12);color:#627EEA}
+.refresh-btn{padding:6px 14px;border-radius:16px;background:var(--bg-card);border:1px solid var(--glass-border);color:var(--text-secondary);font-size:12px;display:flex;align-items:center;gap:6px;transition:all .3s;cursor:pointer}
+.refresh-btn:hover{border-color:var(--gold-dim);color:var(--gold)}
+.refresh-btn.spinning .refresh-icon{animation:spinIcon .8s linear infinite}
+.refresh-icon{display:inline-block}
+
+/* === SCROLLABLE TABLE WRAPPER === */
+.table-scroll-wrap{max-height:960px;overflow-y:auto;overflow-x:auto}
+.table-scroll-wrap::-webkit-scrollbar{width:5px}
+.table-scroll-wrap::-webkit-scrollbar-track{background:var(--bg-card)}
+.table-scroll-wrap::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px}
+.table-scroll-wrap::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+
+/* === COPY BUTTON === */
+.copy-btn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;background:rgba(212,175,55,0.08);border:1px solid rgba(212,175,55,0.15);color:var(--gold-dim);font-size:11px;cursor:pointer;transition:all .2s;margin-left:6px;vertical-align:middle;flex-shrink:0}
+.copy-btn:hover{background:rgba(212,175,55,0.2);color:var(--gold);border-color:var(--gold)}
+.copy-btn.copied{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.3);color:var(--accent-green)}
+
+/* === MONITOR FLOATING PANEL === */
+.monitor-panel{position:fixed;bottom:20px;right:20px;width:380px;max-height:520px;background:var(--bg-primary);border:1px solid var(--glass-border);border-radius:var(--radius-lg);box-shadow:0 12px 48px rgba(0,0,0,0.5),0 0 0 1px rgba(212,175,55,0.08);z-index:2000;display:none;flex-direction:column;overflow:hidden;backdrop-filter:blur(20px);transition:max-height .3s,width .3s}
+.monitor-panel.show{display:flex}
+.monitor-panel.minimized .monitor-body{display:none}
+.monitor-panel.minimized{max-height:auto}
+.monitor-header{padding:12px 16px;background:rgba(212,175,55,0.04);border-bottom:1px solid var(--glass-border);cursor:move;user-select:none;flex-shrink:0}
+.monitor-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.monitor-dot-wrap{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--gold-light)}
+.monitor-controls{display:flex;gap:4px}
+.monitor-ctrl-btn{width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);color:var(--text-muted);font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;cursor:pointer}
+.monitor-ctrl-btn:hover{background:rgba(255,255,255,0.1);color:var(--text-primary)}
+.monitor-status-row{display:flex;gap:8px;align-items:center}
+.monitor-body{flex:1;overflow-y:auto;min-height:0}
+.monitor-body::-webkit-scrollbar{width:4px}
+.monitor-body::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+.monitor-wallets{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.monitor-wallet-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;background:var(--bg-card);border:1px solid rgba(255,255,255,0.03);margin-bottom:6px;font-size:12px;transition:border-color .3s}
+.monitor-wallet-item.changed{border-color:var(--gold);animation:monFlash 1s ease}
+@keyframes monFlash{0%{background:rgba(212,175,55,0.12)}100%{background:var(--bg-card)}}
+.mon-w-left{display:flex;align-items:center;gap:8px}
+.mon-w-chain{padding:2px 6px;border-radius:5px;font-size:9px;font-weight:700;letter-spacing:.3px}
+.mon-w-chain.bsc{background:rgba(243,186,47,0.12);color:#F3BA2F}
+.mon-w-chain.sol{background:rgba(153,69,255,0.12);color:#9945FF}
+.mon-w-addr{font-family:var(--font-mono);color:var(--text-primary)}
+.mon-w-bal{font-family:var(--font-mono);color:var(--accent-green);font-weight:600;font-size:11px}
+.mon-w-bal.loading{color:var(--text-muted)}
+.monitor-feed-label{padding:8px 14px;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:500;border-bottom:1px solid rgba(255,255,255,0.03)}
+.monitor-feed{max-height:240px;overflow-y:auto;padding:6px 10px}
+.monitor-feed::-webkit-scrollbar{width:3px}
+.monitor-feed::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+.mon-event{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;border-radius:6px;margin-bottom:4px;font-size:11px;transition:background .3s;border-left:2px solid transparent}
+.mon-event.new{animation:monFlash .8s ease}
+.mon-event.buy{border-left-color:var(--accent-green)}
+.mon-event.sell{border-left-color:var(--accent-red)}
+.mon-event.balance{border-left-color:var(--gold)}
+.mon-event.transfer{border-left-color:var(--accent-blue)}
+.mon-event-icon{flex-shrink:0;width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px}
+.mon-event-icon.buy{background:rgba(34,197,94,0.1);color:var(--accent-green)}
+.mon-event-icon.sell{background:rgba(239,68,68,0.1);color:var(--accent-red)}
+.mon-event-icon.balance{background:rgba(212,175,55,0.1);color:var(--gold)}
+.mon-event-icon.transfer{background:rgba(59,130,246,0.1);color:var(--accent-blue)}
+.mon-event-body{flex:1;min-width:0}
+.mon-event-title{color:var(--text-primary);font-weight:500;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mon-event-detail{color:var(--text-muted);font-family:var(--font-mono);font-size:10px}
+.mon-event-time{font-size:10px;color:var(--text-muted);font-family:var(--font-mono);flex-shrink:0;white-space:nowrap}
+
+/* === TX FEED REDESIGN === */
+.balance-summary{background:var(--bg-card);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:20px 24px;margin-bottom:24px}
+.balance-summary-title{font-size:14px;font-weight:700;color:var(--gold);letter-spacing:0.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.balance-summary-title::before{content:'';display:inline-block;width:4px;height:16px;background:var(--gold);border-radius:2px}
+.balance-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.balance-wallet-card{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:var(--radius);transition:border-color .2s}
+.balance-wallet-card:hover{border-color:var(--glass-border)}
+.balance-wallet-chain{font-size:9px;font-weight:700;padding:3px 7px;border-radius:4px;background:linear-gradient(135deg,var(--gold),var(--gold-dim));color:var(--bg-deep);letter-spacing:0.5px;flex-shrink:0}
+.balance-wallet-info{flex:1;min-width:0;overflow:hidden}
+.balance-wallet-addr{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.balance-wallet-bal{font-size:14px;font-weight:600;color:var(--text-primary);margin-top:2px}
+
+.tx-feed-card{position:relative;border-radius:var(--radius);background:var(--bg-card);border:1px solid rgba(255,255,255,0.04);margin-bottom:10px;padding:14px 18px 14px 22px;border-left:3px solid transparent;transition:all .25s ease;overflow:hidden}
+.tx-feed-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.01),transparent);pointer-events:none;opacity:0;transition:opacity .25s}
+.tx-feed-card:hover{border-color:rgba(255,255,255,0.08);transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+.tx-feed-card:hover::before{opacity:1}
+.tx-feed-card.accent-green{border-left-color:var(--accent-green)}
+.tx-feed-card.accent-red{border-left-color:var(--accent-red)}
+.tx-feed-card.accent-blue{border-left-color:var(--accent-blue)}
+
+.tx-feed-card-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.tx-action-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;color:#000;letter-spacing:0.3px;white-space:nowrap}
+.tx-action-badge.buy{background:var(--accent-green)}
+.tx-action-badge.sell{background:var(--accent-red)}
+.tx-action-badge.transfer-in{background:var(--accent-blue)}
+.tx-action-badge.transfer-out{background:var(--accent-blue)}
+.tx-token-name{font-size:14px;font-weight:600;color:var(--text-primary)}
+.tx-header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+.tx-feed-card-body{display:flex;flex-direction:column;gap:6px;padding-left:2px}
+.tx-detail-row{display:flex;align-items:center;gap:8px;font-size:12px}
+.tx-detail-row .tx-detail-label{color:var(--text-muted);min-width:64px;flex-shrink:0}
+.tx-detail-row .tx-detail-value{color:var(--text-primary);font-weight:500}
+
+.tx-contract-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);padding:3px 8px;border-radius:5px;font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);border:1px solid rgba(255,255,255,0.06)}
+.tx-copy-btn{display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text-secondary);padding:3px 10px;border-radius:5px;font-size:10px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:0.3px}
+.tx-copy-btn:hover{background:var(--gold);color:var(--bg-deep);border-color:var(--gold)}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <div class="nav-logo">
+    <span>CHAINBADGE</span>
+  </div>
+  <div class="nav-links" id="navLinks"></div>
+  <div class="nav-actions">
+    <a href="index.html" data-i18n="backHome" style="display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary);text-decoration:none;padding:8px 16px;border-radius:20px;background:var(--bg-secondary);border:1px solid var(--glass-border);font-size:12px;font-weight:500;transition:all .3s;letter-spacing:0.5px;" onmouseover="this.style.borderColor='rgba(212,175,55,0.5)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='';this.style.color=''">Home</a>
+    <button class="lang-toggle" id="langToggle" onclick="toggleLang()">中文</button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav"></div>
+
+<!-- TITLE GENERATOR -->
+<section class="section active" id="sec-generator">
+  <div class="container">
+    <div class="gen-input-section">
+      <h2 class="section-title" data-i18n="genTitle">Title Generator</h2>
+      <p id="creditLineGen" style="color:rgba(255,255,255,0.55);font-size:13px;margin:0 0 12px;letter-spacing:0.5px;text-align:center"></p>
+      <p class="section-subtitle" data-i18n="genSubtitle">Enter any wallet address to reveal its on-chain personality.</p>
+      <div class="chain-tabs">
+        <button class="chain-tab active" onclick="selectChain(this,'eth')">ETH</button>
+        <button class="chain-tab" onclick="selectChain(this,'bsc')">BSC</button>
+        <button class="chain-tab" onclick="selectChain(this,'sol')">Solana</button>
+      </div>
+      <div class="gen-input-wrap">
+        <input class="gen-input" id="genInput" data-i18n-placeholder="genPlaceholder" placeholder="0x... or So1..." />
+        <button class="btn-gold btn-sm gen-btn" onclick="startAnalysis()" data-i18n="genBtn">Analyze</button>
+      </div>
+    </div>
+    <div class="analysis-steps" id="analysisSteps">
+      <div class="step" data-step="0"><div class="step-icon">◎</div><div class="step-text" data-i18n="step1">Fetching transaction history...</div></div>
+      <div class="step" data-step="1"><div class="step-icon">◎</div><div class="step-text" data-i18n="step2">Analyzing PnL & win rate...</div></div>
+      <div class="step" data-step="2"><div class="step-icon">◎</div><div class="step-text" data-i18n="step3">Profiling on-chain behavior...</div></div>
+      <div class="step" data-step="3"><div class="step-icon">◎</div><div class="step-text" data-i18n="step4">Generating your title...</div></div>
+    </div>
+    <div class="result-area" id="resultArea">
+      <div class="glass-card result-card" id="resultCard"></div>
+    </div>
+  </div>
+</section>
+
+<!-- WALLET TRACKER -->
+<section class="section" id="sec-tracker">
+  <div class="container">
+    <div class="tracker-header">
+      <h2 class="section-title" data-i18n="trackerTitle">Wallet Tracker</h2>
+    </div>
+    <div style="text-align:center;margin-bottom:16px">
+      <p id="creditLine" style="color:rgba(255,255,255,0.55);font-size:13px;margin:0;letter-spacing:0.5px"></p>
+    </div>
+    <div class="add-address-form glass-card-sm" style="display:flex;gap:8px;margin-bottom:24px;padding:12px 16px;max-width:600px;margin-left:auto;margin-right:auto;border:1px solid rgba(255,255,255,0.04);align-items:center">
+      <input class="add-input" id="addAddrInput" data-i18n-placeholder="addAddrPlaceholder" placeholder="Add address to watchlist..." style="flex:1"/>
+      <button class="btn-gold btn-sm" onclick="addToWatchlist()" data-i18n="addBtn">Add</button>
+    </div>
+    <div class="watchlist" id="watchlist"></div>
+    <div class="tx-feed">
+      <h3 data-i18n="txFeedTitle">Live Transaction Feed</h3>
+      <div id="txFeed"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SMART MONEY -->
+<section class="section" id="sec-smartmoney">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:16px">
+      <h2 class="section-title" data-i18n="smTitle" style="font-family:var(--font-display);font-size:28px;margin-bottom:8px">Smart Money</h2>
+      <p id="creditLineSm" style="color:rgba(255,255,255,0.55);font-size:13px;margin:0;letter-spacing:0.5px"></p>
+    </div>
+    <div class="lb-header" style="margin-top:0">
+      <div></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="lb-filters">
+          <button class="lb-filter active" onclick="filterChain(this,'all')" data-i18n="filterAll">All Chains</button>
+          <button class="lb-filter" onclick="filterChain(this,'eth')">ETH</button>
+          <button class="lb-filter" onclick="filterChain(this,'bsc')">BSC</button>
+          <button class="lb-filter" onclick="filterChain(this,'sol')">Solana</button>
+        </div>
+        <button class="refresh-btn" id="smRefreshBtn" onclick="manualRefreshSmartMoney()">
+          <span class="refresh-icon">↻</span> <span data-i18n="smRefresh">Refresh</span>
+        </button>
+      </div>
+    </div>
+    <div class="live-bar" id="liveBar">
+      <div class="live-dot-wrap">
+        <div class="live-dot" id="liveDot"></div>
+        <span id="liveStatusText">Connecting to chains...</span>
+      </div>
+      <div class="live-stats">
+        <span>SOL: <span class="ws-status connecting" id="wsStatusSol">connecting</span></span>
+        <span>ETH: <span class="ws-status connecting" id="wsStatusEth">connecting</span></span>
+        <span>BSC: <span class="ws-status connecting" id="wsStatusBsc">connecting</span></span>
+        <span>Txns: <span class="live-count" id="liveTxCount">0</span></span>
+      </div>
+    </div>
+    <div class="lb-section">
+      <h3><span data-i18n="smToday">Today's Smart Money</span></h3>
+      <div class="glass-card" style="padding:0;">
+        <div class="table-scroll-wrap">
+          <table class="lb-table" id="smartTable"></table>
+        </div>
+      </div>
+    </div>
+    <div class="lb-section">
+      <h3><span data-i18n="smSniper">Sniper Board</span></h3>
+      <div class="glass-card" style="padding:0;">
+        <div class="table-scroll-wrap">
+          <table class="lb-table" id="sniperTable"></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- MONITOR FLOATING PANEL -->
+<div class="monitor-panel" id="monitorPanel">
+  <div class="monitor-header" id="monitorDragHandle">
+    <div class="monitor-title-row">
+      <div class="monitor-dot-wrap"><div class="live-dot"></div><span id="monitorTitle">Monitor</span></div>
+      <div class="monitor-controls">
+        <button class="monitor-ctrl-btn" onclick="toggleMonitorMinimize()" id="monitorMinBtn">─</button>
+        <button class="monitor-ctrl-btn" onclick="closeMonitorPanel()">✕</button>
+      </div>
+    </div>
+    <div class="monitor-status-row" id="monitorStatusRow">
+      <span class="ws-status connecting" id="monWsSol">SOL ...</span>
+      <span class="ws-status connecting" id="monWsBsc">BSC ...</span>
+      <span style="font-size:10px;color:var(--text-muted)" id="monEventCount">Events: 0</span>
+    </div>
+  </div>
+  <div class="monitor-body" id="monitorBody">
+    <div class="monitor-wallets" id="monitorWallets">
+      <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:12px" id="monitorEmpty">Add wallets in Tracker to start monitoring</div>
+    </div>
+    <div class="monitor-feed-label">Real-time Events</div>
+    <div class="monitor-feed" id="monitorFeed"></div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// SECTION 1: I18N
+// =============================================
+const i18n = {
+  en: {
+    navHome:'Home', navGen:'Title Generator', navTracker:'Wallet Tracker', navSmart:'Smart Money', navComm:'Community', backHome:'Home',
+    heroBadge:'Live on BSC & Solana', heroTitle:'Decode Any Wallet.\nEarn Your Title.', heroDesc:'Paste any BSC or Solana address — get an AI-generated meme title, on-chain stats, and a shareable badge card in seconds.',
+    heroPlaceholder:'Paste a BSC or Solana wallet address...', heroBtn:'Decode', sampleLabel:'Popular Titles',
+    feat1Title:'AI Title Engine', feat1Desc:'Meme-style titles generated from real on-chain behavior patterns.',
+    feat2Title:'Real-Time Tracking', feat2Desc:'Monitor any wallet with live transaction feeds and Telegram alerts.',
+    feat3Title:'Smart Money Radar', feat3Desc:'Discover high win-rate wallets and early snipers automatically.',
+    genTitle:'Title Generator', genSubtitle:'Enter any wallet address to reveal what type your wallet belongs to.',
+    chainAuto:'Auto Detect', genPlaceholder:'0x... or So1...', genBtn:'Analyze',
+    step1:'Fetching on-chain balance...', step2:'Counting transactions...', step3:'Scanning token holdings...', step4:'Generating your title...',
+    trackerTitle:'Wallet Tracker', tgLabel:'Monitor Floating Window', addAddrPlaceholder:'Add address to watchlist...', addBtn:'Add', txFeedTitle:'Live Transaction Feed',
+    smTitle:'Smart Money', filterAll:'All Chains', smToday:"Today's Smart Money", smSniper:'Sniper Board', smRefresh:'Refresh',
+    smConnecting:'Connecting to chains...', smLive:'Live — monitoring DEX swaps', smReconnecting:'Reconnecting...',
+    smWallet:'Wallet', smChain:'Chain', smAction:'Action', smToken:'Token', smAmount:'Amount', smTime:'Time',
+    smBuy:'BUY', smSell:'SELL', smSnipeTag:'SNIPE', smNoData:'Waiting for live data...', smEntryTime:'Entry Time', smBlock:'Block',
+    dashJoined:'Real-time on-chain data', dashAddrTitle:'Managed Addresses',
+    dashTotalBal:'Total Balance', dashTxCount:'Total Txns', dashTokens:'Token Types', dashAddresses:'Addresses',
+    commTitle:'Community', commSubtitle:'Rankings, sharing, and community voting.',
+    rankLegend:'Top Wallets by Balance', rankActive:'Most Active Wallets',
+    shareGenTitle:'Share Card Generator', shareDesc:'Generate a watermarked share card from any analyzed wallet. Perfect for X and Telegram.',
+    shareDownload:'Download Card', shareX:'Share to X', shareTG:'Share to Telegram',
+    voteTitle:'Community Voting', voteDesc:'Vote for custom titles. Most voted titles get featured!',
+    thRank:'Rank', thAddress:'Address', thTitle:'Title', thBalance:'Balance', thTxns:'Txns', thTokens:'Tokens', thAction:'',
+    resultChain:'Detected Chain', resultAddr:'Wallet', totalTxns:'Total Txns', balance:'Balance', tokenCount:'Tokens', nativeBalance:'Native Balance',
+    shareCard:'Download Card', shareXBtn:'Share to X', shareTGBtn:'Share to Telegram',
+    tokenDist:'Token Distribution', txActivity:'Transaction Activity',
+    loading:'Loading...', error:'Error fetching data', noTokens:'No tokens found',
+  },
+  zh: {
+    navHome:'首页', navGen:'称号生成', navTracker:'实时追踪', navSmart:'聪明钱榜单', navComm:'社区', backHome:'首页',
+    heroBadge:'已上线 BSC & Solana', heroTitle:'解码任意钱包\n赢得你的称号', heroDesc:'粘贴任意 BSC 或 Solana 地址 — 秒出 AI 生成的 Meme 称号、链上数据和可分享的徽章卡片。',
+    heroPlaceholder:'粘贴 BSC 或 Solana 钱包地址...', heroBtn:'解码', sampleLabel:'热门称号',
+    feat1Title:'AI 称号引擎', feat1Desc:'根据真实链上行为模式生成 Meme 风格称号。',
+    feat2Title:'实时追踪', feat2Desc:'通过实时交易流和 Telegram 提醒监控任意钱包。',
+    feat3Title:'聪明钱雷达', feat3Desc:'自动发现高胜率钱包和早期狙击手。',
+    genTitle:'称号生成器', genSubtitle:'输入任意钱包地址，揭示你的钱包属于什么类型。',
+    chainAuto:'自动检测', genPlaceholder:'0x... 或 So1...', genBtn:'分析',
+    step1:'正在获取链上余额...', step2:'正在统计交易数量...', step3:'正在扫描代币持仓...', step4:'正在生成你的称号...',
+    trackerTitle:'钱包追踪', tgLabel:'监控悬浮窗', addAddrPlaceholder:'添加地址到监视列表...', addBtn:'添加', txFeedTitle:'实时交易动态',
+    smTitle:'聪明钱榜单', filterAll:'全部链', smToday:'今日聪明钱', smSniper:'狙击手榜', smRefresh:'刷新',
+    smConnecting:'正在连接链上数据...', smLive:'直播中 — 监控 DEX 交易', smReconnecting:'重新连接中...',
+    smWallet:'钱包', smChain:'链', smAction:'操作', smToken:'代币', smAmount:'金额', smTime:'时间',
+    smBuy:'买入', smSell:'卖出', smSnipeTag:'狙击', smNoData:'等待实时数据...', smEntryTime:'进入时间', smBlock:'区块',
+    dashJoined:'实时链上数据', dashAddrTitle:'管理的地址',
+    dashTotalBal:'总余额', dashTxCount:'总交易数', dashTokens:'代币种类', dashAddresses:'地址数',
+    commTitle:'社区', commSubtitle:'排行榜、分享和社区投票。',
+    rankLegend:'余额最高钱包', rankActive:'最活跃钱包',
+    shareGenTitle:'分享卡片生成器', shareDesc:'从任意已分析钱包生成带水印的分享卡片。适合 X 和 Telegram 传播。',
+    shareDownload:'下载卡片', shareX:'分享到 X', shareTG:'分享到 Telegram',
+    voteTitle:'社区投票', voteDesc:'为自定义称号投票。票数最多的称号将被推荐！',
+    thRank:'排名', thAddress:'地址', thTitle:'称号', thBalance:'余额', thTxns:'交易数', thTokens:'代币', thAction:'',
+    resultChain:'检测到的链', resultAddr:'钱包', totalTxns:'总交易数', balance:'余额', tokenCount:'代币数', nativeBalance:'原生代币余额',
+    shareCard:'下载卡片', shareXBtn:'分享到 X', shareTGBtn:'分享到 Telegram',
+    tokenDist:'代币分布', txActivity:'交易活动',
+    loading:'加载中...', error:'数据获取失败', noTokens:'未找到代币',
+  }
+};
+let currentLang = 'en';
+const navSections = ['generator','tracker','smartmoney'];
+const navKeys = ['navGen','navTracker','navSmart'];
+
+function t(key){ return i18n[currentLang][key] || key; }
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(i18n[currentLang][key]) el.textContent = i18n[currentLang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(i18n[currentLang][key]) el.placeholder = i18n[currentLang][key];
+  });
+  document.getElementById('langToggle').textContent = currentLang==='en'?'中文':'EN';
+  // Update credit lines
+  const creditZh = '由 <a href="https://x.com/_StarryMiu" target="_blank" style="color:var(--gold);text-decoration:none">Cute Kitten</a> 精心打造 · 称号生成 · 实时追踪 · 聪明钱包榜单 · 祝你使用愉快';
+  const creditEn = 'Crafted by <a href="https://x.com/_StarryMiu" target="_blank" style="color:var(--gold);text-decoration:none">Cute Kitten</a> · Title Generator · Real-time Tracking · Smart Money Leaderboard · Enjoy!';
+  const creditHtml = currentLang === 'zh' ? creditZh : creditEn;
+  ['creditLine','creditLineGen','creditLineSm'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = creditHtml;
+  });
+  buildNav();
+}
+
+function toggleLang(){
+  currentLang = currentLang==='en'?'zh':'en';
+  document.documentElement.setAttribute('data-lang', currentLang);
+  applyLang();
+  // Re-render analysis result if it exists, so it picks up the new language
+  if (lastAnalysis) {
+    showResult(lastAnalysis);
+  }
+}
+
+// =============================================
+// SECTION 2: RPC INFRASTRUCTURE
+// =============================================
+const BSC_RPCS = [
+  'https://shared.us-east-1.getblock.io/720caefdd6e142ba97d4442f4125daeb',
+  'https://bsc-rpc.publicnode.com',
+  'https://bsc-dataseed.binance.org',
+  'https://bsc-dataseed.bnbchain.org'
+];
+const SOL_RPCS = [
+  'https://solana-mainnet.core.chainstack.com/11eaa5aabf8c53ed3340a8c8bd23ff94',
+  'https://solana-rpc.publicnode.com',
+  'https://api.mainnet-beta.solana.com'
+];
+const ETH_RPCS = [
+  'https://go.getblock.asia/43b2d38556ce46929c25fa2cc9f23bfb',
+  'https://ethereum.publicnode.com',
+  'https://ethereum-rpc.publicnode.com',
+  'https://cloudflare-eth.com'
+];
+
+// Keep WebSocket connections alive even when tab is hidden
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    // Reconnect if connections dropped while hidden
+    if (typeof solWs !== 'undefined' && (!solWs || solWs.readyState > 1)) {
+      if (typeof connectSolanaWs === 'function') connectSolanaWs();
+    }
+    if (typeof bscWs !== 'undefined' && (!bscWs || bscWs.readyState > 1)) {
+      if (typeof connectBscWs === 'function') connectBscWs();
+    }
+    if (typeof ethWs !== 'undefined' && (!ethWs || ethWs.readyState > 1)) {
+      if (typeof connectEthWs === 'function') connectEthWs();
+    }
+  }
+});
+
+const BSC_TOKENS = {
+  'USDT': '0x55d398326f99059fF775485246999027B3197955',
+  'USDC': '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+  'BUSD': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+  'WBNB': '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  'CAKE': '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82'
+};
+
+const SOL_TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
+
+let rpcCallId = 1;
+
+async function rpcCall(urls, method, params, timeout) {
+  timeout = timeout || 8000;
+  for (const url of urls) {
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), timeout);
+      const body = { jsonrpc: '2.0', id: rpcCallId++, method, params };
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl.signal
+      });
+      clearTimeout(timer);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      if (data.error) { console.warn(`RPC error from ${url}:`, data.error); continue; }
+      return data.result;
+    } catch (e) {
+      console.warn(`RPC failed for ${url}:`, e.message);
+      continue;
+    }
+  }
+  throw new Error(`All RPC endpoints failed for ${method}`);
+}
+
+// Fast fetch with timeout helper
+function fetchWithTimeout(url, options, timeout) {
+  timeout = timeout || 6000;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeout);
+  const merged = Object.assign({}, options || {}, { signal: ctrl.signal });
+  return fetch(url, merged).finally(() => clearTimeout(timer));
+}
+
+function bscCall(method, params) { return rpcCall(BSC_RPCS, method, params); }
+function solCall(method, params) { return rpcCall(SOL_RPCS, method, params); }
+function ethCall(method, params) { return rpcCall(ETH_RPCS, method, params); }
+
+function hexToDecimal(hex) {
+  if (!hex || hex === '0x') return 0;
+  return parseInt(hex, 16);
+}
+
+function weiToBnb(weiHex) {
+  const wei = BigInt(weiHex);
+  return Number(wei) / 1e18;
+}
+function weiToEth(weiHex) {
+  const wei = BigInt(weiHex);
+  return Number(wei) / 1e18;
+}
+
+function lamportsToSol(lamports) {
+  return lamports / 1e9;
+}
+
+function shortAddr(addr) {
+  if (!addr || addr.length < 12) return addr || '';
+  return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
+
+function isBscAddress(addr) {
+  return /^0x[a-fA-F0-9]{40}$/.test(addr);
+}
+
+function isSolAddress(addr) {
+  return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(addr) && !addr.startsWith('0x');
+}
+
+function detectChain(addr, forceChain) {
+  if (forceChain && forceChain !== 'auto') return forceChain;
+  if (isSolAddress(addr)) return 'Solana';
+  if (isBscAddress(addr)) return 'BSC'; // default for 0x if no chain specified
+  return null;
+}
+
+// =============================================
+// SECTION 3: BSC DATA FETCHING
+// =============================================
+async function getBscBalance(addr) {
+  const result = await bscCall('eth_getBalance', [addr, 'latest']);
+  return weiToBnb(result);
+}
+
+async function getBscTxCount(addr) {
+  const result = await bscCall('eth_getTransactionCount', [addr, 'latest']);
+  return hexToDecimal(result);
+}
+
+async function getBscTokenBalance(walletAddr, tokenAddr) {
+  // balanceOf(address) selector = 0x70a08231
+  const data = '0x70a08231000000000000000000000000' + walletAddr.slice(2).toLowerCase();
+  const result = await bscCall('eth_call', [{ to: tokenAddr, data: data }, 'latest']);
+  if (!result || result === '0x') return 0;
+  return Number(BigInt(result)) / 1e18;
+}
+
+async function getBscTokenBalances(walletAddr) {
+  const tokens = [];
+  const entries = Object.entries(BSC_TOKENS);
+  const results = await Promise.allSettled(
+    entries.map(([name, contract]) => getBscTokenBalance(walletAddr, contract))
+  );
+  results.forEach((r, i) => {
+    if (r.status === 'fulfilled' && r.value > 0.001) {
+      tokens.push({ name: entries[i][0], balance: r.value });
+    }
+  });
+  return tokens;
+}
+
+async function getBscRecentTxHashes(addr) {
+  // BSC doesn't have a direct "get transactions by address" RPC, so we get the latest block
+  // and check recent blocks for transactions. We'll use eth_getBlockByNumber for a few recent blocks.
+  const txs = [];
+  try {
+    const blockHex = await bscCall('eth_blockNumber', []);
+    const blockNum = hexToDecimal(blockHex);
+    // Check last 3 blocks for any transactions involving this address
+    for (let i = 0; i < 3 && txs.length < 5; i++) {
+      const block = await bscCall('eth_getBlockByNumber', ['0x' + (blockNum - i).toString(16), true]);
+      if (block && block.transactions) {
+        for (const tx of block.transactions) {
+          if (tx.from && tx.from.toLowerCase() === addr.toLowerCase() ||
+              tx.to && tx.to.toLowerCase() === addr.toLowerCase()) {
+            txs.push({
+              hash: tx.hash,
+              from: tx.from,
+              to: tx.to || '(Contract)',
+              value: weiToBnb(tx.value),
+              blockNumber: hexToDecimal(tx.blockNumber),
+              timestamp: hexToDecimal(block.timestamp)
+            });
+          }
+          if (txs.length >= 5) break;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Error fetching BSC recent txs:', e);
+  }
+  return txs;
+}
+
+async function fetchFullBscData(addr) {
+  const [balance, txCount, tokens] = await Promise.all([
+    getBscBalance(addr).catch(() => 0),
+    getBscTxCount(addr).catch(() => 0),
+    getBscTokenBalances(addr).catch(() => [])
+  ]);
+  return { chain: 'BSC', address: addr, balance, txCount, tokens, nativeSymbol: 'BNB' };
+}
+
+// =============================================
+// SECTION 3B: ETH DATA FETCHING
+// =============================================
+async function getEthBalance(addr) {
+  const result = await ethCall('eth_getBalance', [addr, 'latest']);
+  return weiToEth(result);
+}
+async function getEthTxCount(addr) {
+  const result = await ethCall('eth_getTransactionCount', [addr, 'latest']);
+  return hexToDecimal(result);
+}
+async function getEthRecentTxHashes(addr) {
+  const txs = [];
+  try {
+    const blockHex = await ethCall('eth_blockNumber', []);
+    const blockNum = hexToDecimal(blockHex);
+    for (let i = 0; i < 3 && txs.length < 5; i++) {
+      const block = await ethCall('eth_getBlockByNumber', ['0x' + (blockNum - i).toString(16), true]);
+      if (block && block.transactions) {
+        for (const tx of block.transactions) {
+          if (tx.from && tx.from.toLowerCase() === addr.toLowerCase() ||
+              tx.to && tx.to.toLowerCase() === addr.toLowerCase()) {
+            txs.push({
+              hash: tx.hash,
+              from: tx.from,
+              to: tx.to || '(Contract)',
+              value: weiToEth(tx.value),
+              blockNumber: hexToDecimal(tx.blockNumber),
+              timestamp: hexToDecimal(block.timestamp)
+            });
+          }
+          if (txs.length >= 5) break;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Error fetching ETH recent txs:', e);
+  }
+  return txs;
+}
+async function fetchFullEthData(addr) {
+  const [balance, txCount] = await Promise.all([
+    getEthBalance(addr).catch(() => 0),
+    getEthTxCount(addr).catch(() => 0)
+  ]);
+  return { chain: 'ETH', address: addr, balance, txCount, tokens: [], nativeSymbol: 'ETH' };
+}
+
+// =============================================
+// SECTION 4: SOLANA DATA FETCHING
+// =============================================
+async function getSolBalance(addr) {
+  const result = await solCall('getBalance', [addr, {commitment:'confirmed'}]);
+  return lamportsToSol(result.value);
+}
+
+async function getSolSignatures(addr, limit) {
+  limit = limit || 20;
+  const result = await solCall('getSignaturesForAddress', [addr, {limit}]);
+  return result || [];
+}
+
+async function getSolTokenAccounts(addr) {
+  const result = await solCall('getTokenAccountsByOwner', [
+    addr,
+    { programId: SOL_TOKEN_PROGRAM },
+    { encoding: 'jsonParsed' }
+  ]);
+  const tokens = [];
+  if (result && result.value) {
+    for (const acct of result.value) {
+      const info = acct.account.data.parsed && acct.account.data.parsed.info;
+      if (info && info.tokenAmount && parseFloat(info.tokenAmount.uiAmountString) > 0) {
+        tokens.push({
+          mint: info.mint,
+          name: shortAddr(info.mint),
+          balance: parseFloat(info.tokenAmount.uiAmountString),
+          decimals: info.tokenAmount.decimals
+        });
+      }
+    }
+  }
+  return tokens;
+}
+
+async function getSolTxDetails(sig) {
+  try {
+    const result = await solCall('getTransaction', [sig, {encoding:'jsonParsed',maxSupportedTransactionVersion:0}]);
+    return result;
+  } catch(e) { return null; }
+}
+
+async function getSolRecentTxs(addr) {
+  const sigs = await getSolSignatures(addr, 8);
+  const txs = [];
+  for (const sig of sigs.slice(0, 5)) {
+    const detail = await getSolTxDetails(sig.signature);
+    if (detail) {
+      const meta = detail.meta || {};
+      const preBalances = meta.preBalances || [];
+      const postBalances = meta.postBalances || [];
+      const valueSol = preBalances.length > 0 && postBalances.length > 0
+        ? Math.abs(lamportsToSol(postBalances[0] - preBalances[0]))
+        : 0;
+      const accounts = detail.transaction && detail.transaction.message && detail.transaction.message.accountKeys
+        ? detail.transaction.message.accountKeys : [];
+      txs.push({
+        hash: sig.signature,
+        from: accounts[0] ? (accounts[0].pubkey || accounts[0]) : addr,
+        to: accounts.length > 1 ? (accounts[1].pubkey || accounts[1]) : '(Program)',
+        value: valueSol,
+        timestamp: sig.blockTime || 0,
+        error: sig.err !== null
+      });
+    }
+  }
+  return txs;
+}
+
+async function fetchFullSolData(addr) {
+  const [balance, sigs, tokens] = await Promise.all([
+    getSolBalance(addr).catch(() => 0),
+    getSolSignatures(addr, 1000).catch(() => []),
+    getSolTokenAccounts(addr).catch(() => [])
+  ]);
+  return { chain: 'Solana', address: addr, balance, txCount: sigs.length, tokens, nativeSymbol: 'SOL' };
+}
+
+async function fetchWalletData(addr, chain) {
+  if (!chain) chain = detectChain(addr);
+  if (chain === 'BSC') return fetchFullBscData(addr);
+  if (chain === 'ETH') return fetchFullEthData(addr);
+  if (chain === 'Solana') return fetchFullSolData(addr);
+  throw new Error('Invalid address format');
+}
+
+// =============================================
+// SECTION 5: TITLE GENERATION LOGIC
+// =============================================
+const titleRules = {
+  en: [
+    { check: d => d.balance > 100, title: 'Mega Whale', sub: 'Swimming in deep waters' },
+    { check: d => d.balance > 10, title: 'Baby Whale', sub: 'Growing into a leviathan' },
+    { check: d => d.txCount > 5000, title: 'Trading Machine', sub: 'Never stops transacting' },
+    { check: d => d.txCount > 1000, title: 'Active Trader', sub: 'Always on the grind' },
+    { check: d => d.txCount > 500, title: 'Chain Enthusiast', sub: 'A regular on-chain participant' },
+    { check: d => d.tokens.length > 20, title: 'Token Collector Supreme', sub: 'Gotta catch them all' },
+    { check: d => d.tokens.length > 10, title: 'Diversification King', sub: 'Never puts eggs in one basket' },
+    { check: d => d.tokens.length > 5, title: 'Portfolio Builder', sub: 'Building a balanced stack' },
+    { check: d => d.balance > 1 && d.txCount < 10, title: 'Diamond Hands HODLer', sub: 'Buy and never sell' },
+    { check: d => d.balance < 0.01 && d.txCount > 100, title: 'Gas Fee Destroyer', sub: 'All balance went to fees' },
+    { check: d => d.balance < 0.001 && d.txCount < 5, title: 'Ghost Wallet', sub: 'Barely alive on-chain' },
+    { check: d => d.txCount > 200 && d.tokens.length > 5, title: 'DeFi Degen', sub: 'Living in the smart contracts' },
+    { check: d => d.txCount > 100, title: 'Regular Joe', sub: 'Steady and consistent' },
+    { check: d => d.balance > 0.1, title: 'Casual Holder', sub: 'Keeping some skin in the game' },
+    { check: () => true, title: 'Chain Explorer', sub: 'Just getting started' },
+  ],
+  zh: [
+    { check: d => d.balance > 100, title: '超级巨鲸', sub: '在深水区游泳' },
+    { check: d => d.balance > 10, title: '小巨鲸', sub: '正在成长为巨兽' },
+    { check: d => d.txCount > 5000, title: '交易机器', sub: '永不停止交易' },
+    { check: d => d.txCount > 1000, title: '活跃交易者', sub: '一直在链上忙碌' },
+    { check: d => d.txCount > 500, title: '链上爱好者', sub: '链上常客' },
+    { check: d => d.tokens.length > 20, title: '代币收藏至尊', sub: '全部都要收集' },
+    { check: d => d.tokens.length > 10, title: '分散投资之王', sub: '从不把鸡蛋放一个篮子' },
+    { check: d => d.tokens.length > 5, title: '组合构建者', sub: '构建平衡的持仓' },
+    { check: d => d.balance > 1 && d.txCount < 10, title: '钻石手 HODLer', sub: '只买不卖' },
+    { check: d => d.balance < 0.01 && d.txCount > 100, title: 'Gas 毁灭者', sub: '余额全交了手续费' },
+    { check: d => d.balance < 0.001 && d.txCount < 5, title: '幽灵钱包', sub: '链上几乎无生息' },
+    { check: d => d.txCount > 200 && d.tokens.length > 5, title: 'DeFi 堕落者', sub: '住在智能合约里' },
+    { check: d => d.txCount > 100, title: '普通用户', sub: '稳定且持续' },
+    { check: d => d.balance > 0.1, title: '休闲持有者', sub: '保持参与' },
+    { check: () => true, title: '链上探索者', sub: '刚刚起步' },
+  ]
+};
+
+function generateTitle(walletData) {
+  const rules = titleRules[currentLang];
+  for (const rule of rules) {
+    if (rule.check(walletData)) {
+      return { title: rule.title, subtitle: rule.sub };
+    }
+  }
+  return { title: 'Chain Explorer', subtitle: 'Unknown pattern' };
+}
+
+// Store last analysis for share card
+let lastAnalysis = null;
+
+// =============================================
+// SECTION 6: NAVIGATION & UI
+// =============================================
+function buildNav(){
+  const links = document.getElementById('navLinks');
+  const mobile = document.getElementById('mobileNav');
+  links.innerHTML = '';
+  mobile.innerHTML = '';
+  navSections.forEach((s,i)=>{
+    const active = document.getElementById('sec-'+s).classList.contains('active')?'active':'';
+    const label = t(navKeys[i]);
+    links.innerHTML += '<button class="nav-link '+active+'" onclick="goTo(\''+s+'\')">'+label+'</button>';
+    mobile.innerHTML += '<button class="nav-link '+active+'" onclick="goTo(\''+s+'\');toggleMobileMenu()">'+label+'</button>';
+  });
+}
+
+function goTo(section){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+section).classList.add('active');
+  buildNav();
+  window.scrollTo(0,0);
+}
+
+function toggleMobileMenu(){
+  document.getElementById('mobileNav').classList.toggle('show');
+}
+
+function initBg(){
+  const c = document.getElementById('bg-canvas');
+  const ctx = c.getContext('2d');
+  let w,h;
+  const particles = [];
+  function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}
+  resize();
+  window.addEventListener('resize',resize);
+  for(let i=0;i<60;i++){
+    particles.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+0.5,dx:(Math.random()-0.5)*0.3,dy:(Math.random()-0.5)*0.3,o:Math.random()*0.5+0.1});
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{
+      p.x+=p.dx;p.y+=p.dy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(212,175,55,'+p.o+')';ctx.fill();
+    });
+    for(let i=0;i<particles.length;i++){
+      for(let j=i+1;j<particles.length;j++){
+        const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y;
+        const dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<120){
+          ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);
+          ctx.strokeStyle='rgba(212,175,55,'+(0.06*(1-dist/120))+')';ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// =============================================
+// SECTION 7: TITLE GENERATOR UI
+// =============================================
+let selectedChain = 'eth';
+
+function selectChain(el, chain){
+  document.querySelectorAll('.chain-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  selectedChain = chain;
+}
+
+async function startAnalysis(){
+  const input = document.getElementById('genInput').value.trim();
+  if(!input){ document.getElementById('genInput').style.borderColor='var(--accent-red)'; setTimeout(()=>document.getElementById('genInput').style.borderColor='',1500); return; }
+
+  // Use the user-selected chain tab instead of auto-detecting from address format
+  const chain = selectedChain === 'bsc' ? 'BSC' : selectedChain === 'eth' ? 'ETH' : 'Solana';
+  if (!input) {
+    document.getElementById('genInput').style.borderColor='var(--accent-red)';
+    setTimeout(()=>document.getElementById('genInput').style.borderColor='',1500);
+    return;
+  }
+
+  const steps = document.getElementById('analysisSteps');
+  const result = document.getElementById('resultArea');
+  result.classList.remove('show');
+  steps.classList.add('show');
+  const allSteps = steps.querySelectorAll('.step');
+  allSteps.forEach(s=>{s.classList.remove('active','done')});
+
+  // Step 0: start fetching
+  allSteps[0].classList.add('active');
+
+  try {
+    // Step 1: Balance
+    let walletData;
+    if (chain === 'BSC') {
+      const balance = await getBscBalance(input).catch(() => 0);
+      allSteps[0].classList.remove('active'); allSteps[0].classList.add('done');
+      allSteps[1].classList.add('active');
+
+      // Step 2: Tx count
+      const txCount = await getBscTxCount(input).catch(() => 0);
+      allSteps[1].classList.remove('active'); allSteps[1].classList.add('done');
+      allSteps[2].classList.add('active');
+
+      // Step 3: Tokens
+      const tokens = await getBscTokenBalances(input).catch(() => []);
+      allSteps[2].classList.remove('active'); allSteps[2].classList.add('done');
+      allSteps[3].classList.add('active');
+
+      walletData = { chain: 'BSC', address: input, balance, txCount, tokens, nativeSymbol: 'BNB' };
+    } else if (chain === 'ETH') {
+      walletData = await fetchFullEthData(input);
+      allSteps[0].classList.remove('active'); allSteps[0].classList.add('done');
+      allSteps[1].classList.add('active');
+      await new Promise(r => setTimeout(r, 200));
+      allSteps[1].classList.remove('active'); allSteps[1].classList.add('done');
+      allSteps[2].classList.add('active');
+      await new Promise(r => setTimeout(r, 200));
+      allSteps[2].classList.remove('active'); allSteps[2].classList.add('done');
+      allSteps[3].classList.add('active');
+    } else {
+      const balance = await getSolBalance(input).catch(() => 0);
+      allSteps[0].classList.remove('active'); allSteps[0].classList.add('done');
+      allSteps[1].classList.add('active');
+
+      const sigs = await getSolSignatures(input, 1000).catch(() => []);
+      allSteps[1].classList.remove('active'); allSteps[1].classList.add('done');
+      allSteps[2].classList.add('active');
+
+      const tokens = await getSolTokenAccounts(input).catch(() => []);
+      allSteps[2].classList.remove('active'); allSteps[2].classList.add('done');
+      allSteps[3].classList.add('active');
+
+      walletData = { chain: 'Solana', address: input, balance, txCount: sigs.length, tokens, nativeSymbol: 'SOL' };
+    }
+
+    await new Promise(r => setTimeout(r, 400));
+    allSteps[3].classList.remove('active'); allSteps[3].classList.add('done');
+
+    setTimeout(()=>{
+      steps.classList.remove('show');
+      showResult(walletData);
+    }, 300);
+
+  } catch(e) {
+    console.error('Analysis error:', e);
+    steps.classList.remove('show');
+    const card = document.getElementById('resultCard');
+    card.innerHTML = '<div style="text-align:center;padding:40px;color:var(--accent-red)">'+t('error')+': '+e.message+'</div>';
+    result.classList.add('show');
+  }
+}
+
+function showResult(data){
+  lastAnalysis = data;
+  const titleInfo = generateTitle(data);
+  const sAddr = shortAddr(data.address);
+
+  const card = document.getElementById('resultCard');
+  card.innerHTML =
+    '<div class="result-header">' +
+      '<div><span class="badge badge-gold">'+data.chain+'</span></div>' +
+      '<div class="result-chain" style="font-size:12px;color:var(--text-muted)">'+sAddr+'</div>' +
+    '</div>' +
+    '<div class="result-title-area">' +
+      '<div class="result-title">'+titleInfo.title+'</div>' +
+      '<div class="result-subtitle">"'+titleInfo.subtitle+'"</div>' +
+    '</div>' +
+    '<div class="result-stats">' +
+      '<div class="stat-card"><div class="stat-label">'+t('nativeBalance')+'</div><div class="stat-value" style="color:var(--gold)">'+data.balance.toFixed(4)+' '+data.nativeSymbol+'</div></div>' +
+      '<div class="stat-card"><div class="stat-label">'+t('totalTxns')+'</div><div class="stat-value">'+data.txCount.toLocaleString()+'</div></div>' +
+      '<div class="stat-card"><div class="stat-label">'+t('tokenCount')+'</div><div class="stat-value">'+data.tokens.length+'</div></div>' +
+      '<div class="stat-card"><div class="stat-label">'+t('balance')+'</div><div class="stat-value green">'+data.balance.toFixed(4)+'</div></div>' +
+    '</div>' +
+    '<div class="result-charts">' +
+      '<div class="chart-wrap"><h4>'+t('tokenDist')+'</h4><canvas id="pieChart"></canvas>' +
+        (data.tokens.length === 0 ? '<p style="color:var(--text-muted);font-size:12px;text-align:center;margin-top:8px">'+t('noTokens')+'</p>' : '') +
+      '</div>' +
+      '<div class="chart-wrap"><h4>'+t('txActivity')+'</h4><canvas id="lineChart"></canvas></div>' +
+    '</div>' +
+    '<div class="result-actions">' +
+      '<button class="btn-gold">'+t('shareCard')+'</button>' +
+      '<button class="btn-outline">'+t('shareXBtn')+'</button>' +
+      '<button class="btn-outline">'+t('shareTGBtn')+'</button>' +
+    '</div>';
+
+  document.getElementById('resultArea').classList.add('show');
+
+  // Update share preview
+  updateSharePreview(data, titleInfo);
+
+  setTimeout(()=>renderResultCharts(data),100);
+}
+
+function updateSharePreview(data, titleInfo) {
+  const preview = document.getElementById('sharePreview');
+  if (!preview) return;
+  preview.innerHTML =
+    '<div class="sp-title">'+titleInfo.title+'</div>' +
+    '<div class="sp-addr">'+shortAddr(data.address)+'</div>' +
+    '<div class="sp-stats">' +
+      '<span>'+data.balance.toFixed(4)+' '+data.nativeSymbol+'</span>' +
+      '<span>Txns: '+data.txCount.toLocaleString()+'</span>' +
+      '<span>Tokens: '+data.tokens.length+'</span>' +
+    '</div>' +
+    '<div class="sp-watermark">ChainBadge.io</div>';
+}
+
+function renderResultCharts(data){
+  const pieCtx = document.getElementById('pieChart');
+  const lineCtx = document.getElementById('lineChart');
+  if(!pieCtx||!lineCtx) return;
+
+  const goldA = 'rgba(212,175,55,';
+  const chartColors = [goldA+'0.8)','rgba(153,69,255,0.6)','rgba(34,197,94,0.5)','rgba(59,130,246,0.4)','rgba(239,68,68,0.5)',goldA+'0.5)','rgba(100,200,200,0.5)','rgba(255,159,64,0.5)'];
+
+  // Pie chart with real token data
+  if (data.tokens.length > 0) {
+    const topTokens = data.tokens.slice(0, 7).sort((a,b) => b.balance - a.balance);
+    const labels = topTokens.map(t => t.name);
+    const values = topTokens.map(t => t.balance);
+    new Chart(pieCtx,{type:'doughnut',data:{labels,datasets:[{data:values,backgroundColor:chartColors.slice(0, topTokens.length),borderColor:'transparent',borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8a8594',font:{size:11},padding:12}},tooltip:{callbacks:{label:function(ctx){return ctx.label+': '+ctx.parsed.toFixed(4)}}}}}});
+  } else {
+    // Show native balance as single entry
+    new Chart(pieCtx,{type:'doughnut',data:{labels:[data.nativeSymbol],datasets:[{data:[data.balance || 1],backgroundColor:[goldA+'0.8)'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'#8a8594',font:{size:11}}}}}});
+  }
+
+  // Activity chart - show tx count visualization
+  const labels = ['Txns','Tokens','Balance'];
+  const normalizedData = [
+    Math.min(data.txCount, 10000) / 100,
+    data.tokens.length * 10,
+    Math.min(data.balance * 10, 1000)
+  ];
+  new Chart(lineCtx,{type:'bar',data:{labels,datasets:[{data:normalizedData,backgroundColor:[goldA+'0.6)','rgba(153,69,255,0.5)','rgba(34,197,94,0.5)'],borderColor:[goldA+'1)','rgba(153,69,255,0.8)','rgba(34,197,94,0.8)'],borderWidth:1}]},options:{responsive:true,scales:{x:{grid:{display:false},ticks:{color:'#5a5565'}},y:{grid:{color:'rgba(255,255,255,0.03)'},ticks:{color:'#5a5565',font:{size:10}}}},plugins:{legend:{display:false}}}});
+}
+
+// =============================================
+// SECTION 8: WALLET TRACKER
+// =============================================
+const watchlist = [];
+const watchlistData = {}; // addr -> fetched data
+
+async function buildTracker(){
+  const wl = document.getElementById('watchlist');
+  if (watchlist.length === 0) {
+    wl.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-muted);font-size:14px">Add a BSC, ETH or Solana address above to start tracking.</div>';
+    document.getElementById('txFeed').innerHTML = '';
+    return;
+  }
+  wl.innerHTML = watchlist.map((w,i)=>{
+    const sAddr = shortAddr(w.addr);
+    const dataKey = w.addr + '_' + w.chain;
+    const data = watchlistData[dataKey];
+    const balLabel = data ? (data.balance.toFixed(4)+' '+data.nativeSymbol) : '<span class="loading-spinner"></span>';
+    return '<div class="watch-item">' +
+      '<div><div class="watch-addr">'+sAddr+'</div>' +
+      '<div class="watch-label"><span class="badge badge-gold" style="font-size:10px">'+w.chain+'</span> '+balLabel+'</div></div>' +
+      '<div class="watch-actions">' +
+      '<button class="btn-outline btn-sm" onclick="analyzeFromTracker(\''+w.addr+'\')">Analyze</button>' +
+      '<button class="btn-outline btn-sm" style="border-color:var(--accent-red);color:var(--accent-red)" onclick="removeFromWatchlist('+i+')">✕</button></div>' +
+    '</div>';
+  }).join('');
+}
+
+function removeFromWatchlist(idx) {
+  const w = watchlist[idx];
+  const dataKey = w.addr + '_' + w.chain;
+  watchlist.splice(idx, 1);
+  delete watchlistData[dataKey];
+  buildTracker();
+  buildDashboard();
+  if (watchlist.length === 0) stopTrackerAutoRefresh();
+}
+
+function analyzeFromTracker(addr) {
+  document.getElementById('genInput').value = addr;
+  goTo('generator');
+  startAnalysis();
+}
+
+async function addToWatchlist(){
+  const input = document.getElementById('addAddrInput');
+  const v = input.value.trim();
+  if(!v) return;
+
+  // Auto-detect chain: 0x addresses monitor both ETH and BSC, Solana addresses monitor Solana
+  const isSol = isSolAddress(v);
+  const isEvm = isBscAddress(v); // 0x addresses
+
+  if (!isSol && !isEvm) {
+    input.style.borderColor = 'var(--accent-red)';
+    setTimeout(()=> input.style.borderColor = '', 1500);
+    return;
+  }
+
+  // Check duplicate
+  if (watchlist.some(w => w.addr === v)) { input.value=''; return; }
+
+  if (isEvm) {
+    // For 0x addresses, add both ETH and BSC entries
+    watchlist.unshift({addr:v, chain:'ETH'});
+    watchlist.unshift({addr:v, chain:'BSC'});
+  } else {
+    watchlist.unshift({addr:v, chain:'Solana'});
+  }
+
+  input.value='';
+  buildTracker();
+
+  // Fetch data in background
+  try {
+    if (isEvm) {
+      const [ethData, bscData] = await Promise.all([
+        fetchWalletData(v, 'ETH').catch(()=>({ chain:'ETH', address:v, balance:0, txCount:0, tokens:[], nativeSymbol:'ETH' })),
+        fetchWalletData(v, 'BSC').catch(()=>({ chain:'BSC', address:v, balance:0, txCount:0, tokens:[], nativeSymbol:'BNB' }))
+      ]);
+      watchlistData[v+'_ETH'] = ethData;
+      watchlistData[v+'_BSC'] = bscData;
+    } else {
+      const data = await fetchWalletData(v, 'Solana');
+      watchlistData[v+'_Solana'] = data;
+    }
+    buildTracker();
+    await fetchAndShowTxFeed();
+    buildDashboard();
+    startTrackerAutoRefresh();
+  } catch(e) {
+    console.warn('Error fetching watchlist data:', e);
+    buildTracker();
+    startTrackerAutoRefresh();
+  }
+}
+
+function copyContract(addr, btn) {
+  function onSuccess() {
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    btn.style.color = 'var(--accent-green)';
+    setTimeout(()=>{ btn.textContent = orig; btn.style.color = ''; }, 1500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(addr).then(onSuccess).catch(()=> fallbackCopy(addr, onSuccess));
+  } else {
+    fallbackCopy(addr, onSuccess);
+  }
+}
+
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); if(cb) cb(); } catch(e) { console.warn('Copy failed', e); }
+  document.body.removeChild(ta);
+}
+
+// --- Auto-refresh: poll balances every 15s, refresh feed on change ---
+let _trackerRefreshInterval = null;
+
+function startTrackerAutoRefresh() {
+  if (_trackerRefreshInterval) return;
+  _trackerRefreshInterval = setInterval(async () => {
+    if (watchlist.length === 0) return;
+    let changed = false;
+    for (const w of watchlist) {
+      const dataKey = w.addr + '_' + w.chain;
+      const oldData = watchlistData[dataKey];
+      if (!oldData) continue;
+      try {
+        let newBal;
+        if (w.chain === 'BSC') newBal = await getBscBalance(w.addr);
+        else if (w.chain === 'ETH') newBal = await getEthBalance(w.addr);
+        else newBal = await getSolBalance(w.addr);
+        if (Math.abs(newBal - oldData.balance) > 0.000001) {
+          oldData.balance = newBal;
+          changed = true;
+        }
+      } catch(e) {}
+    }
+    if (changed) {
+      buildTracker();
+      await fetchAndShowTxFeed();
+    }
+  }, 15000);
+}
+
+function stopTrackerAutoRefresh() {
+  if (_trackerRefreshInterval) {
+    clearInterval(_trackerRefreshInterval);
+    _trackerRefreshInterval = null;
+  }
+}
+
+async function fetchAndShowTxFeed() {
+  const feed = document.getElementById('txFeed');
+  if (watchlist.length === 0) { feed.innerHTML = ''; return; }
+
+  feed.innerHTML = '<div class="loading-overlay"><span class="loading-spinner"></span> '+t('loading')+'</div>';
+
+  let allTxs = [];
+  for (const w of watchlist.slice(0, 5)) {
+    try {
+      let txs;
+      if (w.chain === 'BSC') {
+        txs = await getBscRecentTxHashes(w.addr);
+      } else if (w.chain === 'ETH') {
+        txs = await getEthRecentTxHashes(w.addr);
+      } else {
+        txs = await getSolRecentTxs(w.addr);
+      }
+      txs.forEach(tx => { tx.watchAddr = w.addr; tx.chain = w.chain; });
+      allTxs = allTxs.concat(txs);
+    } catch(e) { console.warn('Error fetching txs for', w.addr, e); }
+  }
+
+  // Sort by timestamp descending
+  allTxs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  if (allTxs.length === 0) {
+    feed.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px">No recent transactions found in last few blocks.</div>';
+    return;
+  }
+
+  let html = '';
+
+  // === Balance Summary Card ===
+  const balTitle = currentLang === 'zh' ? '监控地址余额' : 'Monitored Wallet Balances';
+  html += '<div class="balance-summary">';
+  html += '<div class="balance-summary-title">' + balTitle + '</div>';
+  html += '<div class="balance-summary-grid">';
+  const shownAddrs = new Set();
+  for (const w of watchlist) {
+    const dataKey = w.addr + '_' + w.chain;
+    const data = watchlistData[dataKey];
+    if (shownAddrs.has(dataKey)) continue;
+    shownAddrs.add(dataKey);
+    const bal = data ? data.balance.toFixed(4) + ' ' + data.nativeSymbol : '--';
+    html += '<div class="balance-wallet-card">' +
+      '<span class="balance-wallet-chain">' + w.chain + '</span>' +
+      '<div class="balance-wallet-info">' +
+        '<div class="balance-wallet-addr">' + shortAddr(w.addr) + '</div>' +
+        '<div class="balance-wallet-bal">' + bal + '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  html += '</div></div>';
+
+  // === Transaction Cards ===
+  const copyLabel = currentLang === 'zh' ? '复制' : 'Copy';
+
+  for (const tx of allTxs.slice(0, 15)) {
+    const isOutgoing = tx.from && tx.from.toLowerCase && tx.from.toLowerCase() === tx.watchAddr.toLowerCase();
+    const nativeSymbol = tx.chain === 'BSC' ? 'BNB' : tx.chain === 'ETH' ? 'ETH' : 'SOL';
+    const timeStr = tx.timestamp ? timeSince(tx.timestamp) : 'recent';
+
+    // Token info
+    const tokenName = tx.tokenSymbol || tx.tokenName || '';
+    const tokenContract = tx.tokenContract || '';
+    const txValue = tx.value > 0 ? tx.value.toFixed(4) : '0';
+    const tokenAmount = tx.tokenAmount ? parseFloat(tx.tokenAmount).toLocaleString(undefined, {maximumFractionDigits:2}) : '';
+    const shortContract = tokenContract ? (tokenContract.slice(0,6) + '...' + tokenContract.slice(-4)) : '';
+    const txTo = tx.to || '';
+    const txFrom = tx.from || '';
+
+    // Determine transaction type: buy, sell, or transfer
+    const hasToken = !!(tokenName || tokenContract);
+    let actionBadge, actionText, amountLabel, accentClass, badgeClass;
+
+    if (hasToken && isOutgoing) {
+      // Sell: outgoing with token involved
+      actionBadge = currentLang === 'zh' ? '卖出' : 'SELL';
+      actionText = currentLang === 'zh' ? '卖出' : 'Sold';
+      amountLabel = currentLang === 'zh' ? '金额' : 'Amount';
+      accentClass = 'accent-red';
+      badgeClass = 'sell';
+    } else if (hasToken && !isOutgoing) {
+      // Buy: incoming with token involved
+      actionBadge = currentLang === 'zh' ? '买入' : 'BUY';
+      actionText = currentLang === 'zh' ? '买入' : 'Bought';
+      amountLabel = currentLang === 'zh' ? '金额' : 'Amount';
+      accentClass = 'accent-green';
+      badgeClass = 'buy';
+    } else if (!hasToken && isOutgoing) {
+      // Transfer out: no token, outgoing native
+      actionBadge = currentLang === 'zh' ? '转出' : 'OUT';
+      actionText = currentLang === 'zh' ? '转出' : 'Sent';
+      amountLabel = currentLang === 'zh' ? '金额' : 'Amount';
+      accentClass = 'accent-blue';
+      badgeClass = 'transfer-out';
+    } else {
+      // Transfer in: no token, incoming native
+      actionBadge = currentLang === 'zh' ? '转入' : 'IN';
+      actionText = currentLang === 'zh' ? '转入' : 'Received';
+      amountLabel = currentLang === 'zh' ? '金额' : 'Amount';
+      accentClass = 'accent-blue';
+      badgeClass = 'transfer-in';
+    }
+
+    const tokenQtyLabel = currentLang === 'zh' ? '代币数量' : 'Token Qty';
+    const contractLabel = currentLang === 'zh' ? '代币合约' : 'Contract';
+    const addrLabel = isOutgoing
+      ? (currentLang === 'zh' ? '转出至' : 'To')
+      : (currentLang === 'zh' ? '转入自' : 'From');
+
+    // Display name: token name for buy/sell, native symbol for transfers
+    const displayName = hasToken
+      ? (tokenName || (currentLang === 'zh' ? '未知代币' : 'Unknown Token'))
+      : (nativeSymbol + ' ' + actionText);
+
+    // Build card
+    html += '<div class="tx-feed-card ' + accentClass + '">';
+
+    // Header row
+    html += '<div class="tx-feed-card-header">' +
+      '<span class="tx-action-badge ' + badgeClass + '">' + actionBadge + '</span>' +
+      '<span class="tx-token-name">' + displayName + '</span>' +
+      '<div class="tx-header-right">' +
+        '<span class="badge badge-gold" style="font-size:9px">' + tx.chain + '</span>' +
+        '<span style="color:var(--text-muted);font-size:11px">' + timeStr + '</span>' +
+      '</div>' +
+    '</div>';
+
+    // Body / detail rows
+    html += '<div class="tx-feed-card-body">';
+
+    // Amount row (native token value)
+    html += '<div class="tx-detail-row">' +
+      '<span class="tx-detail-label">' + amountLabel + '</span>' +
+      '<span class="tx-detail-value">' + txValue + ' ' + nativeSymbol + '</span>' +
+    '</div>';
+
+    // Token quantity row (buy/sell only)
+    if (tokenAmount) {
+      html += '<div class="tx-detail-row">' +
+        '<span class="tx-detail-label">' + tokenQtyLabel + '</span>' +
+        '<span class="tx-detail-value">' + tokenAmount + '</span>' +
+      '</div>';
+    }
+
+    // Token contract row (buy/sell with contract)
+    if (tokenContract) {
+      html += '<div class="tx-detail-row">' +
+        '<span class="tx-detail-label">' + contractLabel + '</span>' +
+        '<span class="tx-detail-value" style="display:flex;align-items:center;gap:6px">' +
+          '<span class="tx-contract-badge">' + shortContract + '</span>' +
+          '<button class="tx-copy-btn" onclick="copyContract(\'' + tokenContract + '\', this)">' + copyLabel + '</button>' +
+        '</span>' +
+      '</div>';
+    }
+
+    // Address row (for transfers, or when no contract but has a to/from)
+    if (!hasToken) {
+      const targetAddr = isOutgoing ? txTo : txFrom;
+      if (targetAddr && targetAddr !== '(Contract)') {
+        const shortTarget = targetAddr.slice(0,6) + '...' + targetAddr.slice(-4);
+        html += '<div class="tx-detail-row">' +
+          '<span class="tx-detail-label">' + addrLabel + '</span>' +
+          '<span class="tx-detail-value" style="display:flex;align-items:center;gap:6px">' +
+            '<span class="tx-contract-badge">' + shortTarget + '</span>' +
+            '<button class="tx-copy-btn" onclick="copyContract(\'' + targetAddr + '\', this)">' + copyLabel + '</button>' +
+          '</span>' +
+        '</div>';
+      }
+    }
+
+    html += '</div>'; // end card-body
+    html += '</div>'; // end tx-feed-card
+  }
+  feed.innerHTML = html;
+}
+
+function timeSince(timestamp) {
+  const now = Math.floor(Date.now() / 1000);
+  const diff = now - timestamp;
+  if (diff < 60) return diff + 's ago';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+// =============================================
+// SECTION 9: SMART MONEY — LIVE DEX MONITORING
+// =============================================
+
+// --- Configuration ---
+const RAYDIUM_AMM = '675kPX9MHTjS2zt1qfr1NYHuzeLXfQM9H24wFSUt1Mp8';
+const RAYDIUM_CLMM = 'CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK';
+const JUPITER_AGG = 'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4';
+const ORCA_WHIRLPOOL = 'whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc';
+const PANCAKE_FACTORY_V2 = '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73';
+const PANCAKE_ROUTER_V2 = '0x10ED43C718714eb63d5aA57B78B54704E256024E';
+const WBNB_ADDR = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+const SWAP_TOPIC = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822';
+const PAIR_CREATED_TOPIC = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9';
+const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+
+const SOL_WS_URLS = ['wss://solana-mainnet.core.chainstack.com/11eaa5aabf8c53ed3340a8c8bd23ff94', 'wss://solana-rpc.publicnode.com', 'wss://api.mainnet-beta.solana.com'];
+const BSC_WS_URLS = ['wss://bsc-rpc.publicnode.com', 'wss://bsc-dataseed.binance.org'];
+const ETH_WS_URLS = ['wss://ethereum-rpc.publicnode.com', 'wss://ethereum.publicnode.com'];
+const BSC_RPC_EXTRA = ['https://shared.us-east-1.getblock.io/720caefdd6e142ba97d4442f4125daeb','https://bsc-rpc.publicnode.com','https://bsc-dataseed.binance.org','https://bsc-dataseed.bnbchain.org'];
+const ETH_RPC_EXTRA = ['https://go.getblock.asia/43b2d38556ce46929c25fa2cc9f23bfb','https://ethereum-rpc.publicnode.com','https://cloudflare-eth.com'];
+
+// --- State ---
+let solWs = null, bscWs = null, ethWs = null;
+let solWsConnected = false, bscWsConnected = false, ethWsConnected = false;
+let solSubId = null, bscSubIdSwap = null, bscSubIdPair = null, ethSubIdSwap = null, ethSubIdPair = null;
+let smartMoneyTrades = [];   // {wallet, chain, action, token, tokenAddr, amount, amountUsd, time, blockNum, txHash, isSnipe}
+let sniperEntries = [];      // {wallet, chain, token, tokenAddr, pairAddr, time, blockNum, txHash}
+let totalLiveTxCount = 0;
+let smartMoneyLoaded = false;
+let currentSmartFilter = 'all';
+let wsReconnectTimers = {};
+
+// Known token names cache
+const tokenNameCache = {};
+const knownBscTokens = {
+  '0x55d398326f99059ff775485246999027b3197955': 'USDT',
+  '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d': 'USDC',
+  '0xe9e7cea3dedca5984780bafc599bd69add087d56': 'BUSD',
+  '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c': 'WBNB',
+  '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82': 'CAKE',
+  '0x2170ed0880ac9a755fd29b2688956bd959f933f8': 'ETH',
+  '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c': 'BTCB',
+  '0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe': 'XRP',
+  '0xba2ae424d960c26247dd6c32edc70b295c744c43': 'DOGE',
+  '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47': 'ADA',
+  '0xbf5140a22578168fd562dccf235e5d43a02ce9b1': 'UNI',
+  '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3': 'DAI',
+};
+
+function copyToClipboard(text, btnEl) {
+  navigator.clipboard.writeText(text).then(() => {
+    btnEl.classList.add('copied');
+    btnEl.innerHTML = '✓';
+    setTimeout(() => { btnEl.classList.remove('copied'); btnEl.innerHTML = '⧉'; }, 1200);
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    btnEl.classList.add('copied');
+    btnEl.innerHTML = '✓';
+    setTimeout(() => { btnEl.classList.remove('copied'); btnEl.innerHTML = '⧉'; }, 1200);
+  });
+}
+
+function getTokenName(addr, chain) {
+  if (!addr) return 'Unknown';
+  const lower = addr.toLowerCase ? addr.toLowerCase() : addr;
+  if (chain === 'BSC' && knownBscTokens[lower]) return knownBscTokens[lower];
+  if (tokenNameCache[lower]) return tokenNameCache[lower];
+  return shortAddr(addr);
+}
+
+// --- WebSocket: Solana ---
+function connectSolanaWs() {
+  if (solWs && solWs.readyState <= 1) return;
+  updateWsStatus('sol', 'connecting');
+  const url = SOL_WS_URLS[Math.floor(Math.random() * SOL_WS_URLS.length)];
+  try {
+    solWs = new WebSocket(url);
+  } catch(e) { updateWsStatus('sol','error'); scheduleReconnect('sol'); return; }
+
+  solWs.onopen = () => {
+    solWsConnected = true;
+    updateWsStatus('sol', 'connected');
+    updateLiveBar();
+    // Subscribe to Raydium AMM logs
+    const subMsg = {
+      jsonrpc:'2.0', id:1, method:'logsSubscribe',
+      params:[
+        { mentions: [RAYDIUM_AMM] },
+        { commitment:'confirmed' }
+      ]
+    };
+    solWs.send(JSON.stringify(subMsg));
+    // Also subscribe to Jupiter
+    const subMsg2 = {
+      jsonrpc:'2.0', id:2, method:'logsSubscribe',
+      params:[
+        { mentions: [JUPITER_AGG] },
+        { commitment:'confirmed' }
+      ]
+    };
+    solWs.send(JSON.stringify(subMsg2));
+  };
+
+  solWs.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.method === 'logsNotification' && msg.params && msg.params.result) {
+        processSolanaLog(msg.params.result);
+      }
+      if (msg.result && typeof msg.result === 'number') {
+        solSubId = msg.result;
+      }
+    } catch(e) {}
+  };
+
+  solWs.onerror = () => { updateWsStatus('sol','error'); };
+  solWs.onclose = () => {
+    solWsConnected = false;
+    updateWsStatus('sol','error');
+    updateLiveBar();
+    scheduleReconnect('sol');
+  };
+}
+
+function processSolanaLog(result) {
+  const value = result.value;
+  if (!value || !value.logs || value.err) return;
+  const sig = value.signature;
+  const logs = value.logs;
+
+  // Look for swap-like instructions
+  let isSwap = false;
+  let programHit = '';
+  for (const log of logs) {
+    if (log.includes('Instruction: Swap') || log.includes('Instruction: Route') ||
+        log.includes('Instruction: swap') || log.includes('ray_log')) {
+      isSwap = true;
+    }
+    if (log.includes(RAYDIUM_AMM)) programHit = 'Raydium';
+    if (log.includes(JUPITER_AGG)) programHit = 'Jupiter';
+  }
+  if (!isSwap && !programHit) return;
+
+  // Extract wallet from accountKeys if available (not always in log subscription)
+  // We'll fetch the tx details to get actual wallet
+  totalLiveTxCount++;
+  document.getElementById('liveTxCount').textContent = totalLiveTxCount;
+
+  // Fetch transaction details to get wallet and amounts
+  fetchSolSwapDetails(sig);
+}
+
+async function fetchSolSwapDetails(sig) {
+  try {
+    const tx = await solCall('getTransaction', [sig, {encoding:'jsonParsed', maxSupportedTransactionVersion:0}]);
+    if (!tx || !tx.meta || !tx.transaction) return;
+
+    const accountKeys = tx.transaction.message.accountKeys || [];
+    const wallet = accountKeys[0] ? (accountKeys[0].pubkey || accountKeys[0]) : null;
+    if (!wallet) return;
+
+    const pre = tx.meta.preBalances || [];
+    const post = tx.meta.postBalances || [];
+    const solDiff = pre.length > 0 ? lamportsToSol(Math.abs(post[0] - pre[0])) : 0;
+
+    // Check token balance changes
+    const preTokens = tx.meta.preTokenBalances || [];
+    const postTokens = tx.meta.postTokenBalances || [];
+    let tokenMint = '';
+    let tokenAmount = 0;
+    let action = solDiff > 0 && post[0] < pre[0] ? 'buy' : 'sell';
+
+    // Find the most significant token change
+    for (const pt of postTokens) {
+      const matching = preTokens.find(p => p.accountIndex === pt.accountIndex);
+      const postAmt = pt.uiTokenAmount ? parseFloat(pt.uiTokenAmount.uiAmountString || '0') : 0;
+      const preAmt = matching && matching.uiTokenAmount ? parseFloat(matching.uiTokenAmount.uiAmountString || '0') : 0;
+      const diff = Math.abs(postAmt - preAmt);
+      if (diff > tokenAmount) {
+        tokenAmount = diff;
+        tokenMint = pt.mint || '';
+        action = postAmt > preAmt ? 'buy' : 'sell';
+      }
+    }
+
+    if (solDiff < 0.001 && tokenAmount === 0) return; // dust
+
+    const trade = {
+      wallet,
+      chain: 'Solana',
+      action,
+      token: tokenMint ? getTokenName(tokenMint, 'Solana') : 'SOL',
+      tokenAddr: tokenMint || 'SOL',
+      amount: solDiff,
+      amountDisplay: solDiff > 0 ? solDiff.toFixed(4) + ' SOL' : tokenAmount.toFixed(2) + ' tokens',
+      time: Date.now(),
+      blockNum: tx.slot || 0,
+      txHash: sig,
+      isSnipe: false
+    };
+
+    // Detect snipe: if wallet bought a token and the pool is very new (check pre-token balance = 0)
+    const walletPreToken = preTokens.find(p => p.owner === wallet && p.mint === tokenMint);
+    if (action === 'buy' && (!walletPreToken || parseFloat(walletPreToken?.uiTokenAmount?.uiAmountString || '0') === 0) && solDiff > 0.1) {
+      trade.isSnipe = true;
+      sniperEntries.unshift({
+        wallet, chain:'Solana', token: trade.token, tokenAddr: tokenMint,
+        pairAddr:'', time: Date.now(), blockNum: trade.blockNum, txHash: sig
+      });
+      if (sniperEntries.length > 50) sniperEntries = sniperEntries.slice(0, 50);
+    }
+
+    smartMoneyTrades.unshift(trade);
+    if (smartMoneyTrades.length > 100) smartMoneyTrades = smartMoneyTrades.slice(0, 100);
+    smartMoneyLoaded = true;
+    renderSmartMoneyTables(currentSmartFilter);
+  } catch(e) {
+    // Silently fail on individual tx fetch
+  }
+}
+
+// --- WebSocket: BSC ---
+function connectBscWs() {
+  if (bscWs && bscWs.readyState <= 1) return;
+  updateWsStatus('bsc', 'connecting');
+  const url = BSC_WS_URLS[0];
+  try {
+    bscWs = new WebSocket(url);
+  } catch(e) { updateWsStatus('bsc','error'); scheduleReconnect('bsc'); return; }
+
+  bscWs.onopen = () => {
+    bscWsConnected = true;
+    updateWsStatus('bsc', 'connected');
+    updateLiveBar();
+    // Subscribe to PancakeSwap V2 Swap events
+    bscWs.send(JSON.stringify({
+      jsonrpc:'2.0', id:1, method:'eth_subscribe',
+      params:['logs', { topics: [SWAP_TOPIC] }]
+    }));
+    // Subscribe to PairCreated events
+    bscWs.send(JSON.stringify({
+      jsonrpc:'2.0', id:2, method:'eth_subscribe',
+      params:['logs', { address: PANCAKE_FACTORY_V2, topics: [PAIR_CREATED_TOPIC] }]
+    }));
+  };
+
+  bscWs.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.params && msg.params.result) {
+        processBscLog(msg.params.result);
+      }
+      if (msg.result && typeof msg.result === 'string' && msg.result.startsWith('0x')) {
+        if (!bscSubIdSwap) bscSubIdSwap = msg.result;
+        else bscSubIdPair = msg.result;
+      }
+    } catch(e) {}
+  };
+
+  bscWs.onerror = () => { updateWsStatus('bsc','error'); };
+  bscWs.onclose = () => {
+    bscWsConnected = false;
+    updateWsStatus('bsc','error');
+    updateLiveBar();
+    scheduleReconnect('bsc');
+  };
+}
+
+// --- WebSocket: ETH ---
+const UNISWAP_V2_FACTORY = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f';
+const UNISWAP_V3_FACTORY = '0x1F98431c8aD98523631AE4a59f267346ea31F984';
+const WETH_ADDR = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const ETH_SWAP_TOPIC = '0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822';
+const ETH_PAIR_CREATED_TOPIC = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9';
+
+const knownEthTokens = {
+  '0xdac17f958d2ee523a2206206994597c13d831ec7': 'USDT',
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'USDC',
+  '0x6b175474e89094c44da98b954eedeac495271d0f': 'DAI',
+  '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'WETH',
+  '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599': 'WBTC',
+  '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984': 'UNI',
+  '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': 'AAVE',
+  '0x514910771af9ca656af840dff83e8264ecf986ca': 'LINK',
+  '0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce': 'SHIB',
+  '0x6982508145454ce325ddbe47a25d4ec3d2311933': 'PEPE',
+};
+
+function connectEthWs() {
+  if (ethWs && ethWs.readyState <= 1) return;
+  updateWsStatus('eth', 'connecting');
+  const url = ETH_WS_URLS[0];
+  try {
+    ethWs = new WebSocket(url);
+  } catch(e) { updateWsStatus('eth','error'); scheduleReconnect('eth'); return; }
+
+  ethWs.onopen = () => {
+    ethWsConnected = true;
+    updateWsStatus('eth', 'connected');
+    updateLiveBar();
+    // Subscribe to Uniswap V2 Swap events
+    ethWs.send(JSON.stringify({
+      jsonrpc:'2.0', id:1, method:'eth_subscribe',
+      params:['logs', { topics: [ETH_SWAP_TOPIC] }]
+    }));
+    // Subscribe to PairCreated events (Uniswap V2)
+    ethWs.send(JSON.stringify({
+      jsonrpc:'2.0', id:2, method:'eth_subscribe',
+      params:['logs', { address: UNISWAP_V2_FACTORY, topics: [ETH_PAIR_CREATED_TOPIC] }]
+    }));
+  };
+
+  ethWs.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.params && msg.params.result) {
+        processEthLog(msg.params.result);
+      }
+      if (msg.result && typeof msg.result === 'string' && msg.result.startsWith('0x')) {
+        if (!ethSubIdSwap) ethSubIdSwap = msg.result;
+        else ethSubIdPair = msg.result;
+      }
+    } catch(e) {}
+  };
+
+  ethWs.onerror = () => { updateWsStatus('eth','error'); };
+  ethWs.onclose = () => {
+    ethWsConnected = false;
+    updateWsStatus('eth','error');
+    updateLiveBar();
+    scheduleReconnect('eth');
+  };
+}
+
+function processEthLog(log) {
+  if (!log || !log.topics || log.topics.length === 0) return;
+  const topic0 = log.topics[0];
+
+  if (topic0 === ETH_PAIR_CREATED_TOPIC) {
+    processEthNewPair(log);
+    return;
+  }
+
+  if (topic0 === ETH_SWAP_TOPIC && log.data && log.data.length >= 258) {
+    processEthSwap(log);
+  }
+}
+
+function processEthSwap(log) {
+  totalLiveTxCount++;
+  document.getElementById('liveTxCount').textContent = totalLiveTxCount;
+
+  try {
+    const data = log.data.slice(2);
+    const sender = log.topics[1] ? '0x' + log.topics[1].slice(26) : '';
+    const to = log.topics[2] ? '0x' + log.topics[2].slice(26) : '';
+    const amount0In = Number(BigInt('0x' + data.slice(0, 64))) / 1e18;
+    const amount1In = Number(BigInt('0x' + data.slice(64, 128))) / 1e18;
+    const amount0Out = Number(BigInt('0x' + data.slice(128, 192))) / 1e18;
+    const amount1Out = Number(BigInt('0x' + data.slice(192, 256))) / 1e18;
+
+    const maxAmt = Math.max(amount0In, amount1In, amount0Out, amount1Out);
+    if (maxAmt < 0.05) return; // Only show swaps > 0.05 ETH equivalent
+
+    const wallet = to || sender;
+    const pairAddr = (log.address || '').toLowerCase();
+    const action = amount1In > amount0In ? 'buy' : 'sell';
+    const amount = Math.max(amount1In, amount1Out, amount0In, amount0Out);
+    const txHash = log.transactionHash || '';
+
+    if (smartMoneyTrades.some(t => t.txHash === txHash && t.wallet === wallet)) return;
+
+    smartMoneyTrades.unshift({
+      wallet, chain:'ETH', action,
+      token: getEthTokenName(pairAddr),
+      tokenAddr: pairAddr,
+      amount,
+      amountDisplay: amount.toFixed(4) + ' ETH',
+      time: Date.now(),
+      blockNum: log.blockNumber ? hexToDecimal(log.blockNumber) : 0,
+      txHash,
+      isSnipe: recentEthNewPairs.has(pairAddr)
+    });
+
+    if (smartMoneyTrades.length > 100) smartMoneyTrades = smartMoneyTrades.slice(0, 100);
+    smartMoneyLoaded = true;
+    renderSmartMoneyTables(currentSmartFilter);
+  } catch(e) {}
+}
+
+const recentEthNewPairs = new Set();
+function processEthNewPair(log) {
+  try {
+    const data = log.data ? log.data.slice(2) : '';
+    const token0 = log.topics[1] ? '0x' + log.topics[1].slice(26) : '';
+    const token1 = log.topics[2] ? '0x' + log.topics[2].slice(26) : '';
+    const pairAddr = data.length >= 64 ? '0x' + data.slice(24, 64) : '';
+
+    if (pairAddr) {
+      recentEthNewPairs.add(pairAddr.toLowerCase());
+      if (recentEthNewPairs.size > 100) {
+        const first = recentEthNewPairs.values().next().value;
+        recentEthNewPairs.delete(first);
+      }
+
+      const nonWeth = token0.toLowerCase() === WETH_ADDR ? token1 : token0;
+      const tokenName = getEthTokenName(nonWeth);
+
+      sniperEntries.unshift({
+        wallet: 'New Pair',
+        chain: 'ETH',
+        token: tokenName + ' (NEW)',
+        tokenAddr: nonWeth,
+        pairAddr,
+        time: Date.now(),
+        blockNum: log.blockNumber ? hexToDecimal(log.blockNumber) : 0,
+        txHash: log.transactionHash || ''
+      });
+      if (sniperEntries.length > 50) sniperEntries = sniperEntries.slice(0, 50);
+
+      totalLiveTxCount++;
+      document.getElementById('liveTxCount').textContent = totalLiveTxCount;
+      smartMoneyLoaded = true;
+      renderSmartMoneyTables(currentSmartFilter);
+    }
+  } catch(e) {}
+}
+
+function getEthTokenName(addr) {
+  if (!addr) return 'Unknown';
+  const lower = addr.toLowerCase ? addr.toLowerCase() : addr;
+  if (knownEthTokens[lower]) return knownEthTokens[lower];
+  if (tokenNameCache[lower]) return tokenNameCache[lower];
+  return shortAddr(addr);
+}
+
+function processBscLog(log) {
+  if (!log || !log.topics || log.topics.length === 0) return;
+  const topic0 = log.topics[0];
+
+  if (topic0 === PAIR_CREATED_TOPIC) {
+    // New pair created on PancakeSwap
+    processBscNewPair(log);
+    return;
+  }
+
+  if (topic0 === SWAP_TOPIC && log.data && log.data.length >= 258) {
+    processBscSwap(log);
+  }
+}
+
+function processBscSwap(log) {
+  totalLiveTxCount++;
+  document.getElementById('liveTxCount').textContent = totalLiveTxCount;
+
+  try {
+    const data = log.data.slice(2); // remove 0x
+    // Swap(sender, amount0In, amount1In, amount0Out, amount1Out, to)
+    const sender = log.topics[1] ? '0x' + log.topics[1].slice(26) : '';
+    const to = log.topics[2] ? '0x' + log.topics[2].slice(26) : '';
+    const amount0In = BigInt('0x' + data.slice(0, 64));
+    const amount1In = BigInt('0x' + data.slice(64, 128));
+    const amount0Out = BigInt('0x' + data.slice(128, 192));
+    const amount1Out = BigInt('0x' + data.slice(192, 256));
+
+    const pairAddr = log.address ? log.address.toLowerCase() : '';
+
+    // Determine action and amounts
+    let action, amount, tokenName;
+    const amt0InNum = Number(amount0In) / 1e18;
+    const amt1InNum = Number(amount1In) / 1e18;
+    const amt0OutNum = Number(amount0Out) / 1e18;
+    const amt1OutNum = Number(amount1Out) / 1e18;
+
+    // If amount1In > 0 and amount0Out > 0, it's a buy (BNB in, token out)
+    // If amount0In > 0 and amount1Out > 0, it's a sell (token in, BNB out)
+    if (amt1InNum > 0.01) {
+      action = 'buy';
+      amount = amt1InNum;
+      tokenName = getTokenName(pairAddr, 'BSC');
+    } else if (amt0InNum > 0.01) {
+      action = 'sell';
+      amount = amt1OutNum > 0 ? amt1OutNum : amt0InNum;
+      tokenName = getTokenName(pairAddr, 'BSC');
+    } else {
+      return; // dust trade
+    }
+
+    const wallet = to || sender;
+    if (!wallet) return;
+
+    // Check if this is a snipe (very large buy on a pair we recently saw created)
+    const isSnipe = action === 'buy' && amount > 0.5 && recentNewPairs.has(pairAddr);
+
+    const trade = {
+      wallet,
+      chain: 'BSC',
+      action,
+      token: tokenName,
+      tokenAddr: pairAddr,
+      amount,
+      amountDisplay: amount.toFixed(4) + ' BNB',
+      time: Date.now(),
+      blockNum: log.blockNumber ? hexToDecimal(log.blockNumber) : 0,
+      txHash: log.transactionHash || '',
+      isSnipe
+    };
+
+    smartMoneyTrades.unshift(trade);
+    if (smartMoneyTrades.length > 100) smartMoneyTrades = smartMoneyTrades.slice(0, 100);
+
+    if (isSnipe) {
+      sniperEntries.unshift({
+        wallet, chain:'BSC', token: tokenName, tokenAddr: pairAddr,
+        pairAddr, time: Date.now(), blockNum: trade.blockNum, txHash: trade.txHash
+      });
+      if (sniperEntries.length > 50) sniperEntries = sniperEntries.slice(0, 50);
+    }
+
+    smartMoneyLoaded = true;
+    renderSmartMoneyTables(currentSmartFilter);
+  } catch(e) {}
+}
+
+const recentNewPairs = new Set();
+function processBscNewPair(log) {
+  try {
+    const data = log.data ? log.data.slice(2) : '';
+    const token0 = log.topics[1] ? '0x' + log.topics[1].slice(26) : '';
+    const token1 = log.topics[2] ? '0x' + log.topics[2].slice(26) : '';
+    const pairAddr = data.length >= 64 ? '0x' + data.slice(24, 64) : '';
+
+    if (pairAddr) {
+      recentNewPairs.add(pairAddr.toLowerCase());
+      // Keep only last 100 pairs
+      if (recentNewPairs.size > 100) {
+        const first = recentNewPairs.values().next().value;
+        recentNewPairs.delete(first);
+      }
+
+      const nonWbnb = token0.toLowerCase() === WBNB_ADDR.toLowerCase() ? token1 : token0;
+      const tokenName = getTokenName(nonWbnb, 'BSC');
+
+      // Add as sniper opportunity
+      sniperEntries.unshift({
+        wallet: 'New Pair',
+        chain: 'BSC',
+        token: tokenName + ' (NEW)',
+        tokenAddr: nonWbnb,
+        pairAddr,
+        time: Date.now(),
+        blockNum: log.blockNumber ? hexToDecimal(log.blockNumber) : 0,
+        txHash: log.transactionHash || ''
+      });
+      if (sniperEntries.length > 50) sniperEntries = sniperEntries.slice(0, 50);
+
+      totalLiveTxCount++;
+      document.getElementById('liveTxCount').textContent = totalLiveTxCount;
+      smartMoneyLoaded = true;
+      renderSmartMoneyTables(currentSmartFilter);
+    }
+  } catch(e) {}
+}
+
+// --- UI Status Updates ---
+function updateWsStatus(chain, status) {
+  const idMap = { sol: 'Sol', bsc: 'Bsc', eth: 'Eth' };
+  const el = document.getElementById('wsStatus' + (idMap[chain] || 'Sol'));
+  if (!el) return;
+  el.className = 'ws-status ' + status;
+  const labels = { connected: 'live', connecting: '...', error: 'off' };
+  el.textContent = labels[status] || status;
+}
+
+function updateLiveBar() {
+  const dot = document.getElementById('liveDot');
+  const text = document.getElementById('liveStatusText');
+  if (!dot || !text) return;
+  if (solWsConnected || bscWsConnected || ethWsConnected) {
+    dot.classList.remove('disconnected');
+    text.textContent = t('smLive');
+  } else {
+    dot.classList.add('disconnected');
+    text.textContent = t('smReconnecting');
+  }
+}
+
+function scheduleReconnect(chain) {
+  if (wsReconnectTimers[chain]) clearTimeout(wsReconnectTimers[chain]);
+  wsReconnectTimers[chain] = setTimeout(() => {
+    if (chain === 'sol') connectSolanaWs();
+    else if (chain === 'eth') connectEthWs();
+    else connectBscWs();
+  }, 5000);
+}
+
+// --- Render Tables ---
+function renderSmartMoneyTables(chainFilter) {
+  let trades = [...smartMoneyTrades];
+  let snipers = [...sniperEntries];
+
+  if (chainFilter === 'bsc') {
+    trades = trades.filter(t => t.chain === 'BSC');
+    snipers = snipers.filter(s => s.chain === 'BSC');
+  } else if (chainFilter === 'eth') {
+    trades = trades.filter(t => t.chain === 'ETH');
+    snipers = snipers.filter(s => s.chain === 'ETH');
+  } else if (chainFilter === 'sol') {
+    trades = trades.filter(t => t.chain === 'Solana');
+    snipers = snipers.filter(s => s.chain === 'Solana');
+  }
+
+  // --- Smart Money Table ---
+  const smartTable = document.getElementById('smartTable');
+  if (trades.length === 0) {
+    smartTable.innerHTML = '<tbody><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted)">' +
+      (smartMoneyLoaded ? 'No trades for this filter' : '<span class="loading-spinner"></span> ' + t('smNoData')) +
+      '</td></tr></tbody>';
+  } else {
+    // Aggregate by wallet: show top wallets by trade count and volume
+    const walletAgg = {};
+    for (const tr of trades) {
+      if (!walletAgg[tr.wallet]) {
+        walletAgg[tr.wallet] = { wallet: tr.wallet, chain: tr.chain, trades: 0, volume: 0, buys: 0, sells: 0, lastAction: tr.action, lastToken: tr.token, lastTokenAddr: tr.tokenAddr, lastTime: tr.time, lastAmount: tr.amountDisplay, snipes: 0 };
+      }
+      walletAgg[tr.wallet].trades++;
+      walletAgg[tr.wallet].volume += tr.amount;
+      if (tr.action === 'buy') walletAgg[tr.wallet].buys++;
+      else walletAgg[tr.wallet].sells++;
+      if (tr.isSnipe) walletAgg[tr.wallet].snipes++;
+      if (tr.time > walletAgg[tr.wallet].lastTime) {
+        walletAgg[tr.wallet].lastTime = tr.time;
+        walletAgg[tr.wallet].lastAction = tr.action;
+        walletAgg[tr.wallet].lastToken = tr.token;
+        walletAgg[tr.wallet].lastTokenAddr = tr.tokenAddr;
+        walletAgg[tr.wallet].lastAmount = tr.amountDisplay;
+      }
+    }
+    const sorted = Object.values(walletAgg).sort((a,b) => b.volume - a.volume).slice(0, 20);
+
+    smartTable.innerHTML = '<thead><tr>' +
+      '<th>' + t('thRank') + '</th>' +
+      '<th>' + t('smWallet') + '</th>' +
+      '<th>' + t('smChain') + '</th>' +
+      '<th>' + t('smAction') + '</th>' +
+      '<th>' + t('smToken') + '</th>' +
+      '<th>' + t('smAmount') + '</th>' +
+      '<th>' + t('smTime') + '</th>' +
+    '</tr></thead><tbody>' +
+    sorted.map((d, i) => {
+      const chainCls = d.chain === 'BSC' ? 'bsc' : d.chain === 'ETH' ? 'eth' : 'sol';
+      const actionCls = d.lastAction === 'buy' ? 'buy' : 'sell';
+      const actionLabel = d.lastAction === 'buy' ? t('smBuy') : t('smSell');
+      const timeStr = timeSince(Math.floor(d.lastTime / 1000));
+      const isNew = (Date.now() - d.lastTime) < 30000;
+      const walletEsc = d.wallet.replace(/'/g,"\\'");
+      const tokenAddrEsc = (d.lastTokenAddr || '').replace(/'/g,"\\'");
+      return '<tr class="' + (isNew ? 'sm-new-row' : '') + '">' +
+        '<td><span class="lb-rank">' + (i+1) + '</span></td>' +
+        '<td><div class="lb-addr-cell"><div><span class="lb-addr">' + shortAddr(d.wallet) + '</span><button class="copy-btn" onclick="copyToClipboard(\'' + walletEsc + '\',this)" title="Copy wallet">⧉</button><div style="font-size:10px;color:var(--text-muted)">' + d.trades + ' trades | ' + d.buys + 'B/' + d.sells + 'S</div></div></div></td>' +
+        '<td><span class="chain-badge-sm ' + chainCls + '">' + d.chain + '</span></td>' +
+        '<td><span class="sm-action-tag ' + actionCls + '">' + actionLabel + '</span></td>' +
+        '<td style="font-size:12px">' + d.lastToken + (tokenAddrEsc ? '<button class="copy-btn" onclick="copyToClipboard(\'' + tokenAddrEsc + '\',this)" title="Copy token address">⧉</button>' : '') + '</td>' +
+        '<td class="sm-value" style="color:var(--accent-green)">' + d.volume.toFixed(4) + '</td>' +
+        '<td class="sm-time">' + timeStr + '</td>' +
+      '</tr>';
+    }).join('') + '</tbody>';
+  }
+
+  // --- Sniper Board ---
+  const sniperTable = document.getElementById('sniperTable');
+  if (snipers.length === 0) {
+    sniperTable.innerHTML = '<tbody><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-muted)">' +
+      (smartMoneyLoaded ? 'No snipers detected yet' : '<span class="loading-spinner"></span> ' + t('smNoData')) +
+      '</td></tr></tbody>';
+  } else {
+    sniperTable.innerHTML = '<thead><tr>' +
+      '<th>' + t('thRank') + '</th>' +
+      '<th>' + t('smWallet') + '</th>' +
+      '<th>' + t('smChain') + '</th>' +
+      '<th>' + t('smToken') + '</th>' +
+      '<th>' + t('smEntryTime') + '</th>' +
+      '<th>' + t('smBlock') + '</th>' +
+      '<th>Tx</th>' +
+    '</tr></thead><tbody>' +
+    snipers.map((s, i) => {
+      const chainCls = s.chain === 'BSC' ? 'bsc' : s.chain === 'ETH' ? 'eth' : 'sol';
+      const timeStr = timeSince(Math.floor(s.time / 1000));
+      const isNew = (Date.now() - s.time) < 30000;
+      const isNewPair = s.wallet === 'New Pair';
+      const explorerBase = s.chain === 'BSC' ? 'https://bscscan.com/tx/' : s.chain === 'ETH' ? 'https://etherscan.io/tx/' : 'https://solscan.io/tx/';
+      const walletEsc = s.wallet.replace(/'/g,"\\'");
+      const tokenAddrEsc = (s.tokenAddr || '').replace(/'/g,"\\'");
+      return '<tr class="' + (isNew ? 'sm-new-row' : '') + '">' +
+        '<td><span class="lb-rank">' + (i+1) + '</span></td>' +
+        '<td><div class="lb-addr-cell"><div><span class="lb-addr">' + (isNewPair ? 'New Pair Created' : shortAddr(s.wallet)) + '</span>' + (isNewPair ? '' : '<button class="copy-btn" onclick="copyToClipboard(\'' + walletEsc + '\',this)" title="Copy wallet">⧉</button>') + (isNewPair ? '' : '<div class="lb-title">' + t('smSnipeTag') + '</div>') + '</div></div></td>' +
+        '<td><span class="chain-badge-sm ' + chainCls + '">' + s.chain + '</span></td>' +
+        '<td><span class="sm-action-tag snipe">' + s.token + '</span>' + (tokenAddrEsc ? '<button class="copy-btn" onclick="copyToClipboard(\'' + tokenAddrEsc + '\',this)" title="Copy token address">⧉</button>' : '') + '</td>' +
+        '<td class="sm-time">' + timeStr + '</td>' +
+        '<td style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted)">' + (s.blockNum ? s.blockNum.toLocaleString() : '-') + '</td>' +
+        '<td>' + (s.txHash ? '<a href="' + explorerBase + s.txHash + '" target="_blank" style="font-size:11px;color:var(--gold)">View</a>' : '-') + '</td>' +
+      '</tr>';
+    }).join('') + '</tbody>';
+  }
+}
+
+function filterChain(el, chain){
+  document.querySelectorAll('.lb-filter').forEach(f=>f.classList.remove('active'));
+  el.classList.add('active');
+  currentSmartFilter = chain;
+  renderSmartMoneyTables(chain);
+}
+
+// --- Manual Refresh: Also poll recent blocks for large swaps ---
+async function manualRefreshSmartMoney() {
+  const btn = document.getElementById('smRefreshBtn');
+  if (btn) { btn.classList.add('spinning'); }
+
+  try {
+    // Poll BSC recent blocks for PancakeSwap swaps
+    await pollBscRecentSwaps();
+    // Poll ETH recent blocks for Uniswap swaps
+    await pollEthRecentSwaps();
+    // Poll Solana recent Raydium transactions
+    await pollSolRecentSwaps();
+  } catch(e) {
+    console.warn('Manual refresh error:', e);
+  }
+
+  if (btn) { setTimeout(() => btn.classList.remove('spinning'), 500); }
+}
+
+async function pollBscRecentSwaps() {
+  try {
+    const allRpcs = [...BSC_RPCS, ...BSC_RPC_EXTRA];
+    const blockHex = await rpcCall(allRpcs, 'eth_blockNumber', []);
+    const blockNum = hexToDecimal(blockHex);
+
+    // Get logs for last 5 blocks — Swap events on any PancakeSwap pair
+    const fromBlock = '0x' + (blockNum - 5).toString(16);
+    const toBlock = '0x' + blockNum.toString(16);
+
+    const logs = await rpcCall(allRpcs, 'eth_getLogs', [{
+      fromBlock, toBlock,
+      topics: [SWAP_TOPIC]
+    }]);
+
+    if (!logs || !Array.isArray(logs)) return;
+
+    // Process only large swaps (filter by data size indicating significant amounts)
+    let addedCount = 0;
+    for (const log of logs) {
+      if (addedCount >= 15) break;
+      if (!log.data || log.data.length < 258) continue;
+
+      const data = log.data.slice(2);
+      const sender = log.topics[1] ? '0x' + log.topics[1].slice(26) : '';
+      const to = log.topics[2] ? '0x' + log.topics[2].slice(26) : '';
+      const amount0In = Number(BigInt('0x' + data.slice(0, 64))) / 1e18;
+      const amount1In = Number(BigInt('0x' + data.slice(64, 128))) / 1e18;
+      const amount0Out = Number(BigInt('0x' + data.slice(128, 192))) / 1e18;
+      const amount1Out = Number(BigInt('0x' + data.slice(192, 256))) / 1e18;
+
+      // Only show swaps > 0.1 BNB equivalent
+      const maxAmt = Math.max(amount0In, amount1In, amount0Out, amount1Out);
+      if (maxAmt < 0.1) continue;
+
+      const wallet = to || sender;
+      const pairAddr = (log.address || '').toLowerCase();
+      const action = amount1In > amount0In ? 'buy' : 'sell';
+      const amount = Math.max(amount1In, amount1Out, amount0In, amount0Out);
+
+      // Avoid duplicates
+      const txHash = log.transactionHash || '';
+      if (smartMoneyTrades.some(t => t.txHash === txHash && t.wallet === wallet)) continue;
+
+      smartMoneyTrades.unshift({
+        wallet, chain:'BSC', action,
+        token: getTokenName(pairAddr, 'BSC'),
+        tokenAddr: pairAddr,
+        amount,
+        amountDisplay: amount.toFixed(4) + ' BNB',
+        time: Date.now() - Math.random() * 30000, // approximate
+        blockNum: log.blockNumber ? hexToDecimal(log.blockNumber) : blockNum,
+        txHash,
+        isSnipe: recentNewPairs.has(pairAddr)
+      });
+      addedCount++;
+    }
+
+    if (smartMoneyTrades.length > 100) smartMoneyTrades = smartMoneyTrades.slice(0, 100);
+
+    // Also check for new pairs
+    const pairLogs = await rpcCall(allRpcs, 'eth_getLogs', [{
+      fromBlock: '0x' + (blockNum - 20).toString(16),
+      toBlock: toBlock,
+      address: PANCAKE_FACTORY_V2,
+      topics: [PAIR_CREATED_TOPIC]
+    }]);
+
+    if (pairLogs && Array.isArray(pairLogs)) {
+      for (const pl of pairLogs.slice(-5)) {
+        processBscNewPair(pl);
+      }
+    }
+
+    smartMoneyLoaded = true;
+    renderSmartMoneyTables(currentSmartFilter);
+  } catch(e) {
+    console.warn('BSC poll error:', e);
+  }
+}
+
+async function pollEthRecentSwaps() {
+  try {
+    const allRpcs = [...ETH_RPCS, ...ETH_RPC_EXTRA];
+    const blockHex = await rpcCall(allRpcs, 'eth_blockNumber', []);
+    const blockNum = hexToDecimal(blockHex);
+
+    const fromBlock = '0x' + (blockNum - 3).toString(16);
+    const toBlock = '0x' + blockNum.toString(16);
+
+    const logs = await rpcCall(allRpcs, 'eth_getLogs', [{
+      fromBlock, toBlock,
+      topics: [ETH_SWAP_TOPIC]
+    }]);
+
+    if (!logs || !Array.isArray(logs)) return;
+
+    let addedCount = 0;
+    for (const log of logs) {
+      if (addedCount >= 15) break;
+      if (!log.data || log.data.length < 258) continue;
+
+      const data = log.data.slice(2);
+      const sender = log.topics[1] ? '0x' + log.topics[1].slice(26) : '';
+      const to = log.topics[2] ? '0x' + log.topics[2].slice(26) : '';
+      const amount0In = Number(BigInt('0x' + data.slice(0, 64))) / 1e18;
+      const amount1In = Number(BigInt('0x' + data.slice(64, 128))) / 1e18;
+      const amount0Out = Number(BigInt('0x' + data.slice(128, 192))) / 1e18;
+      const amount1Out = Number(BigInt('0x' + data.slice(192, 256))) / 1e18;
+
+      const maxAmt = Math.max(amount0In, amount1In, amount0Out, amount1Out);
+      if (maxAmt < 0.05) continue;
+
+      const wallet = to || sender;
+      const pairAddr = (log.address || '').toLowerCase();
+      const action = amount1In > amount0In ? 'buy' : 'sell';
+      const amount = Math.max(amount1In, amount1Out, amount0In, amount0Out);
+
+      const txHash = log.transactionHash || '';
+      if (smartMoneyTrades.some(t => t.txHash === txHash && t.wallet === wallet)) continue;
+
+      smartMoneyTrades.unshift({
+        wallet, chain:'ETH', action,
+        token: getEthTokenName(pairAddr),
+        tokenAddr: pairAddr,
+        amount,
+        amountDisplay: amount.toFixed(4) + ' ETH',
+        time: Date.now() - Math.random() * 30000,
+        blockNum: log.blockNumber ? hexToDecimal(log.blockNumber) : blockNum,
+        txHash,
+        isSnipe: recentEthNewPairs.has(pairAddr)
+      });
+      addedCount++;
+    }
+
+    if (smartMoneyTrades.length > 100) smartMoneyTrades = smartMoneyTrades.slice(0, 100);
+
+    // Check for new Uniswap V2 pairs
+    const pairLogs = await rpcCall(allRpcs, 'eth_getLogs', [{
+      fromBlock: '0x' + (blockNum - 10).toString(16),
+      toBlock: toBlock,
+      address: UNISWAP_V2_FACTORY,
+      topics: [ETH_PAIR_CREATED_TOPIC]
+    }]);
+
+    if (pairLogs && Array.isArray(pairLogs)) {
+      for (const pl of pairLogs.slice(-5)) {
+        processEthNewPair(pl);
+      }
+    }
+
+    smartMoneyLoaded = true;
+    renderSmartMoneyTables(currentSmartFilter);
+  } catch(e) {
+    console.warn('ETH poll error:', e);
+  }
+}
+
+async function pollSolRecentSwaps() {
+  try {
+    // Get recent signatures for Raydium AMM
+    const sigs = await solCall('getSignaturesForAddress', [RAYDIUM_AMM, {limit: 10}]);
+    if (!sigs || !Array.isArray(sigs)) return;
+
+    for (const sig of sigs.slice(0, 5)) {
+      // Avoid duplicates
+      if (smartMoneyTrades.some(t => t.txHash === sig.signature)) continue;
+      if (sniperEntries.some(s => s.txHash === sig.signature)) continue;
+      await fetchSolSwapDetails(sig.signature);
+    }
+  } catch(e) {
+    console.warn('Solana poll error:', e);
+  }
+}
+
+// --- Initialize Smart Money System ---
+function initSmartMoney() {
+  // Show loading state
+  renderSmartMoneyTables('all');
+
+  // Connect WebSockets
+  connectSolanaWs();
+  connectEthWs();
+  connectBscWs();
+
+  // Do initial poll
+  setTimeout(() => manualRefreshSmartMoney(), 1000);
+
+  // Auto-refresh every 30 seconds
+  setInterval(() => {
+    if (document.getElementById('sec-smartmoney').classList.contains('active')) {
+      manualRefreshSmartMoney();
+    }
+  }, 30000);
+}
+
+// =============================================
+// SECTION 11: COMMUNITY
+// =============================================
+// Keep buildDashboard as no-op for backward compatibility
+function buildDashboard() {}
+
+function buildCommunity(){
+  // Rankings will be populated from smart money data once loaded
+  const commRankings = document.getElementById('commRankings');
+
+  const buildRankingFromData = () => {
+    if (smartMoneyTrades.length === 0) {
+      commRankings.innerHTML =
+        '<div class="glass-card ranking-card"><h3>👑 '+t('rankLegend')+'</h3><div class="loading-overlay"><span class="loading-spinner"></span> '+t('loading')+'</div></div>' +
+        '<div class="glass-card ranking-card"><h3>⚡ '+t('rankActive')+'</h3><div class="loading-overlay"><span class="loading-spinner"></span> '+t('loading')+'</div></div>';
+      return;
+    }
+
+    // Aggregate trades by wallet for ranking
+    const walletAgg = {};
+    for (const tr of smartMoneyTrades) {
+      if (!walletAgg[tr.wallet]) {
+        walletAgg[tr.wallet] = { addr: tr.wallet, chain: tr.chain, volume: 0, trades: 0, nativeSymbol: tr.chain === 'BSC' ? 'BNB' : 'SOL' };
+      }
+      walletAgg[tr.wallet].volume += tr.amount;
+      walletAgg[tr.wallet].trades++;
+    }
+    const allWallets = Object.values(walletAgg);
+    const byVolume = [...allWallets].sort((a,b) => b.volume - a.volume).slice(0, 5);
+    const byActivity = [...allWallets].sort((a,b) => b.trades - a.trades).slice(0, 5);
+
+    const makeRanking = (data, titleKey, emoji) =>
+      '<div class="glass-card ranking-card">' +
+        '<h3>'+emoji+' <span data-i18n="'+titleKey+'">'+t(titleKey)+'</span></h3>' +
+        data.map((d, i) => {
+          return '<div class="ranking-item">' +
+            '<div class="ranking-left"><span class="ranking-num">'+(i+1)+'</span><div class="ranking-info"><div class="r-addr">'+shortAddr(d.addr)+'</div><div class="r-title">'+d.chain+'</div></div></div>' +
+            '<div class="ranking-score" style="color:var(--accent-green)">'+d.volume.toFixed(4)+' '+d.nativeSymbol+'</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+
+    const makeActivityRanking = (data, titleKey, emoji) =>
+      '<div class="glass-card ranking-card">' +
+        '<h3>'+emoji+' <span data-i18n="'+titleKey+'">'+t(titleKey)+'</span></h3>' +
+        data.map((d, i) => {
+          return '<div class="ranking-item">' +
+            '<div class="ranking-left"><span class="ranking-num">'+(i+1)+'</span><div class="ranking-info"><div class="r-addr">'+shortAddr(d.addr)+'</div><div class="r-title">'+d.chain+'</div></div></div>' +
+            '<div class="ranking-score" style="color:var(--accent-green)">'+d.trades+' trades</div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+
+    commRankings.innerHTML = makeRanking(byVolume, 'rankLegend', '👑') + makeActivityRanking(byActivity, 'rankActive', '⚡');
+  };
+
+  buildRankingFromData();
+
+  // If smart money data loads later, update
+  if (!smartMoneyLoaded) {
+    const checkInterval = setInterval(() => {
+      if (smartMoneyLoaded) {
+        buildRankingFromData();
+        clearInterval(checkInterval);
+      }
+    }, 2000);
+  }
+
+  // Voting section
+  const votes = [
+    {title:'Diamond Hands OG',count:1247},
+    {title:'Liquidity Vampire',count:983},
+    {title:'Gas War Survivor',count:876},
+    {title:'Memecoin Archaeologist',count:654},
+  ];
+  document.getElementById('voteItems').innerHTML = votes.map(v =>
+    '<div class="vote-item">' +
+      '<div class="vote-title">'+v.title+'</div>' +
+      '<div class="vote-count"><span>'+v.count+'</span><button class="vote-btn" onclick="const c=this.previousElementSibling;c.textContent=parseInt(c.textContent)+1">▲</button></div>' +
+    '</div>'
+  ).join('');
+}
+
+// =============================================
+// SECTION 12: MONITOR FLOATING PANEL
+// =============================================
+let monitorOpen = false;
+let monitorMinimized = false;
+let monitorEvents = [];
+let monitorEventCount = 0;
+let monSolWs = null, monBscWs = null;
+let monSolConnected = false, monBscConnected = false;
+let monSolSubIds = [], monBscSubId = null;
+let monitorWalletBalances = {}; // addr -> {chain, balance, nativeSymbol}
+let monReconnectTimers = {};
+let monDragState = null;
+
+const MON_SOL_WS = 'wss://solana-mainnet.core.chainstack.com/11eaa5aabf8c53ed3340a8c8bd23ff94';
+const MON_SOL_HTTP = ['https://solana-mainnet.core.chainstack.com/11eaa5aabf8c53ed3340a8c8bd23ff94','https://solana-rpc.publicnode.com','https://api.mainnet-beta.solana.com'];
+const MON_BSC_WS = 'wss://bsc-rpc.publicnode.com';
+const MON_BSC_HTTP = ['https://shared.us-east-1.getblock.io/720caefdd6e142ba97d4442f4125daeb','https://bsc-rpc.publicnode.com','https://bsc-dataseed.binance.org','https://bsc-dataseed.bnbchain.org'];
+const MON_ETH_WS = 'wss://ethereum-rpc.publicnode.com';
+const MON_ETH_HTTP = ['https://go.getblock.asia/43b2d38556ce46929c25fa2cc9f23bfb','https://ethereum-rpc.publicnode.com','https://cloudflare-eth.com'];
+
+function toggleMonitorPanel(toggleEl) {
+  const panel = document.getElementById('monitorPanel');
+  if (monitorOpen) {
+    closeMonitorPanel();
+    toggleEl.classList.remove('on');
+  } else {
+    openMonitorPanel();
+    toggleEl.classList.add('on');
+  }
+}
+
+function openMonitorPanel() {
+  monitorOpen = true;
+  const panel = document.getElementById('monitorPanel');
+  panel.classList.add('show');
+  panel.classList.remove('minimized');
+  monitorMinimized = false;
+  renderMonitorWallets();
+  startMonitorWs();
+  initMonitorDrag();
+}
+
+function closeMonitorPanel() {
+  monitorOpen = false;
+  document.getElementById('monitorPanel').classList.remove('show');
+  const tog = document.getElementById('tgToggle');
+  if (tog) tog.classList.remove('on');
+  stopMonitorWs();
+}
+
+function toggleMonitorMinimize() {
+  monitorMinimized = !monitorMinimized;
+  const panel = document.getElementById('monitorPanel');
+  const btn = document.getElementById('monitorMinBtn');
+  if (monitorMinimized) {
+    panel.classList.add('minimized');
+    btn.textContent = '□';
+  } else {
+    panel.classList.remove('minimized');
+    btn.textContent = '─';
+  }
+}
+
+// --- Drag support ---
+function initMonitorDrag() {
+  const handle = document.getElementById('monitorDragHandle');
+  const panel = document.getElementById('monitorPanel');
+  handle.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.monitor-ctrl-btn')) return;
+    monDragState = { startX: e.clientX, startY: e.clientY, startRight: parseInt(getComputedStyle(panel).right), startBottom: parseInt(getComputedStyle(panel).bottom) };
+    document.addEventListener('mousemove', onMonDrag);
+    document.addEventListener('mouseup', onMonDragEnd);
+    e.preventDefault();
+  });
+}
+function onMonDrag(e) {
+  if (!monDragState) return;
+  const panel = document.getElementById('monitorPanel');
+  const dx = monDragState.startX - e.clientX;
+  const dy = monDragState.startY - e.clientY;
+  panel.style.right = Math.max(0, monDragState.startRight + dx) + 'px';
+  panel.style.bottom = Math.max(0, monDragState.startBottom + dy) + 'px';
+}
+function onMonDragEnd() { monDragState = null; document.removeEventListener('mousemove', onMonDrag); document.removeEventListener('mouseup', onMonDragEnd); }
+
+// --- Render wallet list in panel ---
+function renderMonitorWallets() {
+  const container = document.getElementById('monitorWallets');
+  const emptyEl = document.getElementById('monitorEmpty');
+  const titleEl = document.getElementById('monitorTitle');
+  titleEl.textContent = currentLang === 'zh' ? '监控悬浮窗' : 'Monitor';
+
+  if (watchlist.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:12px">' +
+      (currentLang === 'zh' ? '请在追踪器中添加钱包以开始监控' : 'Add wallets in Tracker to start monitoring') + '</div>';
+    return;
+  }
+
+  container.innerHTML = watchlist.map(w => {
+    const bal = monitorWalletBalances[w.addr];
+    const chainCls = w.chain === 'BSC' ? 'bsc' : 'sol';
+    const symbol = w.chain === 'BSC' ? 'BNB' : 'SOL';
+    const balStr = bal ? bal.balance.toFixed(4) + ' ' + symbol : '...';
+    const balCls = bal ? '' : ' loading';
+    return '<div class="monitor-wallet-item" id="mon-w-' + w.addr.slice(0,8) + '">' +
+      '<div class="mon-w-left"><span class="mon-w-chain ' + chainCls + '">' + w.chain + '</span><span class="mon-w-addr">' + shortAddr(w.addr) + '</span></div>' +
+      '<span class="mon-w-bal' + balCls + '">' + balStr + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+// --- Add event to monitor feed ---
+function addMonitorEvent(type, title, detail, time) {
+  monitorEventCount++;
+  document.getElementById('monEventCount').textContent = 'Events: ' + monitorEventCount;
+
+  const icons = { buy: '↓', sell: '↑', balance: '◎', transfer: '↔' };
+  const evt = { type, title, detail, time: time || Date.now() };
+  monitorEvents.unshift(evt);
+  if (monitorEvents.length > 80) monitorEvents = monitorEvents.slice(0, 80);
+
+  const feed = document.getElementById('monitorFeed');
+  const timeStr = new Date(evt.time).toLocaleTimeString();
+  const newEl = document.createElement('div');
+  newEl.className = 'mon-event new ' + type;
+  newEl.innerHTML =
+    '<div class="mon-event-icon ' + type + '">' + (icons[type] || '•') + '</div>' +
+    '<div class="mon-event-body"><div class="mon-event-title">' + title + '</div><div class="mon-event-detail">' + detail + '</div></div>' +
+    '<div class="mon-event-time">' + timeStr + '</div>';
+  feed.prepend(newEl);
+
+  // Keep max 50 DOM elements
+  while (feed.children.length > 50) feed.removeChild(feed.lastChild);
+}
+
+// --- Update balance display ---
+function updateMonitorBalance(addr, newBalance) {
+  const w = watchlist.find(w => w.addr === addr);
+  if (!w) return;
+  const symbol = w.chain === 'BSC' ? 'BNB' : 'SOL';
+  const prev = monitorWalletBalances[addr];
+  const changed = prev && Math.abs(prev.balance - newBalance) > 0.0001;
+
+  monitorWalletBalances[addr] = { chain: w.chain, balance: newBalance, nativeSymbol: symbol };
+
+  // Update DOM
+  const el = document.getElementById('mon-w-' + addr.slice(0,8));
+  if (el) {
+    const balEl = el.querySelector('.mon-w-bal');
+    if (balEl) {
+      balEl.textContent = newBalance.toFixed(4) + ' ' + symbol;
+      balEl.classList.remove('loading');
+    }
+    if (changed) {
+      el.classList.add('changed');
+      setTimeout(() => el.classList.remove('changed'), 1500);
+      const diff = newBalance - prev.balance;
+      const sign = diff > 0 ? '+' : '';
+      addMonitorEvent('balance',
+        (currentLang === 'zh' ? '余额变化: ' : 'Balance: ') + shortAddr(addr),
+        sign + diff.toFixed(4) + ' ' + symbol + ' → ' + newBalance.toFixed(4) + ' ' + symbol
+      );
+    }
+  }
+}
+
+// --- Fetch balance via HTTP RPC ---
+async function monFetchBscBalance(addr) {
+  try {
+    const result = await rpcCall(MON_BSC_HTTP, 'eth_getBalance', [addr, 'latest']);
+    return weiToBnb(result);
+  } catch(e) { return null; }
+}
+
+async function monFetchSolBalance(addr) {
+  try {
+    const result = await rpcCall(MON_SOL_HTTP, 'getBalance', [addr, {commitment:'confirmed'}]);
+    return lamportsToSol(result.value);
+  } catch(e) { return null; }
+}
+
+async function monRefreshBalance(addr, chain) {
+  let bal;
+  if (chain === 'BSC') bal = await monFetchBscBalance(addr);
+  else bal = await monFetchSolBalance(addr);
+  if (bal !== null) updateMonitorBalance(addr, bal);
+}
+
+// --- Monitor WebSocket Status ---
+function updateMonWsStatus(chain, status) {
+  const elId = chain === 'sol' ? 'monWsSol' : 'monWsBsc';
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.className = 'ws-status ' + status;
+  const label = chain === 'sol' ? 'SOL' : 'BSC';
+  const labels = { connected: label + ' live', connecting: label + ' ...', error: label + ' off' };
+  el.textContent = labels[status] || label;
+}
+
+// --- Solana Monitor WS ---
+function startMonSolWs() {
+  if (monSolWs && monSolWs.readyState <= 1) return;
+  updateMonWsStatus('sol', 'connecting');
+
+  try { monSolWs = new WebSocket(MON_SOL_WS); }
+  catch(e) { updateMonWsStatus('sol','error'); scheduleMonReconnect('sol'); return; }
+
+  monSolWs.onopen = () => {
+    monSolConnected = true;
+    updateMonWsStatus('sol', 'connected');
+    monSolSubIds = [];
+    // Subscribe for each Solana wallet
+    let subId = 100;
+    watchlist.filter(w => w.chain === 'Solana').forEach(w => {
+      // accountSubscribe — monitor balance/position changes
+      monSolWs.send(JSON.stringify({
+        jsonrpc:'2.0', id: subId++, method:'accountSubscribe',
+        params: [w.addr, { encoding:'jsonParsed', commitment:'confirmed' }]
+      }));
+      // logsSubscribe — capture Swap and other tx logs mentioning this wallet
+      monSolWs.send(JSON.stringify({
+        jsonrpc:'2.0', id: subId++, method:'logsSubscribe',
+        params: [{ mentions: [w.addr] }, { commitment:'confirmed' }]
+      }));
+    });
+    // Initial balance fetch
+    watchlist.filter(w => w.chain === 'Solana').forEach(w => monRefreshBalance(w.addr, 'Solana'));
+  };
+
+  monSolWs.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      // accountNotification — balance/account data changed
+      if (msg.method === 'accountNotification' && msg.params) {
+        handleSolAccountNotification(msg.params);
+      }
+      // logsNotification — transaction logs
+      if (msg.method === 'logsNotification' && msg.params) {
+        handleSolLogsNotification(msg.params);
+      }
+      // Store subscription IDs
+      if (msg.result && typeof msg.result === 'number') {
+        monSolSubIds.push(msg.result);
+      }
+    } catch(e) {}
+  };
+
+  monSolWs.onerror = () => { updateMonWsStatus('sol','error'); };
+  monSolWs.onclose = () => {
+    monSolConnected = false;
+    updateMonWsStatus('sol','error');
+    scheduleMonReconnect('sol');
+  };
+}
+
+function handleSolAccountNotification(params) {
+  // Account data changed — refresh balance for all Sol wallets
+  // The subscription index tells us which wallet, but we'll just refresh all Sol wallets
+  watchlist.filter(w => w.chain === 'Solana').forEach(w => monRefreshBalance(w.addr, 'Solana'));
+}
+
+function handleSolLogsNotification(params) {
+  const value = params.result ? params.result.value : null;
+  if (!value || value.err) return;
+  const sig = value.signature;
+  const logs = value.logs || [];
+
+  let eventType = 'transfer';
+  let label = 'Transaction';
+  for (const log of logs) {
+    if (log.includes('Instruction: Swap') || log.includes('Instruction: Route') || log.includes('ray_log')) {
+      eventType = 'buy'; label = 'Swap'; break;
+    }
+    if (log.includes('Instruction: Transfer')) {
+      eventType = 'transfer'; label = 'Transfer';
+    }
+  }
+
+  // Find which watched wallet this relates to
+  let walletAddr = '';
+  for (const w of watchlist.filter(w => w.chain === 'Solana')) {
+    walletAddr = w.addr; break; // Simplified — logs subscription is per-wallet
+  }
+
+  addMonitorEvent(eventType,
+    label + ' — ' + shortAddr(walletAddr),
+    'Sig: ' + shortAddr(sig)
+  );
+
+  // Refresh balance
+  if (walletAddr) monRefreshBalance(walletAddr, 'Solana');
+}
+
+// --- BSC Monitor WS ---
+function startMonBscWs() {
+  if (monBscWs && monBscWs.readyState <= 1) return;
+  updateMonWsStatus('bsc', 'connecting');
+
+  try { monBscWs = new WebSocket(MON_BSC_WS); }
+  catch(e) { updateMonWsStatus('bsc','error'); scheduleMonReconnect('bsc'); return; }
+
+  monBscWs.onopen = () => {
+    monBscConnected = true;
+    updateMonWsStatus('bsc', 'connected');
+    // Subscribe to newPendingTransactions
+    monBscWs.send(JSON.stringify({
+      jsonrpc:'2.0', id:1, method:'eth_subscribe',
+      params:['newPendingTransactions']
+    }));
+    // Initial balance fetch for BSC wallets
+    watchlist.filter(w => w.chain === 'BSC').forEach(w => monRefreshBalance(w.addr, 'BSC'));
+  };
+
+  monBscWs.onmessage = (evt) => {
+    try {
+      const msg = JSON.parse(evt.data);
+      if (msg.result && typeof msg.result === 'string' && msg.result.startsWith('0x')) {
+        monBscSubId = msg.result;
+      }
+      // newPendingTransactions — we get tx hashes, check if they involve our wallets
+      if (msg.params && msg.params.result && typeof msg.params.result === 'string') {
+        handleBscPendingTx(msg.params.result);
+      }
+    } catch(e) {}
+  };
+
+  monBscWs.onerror = () => { updateMonWsStatus('bsc','error'); };
+  monBscWs.onclose = () => {
+    monBscConnected = false;
+    updateMonWsStatus('bsc','error');
+    scheduleMonReconnect('bsc');
+  };
+}
+
+// Track pending tx hashes to avoid flooding — only check a sample
+let bscPendingCheckCount = 0;
+let bscPendingCheckInterval = null;
+let bscPendingQueue = [];
+
+function handleBscPendingTx(txHash) {
+  // Queue tx hashes and process in batches to avoid RPC flooding
+  bscPendingQueue.push(txHash);
+  if (bscPendingQueue.length > 200) bscPendingQueue = bscPendingQueue.slice(-100);
+
+  if (!bscPendingCheckInterval) {
+    bscPendingCheckInterval = setInterval(processBscPendingBatch, 2000);
+  }
+}
+
+async function processBscPendingBatch() {
+  if (bscPendingQueue.length === 0) return;
+  const bscWallets = watchlist.filter(w => w.chain === 'BSC').map(w => w.addr.toLowerCase());
+  if (bscWallets.length === 0) return;
+
+  // Sample a few tx hashes from the queue
+  const sample = bscPendingQueue.splice(0, 3);
+  for (const txHash of sample) {
+    try {
+      const tx = await rpcCall(MON_BSC_HTTP, 'eth_getTransactionByHash', [txHash]);
+      if (!tx) continue;
+      const from = (tx.from || '').toLowerCase();
+      const to = (tx.to || '').toLowerCase();
+
+      for (const wAddr of bscWallets) {
+        if (from === wAddr || to === wAddr) {
+          const value = tx.value ? weiToBnb(tx.value) : 0;
+          const isSend = from === wAddr;
+          addMonitorEvent(isSend ? 'sell' : 'buy',
+            (isSend ? (currentLang === 'zh' ? '发送' : 'Sent') : (currentLang === 'zh' ? '收到' : 'Received')) +
+            ' ' + value.toFixed(4) + ' BNB',
+            shortAddr(tx.from) + ' → ' + shortAddr(tx.to)
+          );
+          // Refresh balance for this wallet
+          monRefreshBalance(wAddr.startsWith('0x') ? watchlist.find(w=>w.addr.toLowerCase()===wAddr).addr : wAddr, 'BSC');
+        }
+      }
+    } catch(e) { /* skip */ }
+  }
+}
+
+function scheduleMonReconnect(chain) {
+  if (monReconnectTimers[chain]) clearTimeout(monReconnectTimers[chain]);
+  monReconnectTimers[chain] = setTimeout(() => {
+    if (!monitorOpen) return;
+    if (chain === 'sol') startMonSolWs();
+    else startMonBscWs();
+  }, 5000);
+}
+
+function startMonitorWs() {
+  const hasSol = watchlist.some(w => w.chain === 'Solana');
+  const hasBsc = watchlist.some(w => w.chain === 'BSC');
+  if (hasSol) startMonSolWs();
+  if (hasBsc) startMonBscWs();
+  // Also do periodic balance refresh every 15s
+  if (!window._monBalInterval) {
+    window._monBalInterval = setInterval(() => {
+      if (!monitorOpen) return;
+      watchlist.forEach(w => monRefreshBalance(w.addr, w.chain));
+    }, 15000);
+  }
+}
+
+function stopMonitorWs() {
+  if (monSolWs) { try { monSolWs.close(); } catch(e){} monSolWs = null; }
+  if (monBscWs) { try { monBscWs.close(); } catch(e){} monBscWs = null; }
+  monSolConnected = false; monBscConnected = false;
+  if (bscPendingCheckInterval) { clearInterval(bscPendingCheckInterval); bscPendingCheckInterval = null; }
+  Object.values(monReconnectTimers).forEach(t => clearTimeout(t));
+  monReconnectTimers = {};
+}
+
+// Hook into addToWatchlist to refresh monitor
+const _origAddToWatchlist = addToWatchlist;
+addToWatchlist = async function() {
+  await _origAddToWatchlist();
+  if (monitorOpen) {
+    renderMonitorWallets();
+    // Reconnect WS to add new subscriptions
+    stopMonitorWs();
+    setTimeout(() => startMonitorWs(), 500);
+  }
+};
+
+// Hook into removeFromWatchlist to refresh monitor
+const _origRemoveFromWatchlist = removeFromWatchlist;
+removeFromWatchlist = function(idx) {
+  _origRemoveFromWatchlist(idx);
+  if (monitorOpen) {
+    renderMonitorWallets();
+    stopMonitorWs();
+    setTimeout(() => startMonitorWs(), 500);
+  }
+};
+
+// =============================================
+// SECTION 13: INIT
+// =============================================
+function init(){
+  initBg();
+  applyLang();
+  buildNav();
+  buildTracker();
+
+  // Start real-time smart money monitoring
+  initSmartMoney();
+}
+init();
+</script>
+</body>
+</html>

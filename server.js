@@ -20,6 +20,16 @@ app.get('/sponsor', (req, res) => {
   res.sendFile(path.join(__dirname, 'sponsor.html'));
 });
 
+// Tarot page
+app.get('/taluopai', (req, res) => {
+  res.sendFile(path.join(__dirname, 'taluopai.html'));
+});
+
+// ChainBadge / Zhuizong page
+app.get('/zhuizong', (req, res) => {
+  res.sendFile(path.join(__dirname, 'zhuizong.html'));
+});
+
 // Also allow direct access
 app.get('/mobile.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'mobile.html'));

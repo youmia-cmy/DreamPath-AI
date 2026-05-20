@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卜卦 - 六爻卜卦 · 解卦 · 周公解梦 · 测字</title>
+<style>
+/* === RESET & BASE === */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap');
+
+:root{
+  --ink:#1a1410;--parchment:#2a2318;--gold:#c9a84c;--gold-dim:#8a7434;
+  --cream:#d4c5a0;--red:#8b2500;--jade:#2d5a3d;
+  --bg-deep:#0f0d0a;--text-main:#c4b896;--text-dim:#8a7e66;
+  --border:#3a3228;--card-bg:rgba(30,26,20,0.85);
+}
+
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:'Noto Serif SC',serif;color:var(--text-main);
+  background:var(--bg-deep);min-height:100vh;overflow-x:hidden;
+}
+
+/* === BAGUA BACKGROUND === */
+body::before{
+  content:'';position:fixed;top:50%;left:50%;
+  width:min(90vw,800px);height:min(90vw,800px);
+  transform:translate(-50%,-50%);z-index:0;opacity:.06;
+  pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Ccircle cx='200' cy='200' r='195' fill='none' stroke='%23c9a84c' stroke-width='2'/%3E%3Ccircle cx='200' cy='200' r='150' fill='none' stroke='%23c9a84c' stroke-width='1.5'/%3E%3Ccircle cx='200' cy='200' r='100' fill='none' stroke='%23c9a84c' stroke-width='1'/%3E%3Cpath d='M200 5 A195 195 0 0 1 200 395 A97.5 97.5 0 0 0 200 200 A97.5 97.5 0 0 1 200 5Z' fill='%23c9a84c'/%3E%3Ccircle cx='200' cy='102.5' r='25' fill='%230f0d0a'/%3E%3Ccircle cx='200' cy='297.5' r='25' fill='%23c9a84c'/%3E%3Cline x1='200' y1='5' x2='200' y2='395' stroke='%23c9a84c' stroke-width='.5' opacity='.3'/%3E%3Cline x1='5' y1='200' x2='395' y2='200' stroke='%23c9a84c' stroke-width='.5' opacity='.3'/%3E%3Cline x1='62' y1='62' x2='338' y2='338' stroke='%23c9a84c' stroke-width='.5' opacity='.3'/%3E%3Cline x1='338' y1='62' x2='62' y2='338' stroke='%23c9a84c' stroke-width='.5' opacity='.3'/%3E%3Cg transform='translate(200,30)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='40' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(320,80)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='40' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(370,200)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='-3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='17' height='4' rx='1'/%3E%3Crect x='3' y='9' width='17' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(320,320)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='-3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='17' height='4' rx='1'/%3E%3Crect x='3' y='9' width='17' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(200,370)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='-3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='40' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(80,320)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='17' height='4' rx='1'/%3E%3Crect x='3' y='9' width='17' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(30,200)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='17' height='4' rx='1'/%3E%3Crect x='3' y='3' width='17' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='40' height='4' rx='1'/%3E%3C/g%3E%3Cg transform='translate(80,80)' fill='%23c9a84c'%3E%3Crect x='-20' y='-3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='3' width='40' height='4' rx='1'/%3E%3Crect x='-20' y='9' width='17' height='4' rx='1'/%3E%3Crect x='3' y='9' width='17' height='4' rx='1'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* grain overlay */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+/* === HEADER / NAV === */
+header{
+  position:sticky;top:0;z-index:100;
+  background:linear-gradient(180deg,rgba(15,13,10,.98),rgba(15,13,10,.9));
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(12px);
+}
+.header-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;
+}
+.site-title{
+  font-family:'Ma Shan Zheng',cursive;font-size:2rem;
+  color:var(--gold);letter-spacing:4px;
+  text-shadow:0 0 20px rgba(201,168,76,.3);
+  cursor:default;
+}
+.site-title span{font-size:.7em;color:var(--text-dim);margin-left:8px;letter-spacing:1px;font-family:'Noto Serif SC',serif;}
+.back-home-btn{
+  font-family:'Noto Serif SC',serif;font-size:.9rem;color:var(--gold);
+  text-decoration:none;border:1px solid var(--gold-dim);padding:6px 14px;
+  border-radius:4px;transition:all .3s;letter-spacing:1px;white-space:nowrap;
+}
+.back-home-btn:hover{background:rgba(201,168,76,.15);border-color:var(--gold)}
+nav{display:flex;gap:4px}
+nav button{
+  background:none;border:1px solid transparent;color:var(--text-dim);
+  font-family:'Noto Serif SC',serif;font-size:.9rem;padding:8px 18px;
+  cursor:pointer;border-radius:4px;transition:all .3s;letter-spacing:1px;
+}
+nav button:hover{color:var(--gold);border-color:var(--gold-dim)}
+nav button.active{color:var(--gold);border-color:var(--gold);background:rgba(201,168,76,.08)}
+
+/* === MAIN CONTENT === */
+main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:30px 24px 60px}
+.section{display:none;animation:fadeUp .5s ease}
+.section.active{display:block}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes coinFlip{0%{transform:rotateX(0)}50%{transform:rotateX(900deg)}100%{transform:rotateX(1800deg)}}
+
+.section-title{
+  font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;color:var(--gold);
+  text-align:center;margin-bottom:30px;letter-spacing:3px;
+  position:relative;
+}
+.section-title::after{
+  content:'';display:block;width:60px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  margin:10px auto 0;
+}
+
+/* === CARDS === */
+.card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:8px;padding:28px;margin-bottom:20px;
+  backdrop-filter:blur(8px);
+}
+
+/* === LIUYAO SECTION === */
+.yao-container{text-align:center;padding:20px 0}
+.shake-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  color:var(--ink);font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;
+  border:none;padding:14px 40px;border-radius:50px;cursor:pointer;
+  letter-spacing:3px;transition:all .3s;
+  box-shadow:0 4px 20px rgba(201,168,76,.3);
+}
+.shake-btn:hover{transform:scale(1.05);box-shadow:0 6px 30px rgba(201,168,76,.5)}
+.shake-btn:active{transform:scale(.97)}
+.shake-btn.shaking{animation:shake .15s infinite;pointer-events:none}
+
+.coins-display{display:flex;justify-content:center;gap:10px;margin:20px 0;flex-wrap:wrap}
+.coin{
+  width:42px;height:42px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;font-weight:700;
+  border:2px solid var(--gold);color:var(--gold);
+  background:rgba(201,168,76,.08);transition:border-color .3s,color .3s;
+}
+.coin.flipping{animation:coinFlip .6s ease}
+
+.yao-lines{display:flex;flex-direction:column-reverse;align-items:center;gap:8px;margin:24px 0}
+.yao-line{display:flex;align-items:center;gap:16px}
+.yao-label{font-size:.8rem;color:var(--text-dim);width:40px;text-align:right}
+.yao-bar{height:8px;border-radius:4px;background:var(--gold);transition:all .4s}
+.yao-bar.yang{width:100px}
+.yao-bar.yin{width:42px}
+.yao-bar.yin+.yao-gap{width:16px;display:inline-block}
+.yin-group{display:flex;gap:16px}
+.yao-change{font-size:.75rem;color:var(--red);width:30px}
+
+.gua-result{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.gua-result .gua-card{text-align:center;padding:20px}
+.gua-card h3{font-family:'Ma Shan Zheng',cursive;font-size:1.5rem;color:var(--gold);margin-bottom:6px}
+.gua-card .gua-symbol{font-size:2.5rem;margin:10px 0}
+.gua-card .gua-ci{color:var(--text-main);line-height:1.8;font-size:.9rem;margin-top:12px;text-align:left}
+.gua-card .gua-ci strong{color:var(--gold)}
+
+/* === 64 GUA GRID === */
+.gua-grid{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:24px;
+}
+.gua-cell{
+  text-align:center;padding:12px 6px 8px;border:1px solid var(--border);
+  border-radius:6px;cursor:pointer;transition:all .3s;
+  background:rgba(30,26,20,.6);display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.gua-cell:hover{border-color:var(--gold);background:rgba(201,168,76,.08);transform:translateY(-2px)}
+.gua-cell .gua-sym{display:flex;flex-direction:column;align-items:center;gap:3px}
+.gua-cell .gua-sym .yao-r{display:flex;align-items:center;width:32px;justify-content:space-between}
+.gua-cell .gua-sym .yao-r .yb{height:3px;border-radius:1px;background:var(--gold)}
+.gua-cell .gua-sym .yao-r .yb.yang{width:32px}
+.gua-cell .gua-sym .yao-r .yb.yin{width:12px}
+.gua-cell .gua-nm{font-size:.75rem;color:var(--text-dim)}
+.gua-detail{animation:fadeIn .4s ease}
+.gua-detail h2{font-family:'Ma Shan Zheng',cursive;font-size:2rem;color:var(--gold);margin-bottom:16px}
+.gua-detail .meta{color:var(--text-dim);font-size:.85rem;margin-bottom:16px}
+.gua-detail .ci-block{margin:16px 0;padding:16px;background:rgba(201,168,76,.05);border-left:3px solid var(--gold);border-radius:0 6px 6px 0}
+.ci-block h4{color:var(--gold);margin-bottom:8px;font-size:.95rem}
+.ci-block p{line-height:1.9;font-size:.9rem}
+.back-btn{
+  background:none;border:1px solid var(--border);color:var(--text-dim);
+  padding:8px 20px;border-radius:4px;cursor:pointer;font-family:'Noto Serif SC',serif;
+  margin-bottom:16px;transition:all .3s;
+}
+.back-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* === GUA ANALYSIS GRID === */
+.analysis-section{margin-top:24px}
+.analysis-section h4{font-family:'Ma Shan Zheng',cursive;font-size:1.2rem;color:var(--gold);margin-bottom:14px;letter-spacing:2px}
+.analysis-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;
+}
+.analysis-item{
+  padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid var(--border);
+  border-radius:6px;transition:all .3s;
+}
+.analysis-item:hover{border-color:var(--gold-dim);background:rgba(201,168,76,.08)}
+.analysis-item .a-label{
+  font-size:.75rem;color:var(--gold);margin-bottom:4px;font-weight:700;letter-spacing:1px;
+}
+.analysis-item .a-value{font-size:.85rem;line-height:1.6;color:var(--text-main)}
+
+/* === DREAM === */
+.dream-input-wrap{display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto 24px}
+.dream-textarea{
+  width:100%;min-height:120px;max-height:300px;resize:vertical;
+  background:rgba(30,26,20,.8);border:1px solid var(--border);
+  color:var(--text-main);padding:14px 16px;border-radius:6px;
+  font-family:'Noto Serif SC',serif;font-size:.95rem;line-height:1.8;
+  outline:none;transition:border-color .3s;
+}
+.dream-textarea:focus{border-color:var(--gold)}
+.dream-textarea::placeholder{color:var(--text-dim)}
+.dream-char-count{text-align:right;font-size:.75rem;color:var(--text-dim)}
+.dream-char-count .over{color:var(--red)}
+.dream-btn-row{display:flex;gap:12px;align-items:center;justify-content:center}
+.dream-btn{
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  color:var(--ink);border:none;padding:12px 24px;border-radius:6px;
+  font-family:'Ma Shan Zheng',cursive;font-size:1.1rem;cursor:pointer;
+  letter-spacing:2px;transition:all .3s;
+}
+.dream-btn:hover{box-shadow:0 4px 16px rgba(201,168,76,.4)}
+.dream-btn:disabled{opacity:.5;cursor:not-allowed}
+.dream-categories{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:24px}
+.dream-cat-btn{
+  background:rgba(30,26,20,.6);border:1px solid var(--border);color:var(--text-dim);
+  padding:6px 14px;border-radius:20px;cursor:pointer;font-size:.8rem;
+  font-family:'Noto Serif SC',serif;transition:all .3s;
+}
+.dream-cat-btn:hover,.dream-cat-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.08)}
+.dream-results{display:grid;grid-template-columns:1fr;gap:16px}
+.dream-card{padding:16px;cursor:default}
+.dream-card h4{color:var(--gold);font-size:.95rem;margin-bottom:8px}
+.dream-card p{font-size:.85rem;line-height:1.7;color:var(--text-main)}
+.dream-card .dream-tag{font-size:.75rem;color:var(--jade);margin-top:8px;display:inline-block;
+  padding:2px 8px;border:1px solid var(--jade);border-radius:10px;margin-right:6px}
+.dream-overview{padding:24px;margin-bottom:20px;border-left:3px solid var(--gold);background:rgba(201,168,76,.05);border-radius:0 8px 8px 0}
+.dream-overview h3{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;color:var(--gold);margin-bottom:12px}
+.dream-overview .dream-summary{font-size:.95rem;line-height:2;color:var(--text-main)}
+.dream-elements-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:16px}
+.dream-element-card{padding:18px}
+.dream-element-card h4{color:var(--gold);font-size:.95rem;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.dream-element-card .el-icon{font-size:1.2rem}
+.dream-element-card p{font-size:.85rem;line-height:1.8}
+.dream-verdict{margin-top:20px;padding:24px;text-align:center;border:1px solid var(--gold-dim);border-radius:8px;background:rgba(201,168,76,.05)}
+.dream-verdict h3{font-family:'Ma Shan Zheng',cursive;font-size:1.6rem;margin-bottom:10px}
+.dream-verdict.ji h3{color:var(--gold)}
+.dream-verdict.xiong h3{color:var(--red)}
+.dream-verdict.zhong h3{color:var(--text-main)}
+.dream-verdict .verdict-text{font-size:.9rem;line-height:1.9;color:var(--text-main)}
+.dream-advice{margin-top:16px;padding:16px 20px;background:rgba(45,90,61,.1);border:1px solid var(--jade);border-radius:6px}
+.dream-advice h4{color:var(--jade);font-size:.9rem;margin-bottom:8px}
+.dream-advice p{font-size:.85rem;line-height:1.8;color:var(--text-main)}
+
+/* === CEZI === */
+.cezi-wrap{text-align:center}
+.cezi-input-wrap{display:flex;gap:12px;max-width:400px;margin:0 auto 24px;justify-content:center}
+.cezi-input{
+  width:120px;text-align:center;font-size:2rem;
+  background:rgba(30,26,20,.8);border:1px solid var(--border);
+  color:var(--gold);padding:16px;border-radius:6px;
+  font-family:'Ma Shan Zheng',cursive;outline:none;transition:border-color .3s;
+}
+.cezi-input:focus{border-color:var(--gold)}
+.cezi-result{max-width:600px;margin:0 auto;text-align:left}
+.cezi-result .big-char{
+  font-family:'Ma Shan Zheng',cursive;font-size:5rem;color:var(--gold);
+  text-align:center;margin:20px 0;
+  text-shadow:0 0 40px rgba(201,168,76,.3);
+}
+.cezi-result .attr-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;
+}
+.attr-item{
+  padding:12px;background:rgba(201,168,76,.05);border-radius:6px;
+  border:1px solid var(--border);
+}
+.attr-item .attr-label{font-size:.75rem;color:var(--text-dim);margin-bottom:4px}
+.attr-item .attr-value{font-size:1.1rem;color:var(--gold);font-family:'Ma Shan Zheng',cursive}
+.cezi-fortune{
+  margin-top:20px;padding:20px;text-align:center;
+  border:1px solid var(--gold-dim);border-radius:8px;
+  background:rgba(201,168,76,.05);
+}
+.cezi-fortune .fortune-level{
+  font-family:'Ma Shan Zheng',cursive;font-size:2rem;margin-bottom:8px;
+}
+.fortune-ji{color:#c9a84c}
+.fortune-xiong{color:var(--red)}
+.fortune-zhong{color:var(--text-main)}
+.cezi-fortune .fortune-text{line-height:1.8;font-size:.9rem}
+
+/* === FOOTER === */
+footer{
+  position:relative;z-index:1;text-align:center;padding:30px;
+  color:var(--text-dim);font-size:.75rem;border-top:1px solid var(--border);
+  letter-spacing:1px;
+}
+
+/* === RESPONSIVE === */
+@media(max-width:768px){
+  .header-inner{flex-direction:column;gap:10px}
+  nav{flex-wrap:wrap;justify-content:center}
+  nav button{padding:6px 12px;font-size:.8rem}
+  .gua-grid{grid-template-columns:repeat(4,1fr)}
+  .gua-result{grid-template-columns:1fr}
+  .dream-elements-grid{grid-template-columns:1fr}
+  .attr-grid{grid-template-columns:1fr!important}
+}
+@media(max-width:480px){
+  .gua-grid{grid-template-columns:repeat(3,1fr)}
+  main{padding:20px 12px 40px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="site-title">六爻<span>· 古法卜卦</span></div>
+    <nav>
+      <button onclick="showSection('bazi')">五行命格</button>
+      <button class="active" onclick="showSection('liuyao')">六爻卜卦</button>
+      <button onclick="showSection('jiegua')">解卦</button>
+      <button onclick="showSection('dream')">周公解梦</button>
+      <button onclick="showSection('cezi')">吉凶测字</button>
+      <button onclick="showSection('fengshui')">风水图解</button>
+      <a href="index.html" class="back-home-btn" title="返回首页">首页</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- 生辰八字 -->
+  <div id="sec-bazi" class="section">
+    <div class="section-title">生辰八字 · 五行命格</div>
+    <div class="card">
+      <p style="text-align:center;color:var(--text-dim);margin-bottom:20px;line-height:1.8">
+        输入出生日期与时辰，系统将推算您的四柱八字及五行分布，<br>并给出命格五行的详细分析。
+      </p>
+      <div style="max-width:500px;margin:0 auto;">
+        <!-- 历法选择 -->
+        <div style="display:flex;justify-content:center;gap:20px;margin-bottom:18px;">
+          <label style="cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-main);">
+            <input type="radio" name="calType" value="solar" checked onchange="toggleCalType()" style="accent-color:var(--gold);"> 新历（公历）
+          </label>
+          <label style="cursor:pointer;display:flex;align-items:center;gap:6px;color:var(--text-main);">
+            <input type="radio" name="calType" value="lunar" onchange="toggleCalType()" style="accent-color:var(--gold);"> 农历
+          </label>
+        </div>
+        <!-- 日期输入 -->
+        <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:14px;">
+          <select id="baziYear" class="cezi-input" style="width:100px;font-size:1rem;letter-spacing:0;padding:8px;"></select>
+          <select id="baziMonth" class="cezi-input" style="width:80px;font-size:1rem;letter-spacing:0;padding:8px;"></select>
+          <select id="baziDay" class="cezi-input" style="width:80px;font-size:1rem;letter-spacing:0;padding:8px;"></select>
+          <select id="baziHour" class="cezi-input" style="width:120px;font-size:1rem;letter-spacing:0;padding:8px;"></select>
+        </div>
+        <div id="lunarLeapWrap" style="display:none;text-align:center;margin-bottom:14px;">
+          <label style="cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:center;color:var(--text-dim);">
+            <input type="checkbox" id="lunarLeap" style="accent-color:var(--gold);"> 闰月
+          </label>
+        </div>
+        <div style="text-align:center;">
+          <button class="dream-btn" onclick="calcBazi()">排 八 字</button>
+        </div>
+      </div>
+      <div id="baziResult" style="margin-top:24px;"></div>
+    </div>
+  </div>
+
+  <!-- 六爻卜卦 -->
+  <div id="sec-liuyao" class="section active">
+    <div class="section-title">六爻卜卦</div>
+    <div class="card">
+      <p style="text-align:center;color:var(--text-dim);margin-bottom:20px;line-height:1.8">
+        心中默念所问之事，诚心摇卦。<br>系统将模拟六枚铜钱一次抛出，每枚铜钱对应一爻，得出卦象。
+      </p>
+      <div class="yao-container">
+        <button class="shake-btn" id="shakeBtn" onclick="startShake()">
+          ☰ 摇 卦
+        </button>
+        <div class="coins-display" id="coinsDisplay" style="display:none">
+          <div class="coin" id="coin1">?</div>
+          <div class="coin" id="coin2">?</div>
+          <div class="coin" id="coin3">?</div>
+          <div class="coin" id="coin4">?</div>
+          <div class="coin" id="coin5">?</div>
+          <div class="coin" id="coin6">?</div>
+        </div>
+        <div id="yaoProgress" style="color:var(--text-dim);font-size:.85rem;margin-top:10px"></div>
+      </div>
+      <div class="yao-lines" id="yaoLines"></div>
+      <div id="guaResult"></div>
+    </div>
+  </div>
+
+  <!-- 解卦 -->
+  <div id="sec-jiegua" class="section">
+    <div class="section-title">六十四卦</div>
+    <div id="guaGridWrap">
+      <div class="gua-grid" id="guaGrid"></div>
+    </div>
+    <div id="guaDetailWrap" style="display:none"></div>
+  </div>
+
+  <!-- 周公解梦 -->
+  <div id="sec-dream" class="section">
+    <div class="section-title">周公解梦</div>
+    <p style="text-align:center;color:var(--text-dim);margin-bottom:20px;line-height:1.8;max-width:600px;margin-left:auto;margin-right:auto">
+      详细描述您的梦境内容，系统将根据周公解梦古籍，<br>对整个梦境进行全面深度解析，揭示梦中玄机。
+    </p>
+    <div class="dream-input-wrap">
+      <textarea class="dream-textarea" id="dreamInput" placeholder="请详细描述您的梦境内容，例如：&#10;昨晚梦见自己在一片茫茫大海上划船，突然天空乌云密布下起大雨，海水变得浑浊，一条金色的龙从海中跃出飞上天空，我感到非常震撼又有些害怕..." maxlength="1000" oninput="updateDreamCharCount()"></textarea>
+      <div class="dream-char-count"><span id="dreamCharNum">0</span>/1000</div>
+      <div class="dream-btn-row">
+        <button class="dream-btn" onclick="searchDream()">解 梦</button>
+        <button class="dream-btn" style="background:rgba(30,26,20,.6);color:var(--text-dim);border:1px solid var(--border)" onclick="document.getElementById('dreamInput').value='';updateDreamCharCount();document.getElementById('dreamResults').innerHTML=''">清 空</button>
+      </div>
+    </div>
+    <div class="dream-categories" id="dreamCats"></div>
+    <div class="dream-results" id="dreamResults"></div>
+  </div>
+
+  <!-- 测字 -->
+  <div id="sec-cezi" class="section">
+    <div class="section-title">吉凶测字</div>
+    <div class="cezi-wrap">
+      <p style="color:var(--text-dim);margin-bottom:20px;line-height:1.8">
+        输入汉字、数字或英文字母，依据笔画、数理、五行分析其吉凶寓意。
+      </p>
+      <div class="cezi-input-wrap">
+        <input class="cezi-input" id="ceziInput" maxlength="200" placeholder="输入文字" style="width:240px;font-size:1.4rem;letter-spacing:4px">
+        <button class="dream-btn" onclick="analyzeChar()">测 字</button>
+      </div>
+      <div class="cezi-result" id="ceziResult"></div>
+    </div>
+  </div>
+
+  <!-- 风水图解 -->
+  <div id="sec-fengshui" class="section">
+    <div class="section-title">风水图解</div>
+    <div class="card" style="margin-bottom:24px;">
+      <p style="text-align:center;color:var(--text-dim);margin-bottom:20px;line-height:1.8">
+        风水，古称堪舆，是中国传统文化中关于人与自然和谐共处的学问。<br>
+        以下图解涵盖核心风水理论。
+      </p>
+    </div>
+
+    <!-- 1. 先天八卦 -->
+    <div class="card fengshui-card" style="margin-bottom:28px;">
+      <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:16px;text-align:center;">一、先天八卦（伏羲八卦）</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:center;">
+        <svg viewBox="0 0 300 300" width="260" height="260" style="flex-shrink:0;">
+          <circle cx="150" cy="150" r="140" fill="none" stroke="#c9a84c" stroke-width="1.5" opacity="0.5"/>
+          <circle cx="150" cy="150" r="100" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.3"/>
+          <!-- 太极 -->
+          <path d="M150 50 A100 100 0 0 1 150 250 A50 50 0 0 0 150 150 A50 50 0 0 1 150 50Z" fill="#c9a84c"/>
+          <path d="M150 250 A100 100 0 0 1 150 50 A50 50 0 0 1 150 150 A50 50 0 0 0 150 250Z" fill="#1a1410" stroke="#c9a84c" stroke-width="0.5"/>
+          <path d="M150 150 A50 50 0 0 0 150 250 Z" fill="#c9a84c"/>
+          <path d="M150 150 A50 50 0 0 1 150 250 Z" fill="#c9a84c"/>
+          <circle cx="150" cy="100" r="8" fill="#c9a84c"/>
+          <circle cx="150" cy="200" r="8" fill="#1a1410"/>
+          <!-- 八卦方位文字 -->
+          <text x="150" y="28" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">乾 ☰</text>
+          <text x="150" y="290" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">坤 ☷</text>
+          <text x="280" y="155" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">坎 ☵</text>
+          <text x="20" y="155" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">离 ☲</text>
+          <text x="245" y="60" fill="#c9a84c" font-size="13" text-anchor="middle" font-family="Noto Serif SC,serif">兑 ☱</text>
+          <text x="55" y="60" fill="#c9a84c" font-size="13" text-anchor="middle" font-family="Noto Serif SC,serif">巽 ☴</text>
+          <text x="245" y="258" fill="#c9a84c" font-size="13" text-anchor="middle" font-family="Noto Serif SC,serif">震 ☳</text>
+          <text x="55" y="258" fill="#c9a84c" font-size="13" text-anchor="middle" font-family="Noto Serif SC,serif">艮 ☶</text>
+        </svg>
+        <div style="flex:1;min-width:240px;line-height:2;color:var(--text-main);font-size:0.95rem;">
+          <p><b style="color:var(--gold);">释义：</b>先天八卦为伏羲所创，代表天地万物最原始的状态，又称"体卦"。</p>
+          <p><b style="color:var(--gold);">方位：</b>乾南坤北，离东坎西。乾坤为天地定位，坎离为水火不相射。</p>
+          <p><b style="color:var(--gold);">口诀：</b>"乾三连，坤六断，震仰盂，艮覆碗，离中虚，坎中满，兑上缺，巽下断。"</p>
+          <p><b style="color:var(--gold);">应用：</b>先天八卦主理气，用于推算宇宙运行规律、阴阳消长之理，是风水理气派的核心基础。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 后天八卦 -->
+    <div class="card fengshui-card" style="margin-bottom:28px;">
+      <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:16px;text-align:center;">二、后天八卦（文王八卦）</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:center;">
+        <svg viewBox="0 0 300 300" width="260" height="260" style="flex-shrink:0;">
+          <circle cx="150" cy="150" r="140" fill="none" stroke="#c9a84c" stroke-width="1.5" opacity="0.5"/>
+          <circle cx="150" cy="150" r="100" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.3"/>
+          <!-- 九宫格 -->
+          <line x1="83" y1="83" x2="217" y2="83" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="83" y1="150" x2="217" y2="150" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="83" y1="217" x2="217" y2="217" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="83" y1="83" x2="83" y2="217" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="150" y1="83" x2="150" y2="217" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="217" y1="83" x2="217" y2="217" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <!-- 洛书数字 -->
+          <text x="116" y="120" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">4</text>
+          <text x="150" y="120" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">9</text>
+          <text x="184" y="120" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">2</text>
+          <text x="116" y="158" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">3</text>
+          <text x="150" y="158" fill="#c9a84c" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">5</text>
+          <text x="184" y="158" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">7</text>
+          <text x="116" y="196" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">8</text>
+          <text x="150" y="196" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">1</text>
+          <text x="184" y="196" fill="#8a7434" font-size="20" text-anchor="middle" font-family="Noto Serif SC,serif">6</text>
+          <!-- 方位 -->
+          <text x="150" y="28" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">离 · 南 · 火</text>
+          <text x="150" y="290" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">坎 · 北 · 水</text>
+          <text x="285" y="155" fill="#c9a84c" font-size="13" text-anchor="end" font-family="Noto Serif SC,serif">兑·西</text>
+          <text x="15" y="155" fill="#c9a84c" font-size="13" text-anchor="start" font-family="Noto Serif SC,serif">震·东</text>
+          <text x="248" y="58" fill="#c9a84c" font-size="12" text-anchor="middle" font-family="Noto Serif SC,serif">乾·西北</text>
+          <text x="52" y="58" fill="#c9a84c" font-size="12" text-anchor="middle" font-family="Noto Serif SC,serif">巽·东南</text>
+          <text x="248" y="260" fill="#c9a84c" font-size="12" text-anchor="middle" font-family="Noto Serif SC,serif">坤·西南</text>
+          <text x="52" y="260" fill="#c9a84c" font-size="12" text-anchor="middle" font-family="Noto Serif SC,serif">艮·东北</text>
+        </svg>
+        <div style="flex:1;min-width:240px;line-height:2;color:var(--text-main);font-size:0.95rem;">
+          <p><b style="color:var(--gold);">释义：</b>后天八卦为文王所演，反映天地运行的实际规律，又称"用卦"，是风水实践中最常用的方位体系。</p>
+          <p><b style="color:var(--gold);">方位：</b>离南坎北，震东兑西，巽东南，坤西南，艮东北，乾西北。</p>
+          <p><b style="color:var(--gold);">洛书：</b>图中数字为洛书九宫，"戴九履一，左三右七，二四为肩，六八为足，五居中央"。横竖斜相加皆为十五。</p>
+          <p><b style="color:var(--gold);">应用：</b>阳宅风水以后天八卦定方位，判断住宅各方位的吉凶属性与五行对应关系。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 五行生克 -->
+    <div class="card fengshui-card" style="margin-bottom:28px;">
+      <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:16px;text-align:center;">三、五行生克关系</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:center;">
+        <svg viewBox="0 0 300 300" width="260" height="260" style="flex-shrink:0;">
+          <!-- 五行圆圈 -->
+          <circle cx="150" cy="50" r="30" fill="none" stroke="#e74c3c" stroke-width="2"/>
+          <text x="150" y="46" fill="#e74c3c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">火</text>
+          <text x="150" y="62" fill="#e74c3c" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">丙丁·南</text>
+
+          <circle cx="270" cy="130" r="30" fill="none" stroke="#c9a84c" stroke-width="2"/>
+          <text x="270" y="126" fill="#c9a84c" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">土</text>
+          <text x="270" y="142" fill="#c9a84c" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">戊己·中</text>
+
+          <circle cx="230" cy="260" r="30" fill="none" stroke="#bdc3c7" stroke-width="2"/>
+          <text x="230" y="256" fill="#bdc3c7" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">金</text>
+          <text x="230" y="272" fill="#bdc3c7" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">庚辛·西</text>
+
+          <circle cx="70" cy="260" r="30" fill="none" stroke="#3498db" stroke-width="2"/>
+          <text x="70" y="256" fill="#3498db" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">水</text>
+          <text x="70" y="272" fill="#3498db" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">壬癸·北</text>
+
+          <circle cx="30" cy="130" r="30" fill="none" stroke="#27ae60" stroke-width="2"/>
+          <text x="30" y="126" fill="#27ae60" font-size="14" text-anchor="middle" font-family="Noto Serif SC,serif">木</text>
+          <text x="30" y="142" fill="#27ae60" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">甲乙·东</text>
+
+          <!-- 相生箭头（外圈顺时针） -->
+          <defs>
+            <marker id="arrowGold" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#c9a84c" opacity="0.7"/></marker>
+            <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6Z" fill="#8b2500" opacity="0.7"/></marker>
+          </defs>
+          <!-- 木生火 -->
+          <line x1="55" y1="108" x2="125" y2="62" stroke="#c9a84c" stroke-width="1.2" opacity="0.6" marker-end="url(#arrowGold)"/>
+          <!-- 火生土 -->
+          <line x1="178" y1="55" x2="242" y2="108" stroke="#c9a84c" stroke-width="1.2" opacity="0.6" marker-end="url(#arrowGold)"/>
+          <!-- 土生金 -->
+          <line x1="265" y1="162" x2="245" y2="232" stroke="#c9a84c" stroke-width="1.2" opacity="0.6" marker-end="url(#arrowGold)"/>
+          <!-- 金生水 -->
+          <line x1="200" y1="265" x2="102" y2="265" stroke="#c9a84c" stroke-width="1.2" opacity="0.6" marker-end="url(#arrowGold)"/>
+          <!-- 水生木 -->
+          <line x1="58" y1="232" x2="35" y2="162" stroke="#c9a84c" stroke-width="1.2" opacity="0.6" marker-end="url(#arrowGold)"/>
+
+          <!-- 相克箭头（内五角星） -->
+          <!-- 木克土 -->
+          <line x1="58" y1="120" x2="240" y2="125" stroke="#8b2500" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" marker-end="url(#arrowRed)"/>
+          <!-- 土克水 -->
+          <line x1="250" y1="150" x2="95" y2="248" stroke="#8b2500" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" marker-end="url(#arrowRed)"/>
+          <!-- 水克火 -->
+          <line x1="82" y1="232" x2="140" y2="78" stroke="#8b2500" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" marker-end="url(#arrowRed)"/>
+          <!-- 火克金 -->
+          <line x1="168" y1="72" x2="215" y2="235" stroke="#8b2500" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" marker-end="url(#arrowRed)"/>
+          <!-- 金克木 -->
+          <line x1="202" y1="252" x2="48" y2="155" stroke="#8b2500" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" marker-end="url(#arrowRed)"/>
+
+          <!-- 图例 -->
+          <line x1="100" y1="12" x2="130" y2="12" stroke="#c9a84c" stroke-width="1.5" opacity="0.7"/>
+          <text x="134" y="16" fill="#c9a84c" font-size="10" font-family="Noto Serif SC,serif">相生</text>
+          <line x1="170" y1="12" x2="200" y2="12" stroke="#8b2500" stroke-width="1" opacity="0.5" stroke-dasharray="4,3"/>
+          <text x="204" y="16" fill="#8b2500" font-size="10" font-family="Noto Serif SC,serif">相克</text>
+        </svg>
+        <div style="flex:1;min-width:240px;line-height:2;color:var(--text-main);font-size:0.95rem;">
+          <p><b style="color:var(--gold);">相生：</b>木生火 → 火生土 → 土生金 → 金生水 → 水生木。生者为母，被生者为子，生生不息。</p>
+          <p><b style="color:var(--gold);">相克：</b>木克土 → 土克水 → 水克火 → 火克金 → 金克木。克者为制约，被克者受损。</p>
+          <p><b style="color:var(--gold);">风水应用：</b>住宅方位对应五行，如北方属水、南方属火。装修用色、材质选择均需参考五行生克，使之和谐相生，避免相克冲突。</p>
+          <p><b style="color:var(--gold);">举例：</b>厨房（火）不宜设在北方（水），因水克火；客厅若在南方可用木色系装饰，取木生火之意。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 阳宅风水 -->
+    <div class="card fengshui-card" style="margin-bottom:28px;">
+      <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:16px;text-align:center;">四、阳宅风水格局</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:center;">
+        <svg viewBox="0 0 300 280" width="280" height="260" style="flex-shrink:0;">
+          <!-- 房屋轮廓 -->
+          <rect x="60" y="80" width="180" height="160" fill="none" stroke="#c9a84c" stroke-width="1.5" rx="3"/>
+          <!-- 屋顶 -->
+          <polygon points="40,80 150,20 260,80" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+          <!-- 九宫格分隔 -->
+          <line x1="120" y1="80" x2="120" y2="240" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="180" y1="80" x2="180" y2="240" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="60" y1="133" x2="240" y2="133" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <line x1="60" y1="187" x2="240" y2="187" stroke="#c9a84c" stroke-width="0.5" opacity="0.4"/>
+          <!-- 方位标注 -->
+          <text x="90" y="113" fill="#c9a84c" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">巽·财</text>
+          <text x="150" y="113" fill="#e74c3c" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">离·名</text>
+          <text x="210" y="113" fill="#c9a84c" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">坤·婚</text>
+          <text x="90" y="167" fill="#27ae60" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">震·家</text>
+          <text x="150" y="167" fill="#c9a84c" font-size="12" text-anchor="middle" font-family="Noto Serif SC,serif">中宫</text>
+          <text x="210" y="167" fill="#bdc3c7" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">兑·子</text>
+          <text x="90" y="220" fill="#c9a84c" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">艮·学</text>
+          <text x="150" y="220" fill="#3498db" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">坎·业</text>
+          <text x="210" y="220" fill="#c9a84c" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">乾·贵</text>
+          <!-- 大门 -->
+          <rect x="138" y="232" width="24" height="10" fill="#c9a84c" opacity="0.3" rx="2"/>
+          <text x="150" y="260" fill="#8a7e66" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">▲ 大门·朝向</text>
+          <!-- 南 -->
+          <text x="150" y="72" fill="#8a7e66" font-size="10" text-anchor="middle" font-family="Noto Serif SC,serif">— 南 —</text>
+        </svg>
+        <div style="flex:1;min-width:240px;line-height:2;color:var(--text-main);font-size:0.95rem;">
+          <p><b style="color:var(--gold);">九宫飞星：</b>将住宅划分为九宫格，对应后天八卦八个方位加中宫，每个宫位主管不同的人生领域。</p>
+          <p><b style="color:var(--gold);">核心宫位：</b></p>
+          <ul style="padding-left:18px;margin-bottom:8px;">
+            <li><b>巽位（东南）</b>— 财运，宜保持明亮通风</li>
+            <li><b>离位（南）</b>— 声名，宜挂字画或证书</li>
+            <li><b>坎位（北）</b>— 事业，宜摆放鱼缸或流水</li>
+            <li><b>坤位（西南）</b>— 婚姻，宜成双成对之物</li>
+            <li><b>乾位（西北）</b>— 贵人，忌缺角或污秽</li>
+          </ul>
+          <p><b style="color:var(--gold);">禁忌：</b>大门不宜正对楼梯、电梯、镜子；厨房与卫生间不宜相邻或正对；卧室门不宜正对大门。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 青龙白虎 -->
+    <div class="card fengshui-card" style="margin-bottom:28px;">
+      <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:16px;text-align:center;">五、四象方位（青龙白虎朱雀玄武）</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start;justify-content:center;">
+        <svg viewBox="0 0 300 300" width="260" height="260" style="flex-shrink:0;">
+          <!-- 中心建筑 -->
+          <rect x="115" y="115" width="70" height="70" fill="rgba(42,35,24,0.8)" stroke="#c9a84c" stroke-width="1.5" rx="4"/>
+          <text x="150" y="155" fill="#c9a84c" font-size="13" text-anchor="middle" font-family="Noto Serif SC,serif">宅</text>
+          <!-- 四象 -->
+          <!-- 青龙·东 -->
+          <text x="38" y="150" fill="#27ae60" font-size="16" text-anchor="middle" font-family="Noto Serif SC,serif">青龙</text>
+          <text x="38" y="168" fill="#27ae60" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">左·东</text>
+          <line x1="65" y1="150" x2="112" y2="150" stroke="#27ae60" stroke-width="1" opacity="0.5" stroke-dasharray="3,3"/>
+          <!-- 白虎·西 -->
+          <text x="262" y="150" fill="#bdc3c7" font-size="16" text-anchor="middle" font-family="Noto Serif SC,serif">白虎</text>
+          <text x="262" y="168" fill="#bdc3c7" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">右·西</text>
+          <line x1="188" y1="150" x2="235" y2="150" stroke="#bdc3c7" stroke-width="1" opacity="0.5" stroke-dasharray="3,3"/>
+          <!-- 朱雀·南 -->
+          <text x="150" y="280" fill="#e74c3c" font-size="16" text-anchor="middle" font-family="Noto Serif SC,serif">朱雀</text>
+          <text x="150" y="296" fill="#e74c3c" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">前·南</text>
+          <line x1="150" y1="188" x2="150" y2="262" stroke="#e74c3c" stroke-width="1" opacity="0.5" stroke-dasharray="3,3"/>
+          <!-- 玄武·北 -->
+          <text x="150" y="35" fill="#3498db" font-size="16" text-anchor="middle" font-family="Noto Serif SC,serif">玄武</text>
+          <text x="150" y="18" fill="#3498db" font-size="11" text-anchor="middle" font-family="Noto Serif SC,serif">后·北</text>
+          <line x1="150" y1="45" x2="150" y2="112" stroke="#3498db" stroke-width="1" opacity="0.5" stroke-dasharray="3,3"/>
+        </svg>
+        <div style="flex:1;min-width:240px;line-height:2;color:var(--text-main);font-size:0.95rem;">
+          <p><b style="color:var(--gold);">四象理论：</b>以住宅坐向为基准，前朱雀、后玄武、左青龙、右白虎，四方环抱为上吉之局。</p>
+          <p><b style="color:#27ae60;">青龙方（左/东）：</b>宜高、宜动、宜有水。青龙代表祥瑞，此方宜略高于白虎方。</p>
+          <p><b style="color:#bdc3c7;">白虎方（右/西）：</b>宜低、宜静、宜平。白虎主肃杀，不宜有尖角、噪音或过高建筑。</p>
+          <p><b style="color:#e74c3c;">朱雀方（前/南）：</b>宜开阔，称"明堂"。前方视野开阔、有水环绕为佳，忌逼仄或有直冲之路。</p>
+          <p><b style="color:#3498db;">玄武方（后/北）：</b>宜有靠山，高大稳重之物。后方空虚则主无靠、根基不稳。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. 流年飞星简表 -->
+    <div class="card fengshui-card" style="margin-bottom:28px;">
+      <h3 style="color:var(--gold);font-size:1.3rem;margin-bottom:16px;text-align:center;">六、九星属性速查</h3>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:0.9rem;color:var(--text-main);">
+          <thead>
+            <tr style="border-bottom:2px solid var(--gold);color:var(--gold);">
+              <th style="padding:10px 8px;text-align:center;">飞星</th>
+              <th style="padding:10px 8px;text-align:center;">名称</th>
+              <th style="padding:10px 8px;text-align:center;">五行</th>
+              <th style="padding:10px 8px;text-align:center;">吉凶</th>
+              <th style="padding:10px 8px;text-align:left;">主事</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">一白</td><td style="text-align:center;">贪狼</td><td style="text-align:center;">水</td><td style="text-align:center;color:#27ae60;">吉</td><td style="padding:8px;">桃花、人缘、财运、升迁</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">二黑</td><td style="text-align:center;">巨门</td><td style="text-align:center;">土</td><td style="text-align:center;color:#e74c3c;">凶</td><td style="padding:8px;">疾病、伤痛，宜化解</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">三碧</td><td style="text-align:center;">禄存</td><td style="text-align:center;">木</td><td style="text-align:center;color:#e74c3c;">凶</td><td style="padding:8px;">口舌是非、官司纠纷</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">四绿</td><td style="text-align:center;">文曲</td><td style="text-align:center;">木</td><td style="text-align:center;color:#27ae60;">吉</td><td style="padding:8px;">文昌、学业、考试、创作</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">五黄</td><td style="text-align:center;">廉贞</td><td style="text-align:center;">土</td><td style="text-align:center;color:#e74c3c;">大凶</td><td style="padding:8px;">灾祸、破财，忌动土</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">六白</td><td style="text-align:center;">武曲</td><td style="text-align:center;">金</td><td style="text-align:center;color:#27ae60;">吉</td><td style="padding:8px;">权力、武职、偏财</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">七赤</td><td style="text-align:center;">破军</td><td style="text-align:center;">金</td><td style="text-align:center;color:#e74c3c;">凶</td><td style="padding:8px;">破败、盗贼、口舌</td></tr>
+            <tr style="border-bottom:1px solid var(--border);"><td style="padding:8px;text-align:center;">八白</td><td style="text-align:center;">左辅</td><td style="text-align:center;">土</td><td style="text-align:center;color:#27ae60;">大吉</td><td style="padding:8px;">正财、置业、大利事业</td></tr>
+            <tr><td style="padding:8px;text-align:center;">九紫</td><td style="text-align:center;">右弼</td><td style="text-align:center;">火</td><td style="text-align:center;color:#27ae60;">吉</td><td style="padding:8px;">喜事、姻缘、嘉庆</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <a href="https://x.com/_StarryMiu" target="_blank" style="color:inherit;text-decoration:none;">Cute Kitten</a> 五行命格 · 六爻卜卦 · 解卦 · 周公解梦 · 吉凶测字 · 风水图解
+</footer>
+
+<script>
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('nav button').forEach((b,i)=>{
+    b.classList.toggle('active',['bazi','liuyao','jiegua','dream','cezi','fengshui'][i]===id);
+  });
+}
+
+/* ============================================================
+   64 HEXAGRAMS DATA - Complete
+   ============================================================ */
+const TRIGRAMS = {
+  '111':'乾','000':'坤','100':'震','010':'坎','001':'艮','011':'巽','101':'离','110':'兑'
+};
+const TRIGRAM_NATURE = {
+  '乾':'天','坤':'地','震':'雷','巽':'风','坎':'水','离':'火','艮':'山','兑':'泽'
+};
+
+const GUA64 = [
+// [index, upper, lower, name, guaci, xiangci, tuanci, yao1-6]
+[1,'111','111','乾','元亨利贞。','天行健，君子以自强不息。','大哉乾元，万物资始，乃统天。云行雨施，品物流形。大明终始，六位时成，时乘六龙以御天。乾道变化，各正性命，保合太和，乃利贞。首出庶物，万国咸宁。',
+'初九：潜龙勿用。','九二：见龙在田，利见大人。','九三：君子终日乾乾，夕惕若厉，无咎。','九四：或跃在渊，无咎。','九五：飞龙在天，利见大人。','上九：亢龙有悔。'],
+[2,'000','000','坤','元亨，利牝马之贞。君子有攸往，先迷后得主。利西南得朋，东北丧朋。安贞吉。','地势坤，君子以厚德载物。','至哉坤元，万物资生，乃顺承天。坤厚载物，德合无疆。含弘光大，品物咸亨。牝马地类，行地无疆，柔顺利贞。',
+'初六：履霜，坚冰至。','六二：直方大，不习无不利。','六三：含章可贞，或从王事，无成有终。','六四：括囊，无咎无誉。','六五：黄裳，元吉。','上六：龙战于野，其血玄黄。'],
+[3,'100','010','屯','元亨利贞，勿用有攸往，利建侯。','云雷屯，君子以经纶。','屯，刚柔始交而难生，动乎险中，大亨贞。',
+'初九：磐桓，利居贞，利建侯。','六二：屯如邅如，乘马班如。匪寇婚媾，女子贞不字，十年乃字。','六三：即鹿无虞，惟入于林中，君子几不如舍，往吝。','六四：乘马班如，求婚媾，往吉，无不利。','九五：屯其膏，小贞吉，大贞凶。','上六：乘马班如，泣血涟如。'],
+[4,'010','001','蒙','亨。匪我求童蒙，童蒙求我。初筮告，再三渎，渎则不告。利贞。','山下出泉，蒙。君子以果行育德。','蒙，山下有险，险而止，蒙。',
+'初六：发蒙，利用刑人，用说桎梏，以往吝。','九二：包蒙吉，纳妇吉，子克家。','六三：勿用取女，见金夫，不有躬，无攸利。','六四：困蒙，吝。','六五：童蒙，吉。','上九：击蒙，不利为寇，利御寇。'],
+[5,'010','111','需','有孚，光亨，贞吉。利涉大川。','云上于天，需。君子以饮食宴乐。','需，须也。险在前也，刚健而不陷，其义不困穷矣。',
+'初九：需于郊，利用恒，无咎。','九二：需于沙，小有言，终吉。','九三：需于泥，致寇至。','六四：需于血，出自穴。','九五：需于酒食，贞吉。','上六：入于穴，有不速之客三人来，敬之终吉。'],
+[6,'111','010','讼','有孚窒惕，中吉，终凶。利见大人，不利涉大川。','天与水违行，讼。君子以作事谋始。','讼，上刚下险，险而健，讼。',
+'初六：不永所事，小有言，终吉。','九二：不克讼，归而逋，其邑人三百户，无眚。','六三：食旧德，贞厉，终吉。或从王事，无成。','九四：不克讼，复即命，渝安贞，吉。','九五：讼，元吉。','上九：或锡之鞶带，终朝三褫之。'],
+[7,'000','010','师','贞，丈人吉，无咎。','地中有水，师。君子以容民畜众。','师，众也。贞，正也。能以众正，可以王矣。',
+'初六：师出以律，否臧凶。','九二：在师中吉，无咎，王三锡命。','六三：师或舆尸，凶。','六四：师左次，无咎。','六五：田有禽，利执言，无咎。长子帅师，弟子舆尸，贞凶。','上六：大君有命，开国承家，小人勿用。'],
+[8,'010','000','比','吉。原筮元永贞，无咎。不宁方来，后夫凶。','地上有水，比。先王以建万国，亲诸侯。','比，吉也。比，辅也。下顺从也。',
+'初六：有孚比之，无咎。有孚盈缶，终来有他，吉。','六二：比之自内，贞吉。','六三：比之匪人。','六四：外比之，贞吉。','九五：显比，王用三驱，失前禽，邑人不诫，吉。','上六：比之无首，凶。'],
+[9,'011','111','小畜','亨。密云不雨，自我西郊。','风行天上，小畜。君子以懿文德。','小畜，柔得位而上下应之，曰小畜。健而巽，刚中而志行，乃亨。',
+'初九：复自道，何其咎，吉。','九二：牵复，吉。','九三：舆说辐，夫妻反目。','六四：有孚，血去惕出，无咎。','九五：有孚挛如，富以其邻。','上九：既雨既处，尚德载，妇贞厉。月几望，君子征凶。'],
+[10,'111','011','履','履虎尾，不咥人，亨。','上天下泽，履。君子以辩上下，定民志。','履，柔履刚也。说而应乎乾，是以履虎尾不咥人亨。',
+'初九：素履往，无咎。','九二：履道坦坦，幽人贞吉。','六三：眇能视，跛能履，履虎尾，咥人凶。武人为于大君。','九四：履虎尾，愬愬终吉。','九五：夬履，贞厉。','上九：视履考祥，其旋元吉。'],
+[11,'000','111','泰','小往大来，吉，亨。','天地交，泰。后以财成天地之道，辅相天地之宜，以左右民。','泰，小往大来吉亨，则是天地交而万物通也。',
+'初九：拔茅茹，以其汇，征吉。','九二：包荒，用冯河，不遐遗，朋亡，得尚于中行。','九三：无平不陂，无往不复，艰贞无咎。勿恤其孚，于食有福。','六四：翩翩不富，以其邻，不戒以孚。','六五：帝乙归妹，以祉元吉。','上六：城复于隍，勿用师。自邑告命，贞吝。'],
+[12,'111','000','否','否之匪人，不利君子贞，大往小来。','天地不交，否。君子以俭德辟难，不可荣以禄。','否之匪人，不利君子贞，大往小来，则是天地不交而万物不通也。',
+'初六：拔茅茹，以其汇，贞吉，亨。','六二：包承，小人吉，大人否，亨。','六三：包羞。','九四：有命无咎，畴离祉。','九五：休否，大人吉。其亡其亡，系于苞桑。','上九：倾否，先否后喜。'],
+[13,'111','101','同人','同人于野，亨。利涉大川，利君子贞。','天与火，同人。君子以类族辨物。','同人，柔得位得中，而应乎乾，曰同人。',
+'初九：同人于门，无咎。','六二：同人于宗，吝。','九三：伏戎于莽，升其高陵，三岁不兴。','九四：乘其墉，弗克攻，吉。','九五：同人先号咷而后笑，大师克相遇。','上九：同人于郊，无悔。'],
+[14,'101','111','大有','元亨。','火在天上，大有。君子以遏恶扬善，顺天休命。','大有，柔得尊位大中，而上下应之，曰大有。',
+'初九：无交害，匪咎，艰则无咎。','九二：大车以载，有攸往，无咎。','九三：公用亨于天子，小人弗克。','九四：匪其彭，无咎。','六五：厥孚交如，威如，吉。','上九：自天祐之，吉无不利。'],
+[15,'001','000','谦','亨，君子有终。','地中有山，谦。君子以裒多益寡，称物平施。','谦亨，天道下济而光明，地道卑而上行。',
+'初六：谦谦君子，用涉大川，吉。','六二：鸣谦，贞吉。','九三：劳谦，君子有终，吉。','六四：无不利，撝谦。','六五：不富以其邻，利用侵伐，无不利。','上六：鸣谦，利用行师，征邑国。'],
+[16,'000','100','豫','利建侯行师。','雷出地奋，豫。先王以作乐崇德，殷荐之上帝，以配祖考。','豫，刚应而志行，顺以动，豫。',
+'初六：鸣豫，凶。','六二：介于石，不终日，贞吉。','六三：盱豫，悔。迟有悔。','九四：由豫，大有得。勿疑朋盍簪。','六五：贞疾，恒不死。','上六：冥豫，成有渝，无咎。'],
+[17,'011','100','随','元亨利贞，无咎。','泽中有雷，随。君子以向晦入宴息。','随，刚来而下柔，动而说，随。',
+'初九：官有渝，贞吉。出门交有功。','六二：系小子，失丈夫。','六三：系丈夫，失小子。随有求得，利居贞。','九四：随有获，贞凶。有孚在道，以明，何咎。','九五：孚于嘉，吉。','上六：拘系之，乃从维之。王用亨于西山。'],
+[18,'001','011','蛊','元亨，利涉大川。先甲三日，后甲三日。','山下有风，蛊。君子以振民育德。','蛊，刚上而柔下，巽而止，蛊。',
+'初六：干父之蛊，有子，考无咎，厉终吉。','九二：干母之蛊，不可贞。','九三：干父之蛊，小有悔，无大咎。','六四：裕父之蛊，往见吝。','六五：干父之蛊，用誉。','上九：不事王侯，高尚其事。'],
+[19,'000','011','临','元亨利贞。至于八月有凶。','泽上有地，临。君子以教思无穷，容保民无疆。','临，刚浸而长，说而顺，刚中而应。',
+'初九：咸临，贞吉。','九二：咸临，吉，无不利。','六三：甘临，无攸利。既忧之，无咎。','六四：至临，无咎。','六五：知临，大君之宜，吉。','上六：敦临，吉，无咎。'],
+[20,'011','000','观','盥而不荐，有孚颙若。','风行地上，观。先王以省方观民设教。','观，大观在上，顺而巽，中正以观天下。',
+'初六：童观，小人无咎，君子吝。','六二：窥观，利女贞。','六三：观我生，进退。','六四：观国之光，利用宾于王。','九五：观我生，君子无咎。','上九：观其生，君子无咎。'],
+[21,'101','100','噬嗑','亨。利用狱。','雷电噬嗑。先王以明罚敕法。','噬嗑，颐中有物，曰噬嗑。噬嗑而亨，刚柔分动而明，雷电合而章。',
+'初九：屦校灭趾，无咎。','六二：噬肤灭鼻，无咎。','六三：噬腊肉，遇毒，小吝，无咎。','九四：噬干胏，得金矢，利艰贞，吉。','六五：噬干肉，得黄金，贞厉，无咎。','上九：何校灭耳，凶。'],
+[22,'001','101','贲','亨。小利有攸往。','山下有火，贲。君子以明庶政，无敢折狱。','贲亨，柔来而文刚，故亨。分刚上而文柔，故小利有攸往。',
+'初九：贲其趾，舍车而徒。','六二：贲其须。','九三：贲如濡如，永贞吉。','六四：贲如皤如，白马翰如，匪寇婚媾。','六五：贲于丘园，束帛戋戋，吝，终吉。','上九：白贲，无咎。'],
+[23,'001','000','剥','不利有攸往。','山附于地，剥。上以厚下安宅。','剥，剥也，柔变刚也。不利有攸往，小人长也。',
+'初六：剥床以足，蔑贞凶。','六二：剥床以辨，蔑贞凶。','六三：剥之，无咎。','六四：剥床以肤，凶。','六五：贯鱼，以宫人宠，无不利。','上九：硕果不食，君子得舆，小人剥庐。'],
+[24,'000','100','复','亨。出入无疾，朋来无咎。反复其道，七日来复，利有攸往。','雷在地中，复。先王以至日闭关，商旅不行，后不省方。','复亨，刚反。动而以顺行，是以出入无疾，朋来无咎。',
+'初九：不远复，无祗悔，元吉。','六二：休复，吉。','六三：频复，厉，无咎。','六四：中行独复。','六五：敦复，无悔。','上六：迷复，凶，有灾眚。用行师，终有大败，以其国君凶，至于十年不克征。'],
+[25,'111','100','无妄','元亨利贞。其匪正有眚，不利有攸往。','天下雷行，物与无妄。先王以茂对时育万物。','无妄，刚自外来而为主于内，动而健，刚中而应，大亨以正，天之命也。',
+'初九：无妄往，吉。','六二：不耕获，不菑畬，则利有攸往。','六三：无妄之灾，或系之牛，行人之得，邑人之灾。','九四：可贞，无咎。','九五：无妄之疾，勿药有喜。','上九：无妄行，有眚，无攸利。'],
+[26,'001','111','大畜','利贞，不家食吉，利涉大川。','天在山中，大畜。君子以多识前言往行，以畜其德。','大畜，刚健笃实辉光，日新其德。',
+'初九：有厉，利已。','九二：舆说辐。','九三：良马逐，利艰贞。曰闲舆卫，利有攸往。','六四：童牛之牿，元吉。','六五：豮豕之牙，吉。','上九：何天之衢，亨。'],
+[27,'001','100','颐','贞吉。观颐，自求口实。','山下有雷，颐。君子以慎言语，节饮食。','颐贞吉，养正则吉也。观颐，观其所养也。自求口实，观其自养也。',
+'初九：舍尔灵龟，观我朵颐，凶。','六二：颠颐，拂经，于丘颐，征凶。','六三：拂颐，贞凶，十年勿用，无攸利。','六四：颠颐，吉。虎视眈眈，其欲逐逐，无咎。','六五：拂经，居贞吉，不可涉大川。','上九：由颐，厉吉，利涉大川。'],
+[28,'011','110','大过','栋桡，利有攸往，亨。','泽灭木，大过。君子以独立不惧，遁世无闷。','大过，大者过也。栋桡，本末弱也。',
+'初六：藉用白茅，无咎。','九二：枯杨生稊，老夫得其女妻，无不利。','九三：栋桡，凶。','九四：栋隆，吉。有它吝。','九五：枯杨生华，老妇得其士夫，无咎无誉。','上六：过涉灭顶，凶，无咎。'],
+[29,'010','010','坎','习坎，有孚，维心亨，行有尚。','水洊至，习坎。君子以常德行，习教事。','习坎，重险也。水流而不盈，行险而不失其信。',
+'初六：习坎，入于坎窞，凶。','九二：坎有险，求小得。','六三：来之坎坎，险且枕，入于坎窞，勿用。','六四：樽酒簋贰，用缶，纳约自牖，终无咎。','九五：坎不盈，祗既平，无咎。','上六：系用徽纆，寘于丛棘，三岁不得，凶。'],
+[30,'101','101','离','利贞，亨。畜牝牛，吉。','明两作，离。大人以继明照于四方。','离，丽也。日月丽乎天，百谷草木丽乎土，重明以丽乎正，乃化成天下。',
+'初九：履错然，敬之无咎。','六二：黄离，元吉。','九三：日昃之离，不鼓缶而歌，则大耋之嗟，凶。','九四：突如其来如，焚如，死如，弃如。','六五：出涕沱若，戚嗟若，吉。','上九：王用出征，有嘉折首，获匪其丑，无咎。'],
+[31,'011','001','咸','亨，利贞，取女吉。','山上有泽，咸。君子以虚受人。','咸，感也。柔上而刚下，二气感应以相与。',
+'初六：咸其拇。','六二：咸其腓，凶，居吉。','九三：咸其股，执其随，往吝。','九四：贞吉悔亡，憧憧往来，朋从尔思。','九五：咸其脢，无悔。','上六：咸其辅颊舌。'],
+[32,'001','011','恒','亨，无咎，利贞，利有攸往。','雷风恒。君子以立不易方。','恒，久也。刚上而柔下，雷风相与，巽而动，刚柔皆应，恒。',
+'初六：浚恒，贞凶，无攸利。','九二：悔亡。','九三：不恒其德，或承之羞，贞吝。','九四：田无禽。','六五：恒其德，贞，妇人吉，夫子凶。','上六：振恒，凶。'],
+[33,'111','001','遁','亨，小利贞。','天下有山，遁。君子以远小人，不恶而严。','遁亨，遁而亨也。刚当位而应，与时行也。',
+'初六：遁尾，厉，勿用有攸往。','六二：执之用黄牛之革，莫之胜说。','九三：系遁，有疾厉，畜臣妾吉。','九四：好遁，君子吉，小人否。','九五：嘉遁，贞吉。','上九：肥遁，无不利。'],
+[34,'100','111','大壮','利贞。','雷在天上，大壮。君子以非礼弗履。','大壮，大者壮也。刚以动，故壮。',
+'初九：壮于趾，征凶，有孚。','九二：贞吉。','九三：小人用壮，君子用罔，贞厉。羝羊触藩，羸其角。','九四：贞吉悔亡，藩决不羸，壮于大舆之輹。','六五：丧羊于易，无悔。','上六：羝羊触藩，不能退，不能遂，无攸利，艰则吉。'],
+[35,'101','000','晋','康侯用锡马蕃庶，昼日三接。','明出地上，晋。君子以自昭明德。','晋，进也。明出地上，顺而丽乎大明，柔进而上行，是以康侯用锡马蕃庶，昼日三接也。',
+'初六：晋如摧如，贞吉。罔孚，裕无咎。','六二：晋如愁如，贞吉。受兹介福，于其王母。','六三：众允，悔亡。','九四：晋如鼫鼠，贞厉。','六五：悔亡，失得勿恤，往吉，无不利。','上九：晋其角，维用伐邑，厉吉无咎，贞吝。'],
+[36,'000','101','明夷','利艰贞。','明入地中，明夷。君子以莅众，用晦而明。','明入地中，明夷。内文明而外柔顺，以蒙大难，文王以之。',
+'初九：明夷于飞，垂其翼。君子于行，三日不食。有攸往，主人有言。','六二：明夷，夷于左股，用拯马壮，吉。','九三：明夷于南狩，得其大首，不可疾贞。','六四：入于左腹，获明夷之心，于出门庭。','六五：箕子之明夷，利贞。','上六：不明晦，初登于天，后入于地。'],
+[37,'011','101','家人','利女贞。','风自火出，家人。君子以言有物而行有恒。','家人，女正位乎内，男正位乎外，男女正，天地之大义也。',
+'初九：闲有家，悔亡。','六二：无攸遂，在中馈，贞吉。','九三：家人嗃嗃，悔厉吉。妇子嘻嘻，终吝。','六四：富家，大吉。','九五：王假有家，勿恤吉。','上九：有孚威如，终吉。'],
+[38,'101','011','睽','小事吉。','上火下泽，睽。君子以同而异。','睽，火动而上，泽动而下。二女同居，其志不同行。',
+'初九：悔亡，丧马勿逐，自复。见恶人无咎。','九二：遇主于巷，无咎。','六三：见舆曳，其牛掣，其人天且劓，无初有终。','九四：睽孤，遇元夫，交孚，厉无咎。','六五：悔亡，厥宗噬肤，往何咎。','上九：睽孤，见豕负涂，载鬼一车，先张之弧，后说之弧，匪寇婚媾，往遇雨则吉。'],
+[39,'010','001','蹇','利西南，不利东北。利见大人，贞吉。','山上有水，蹇。君子以反身修德。','蹇，难也，险在前也。见险而能止，知矣哉。',
+'初六：往蹇，来誉。','六二：王臣蹇蹇，匪躬之故。','九三：往蹇来反。','六四：往蹇来连。','九五：大蹇朋来。','上六：往蹇来硕，吉。利见大人。'],
+[40,'100','010','解','利西南，无所往，其来复吉。有攸往，夙吉。','雷雨作，解。君子以赦过宥罪。','解，险以动，动而免乎险，解。',
+'初六：无咎。','九二：田获三狐，得黄矢，贞吉。','六三：负且乘，致寇至，贞吝。','九四：解而拇，朋至斯孚。','六五：君子维有解，吉。有孚于小人。','上六：公用射隼于高墉之上，获之，无不利。'],
+[41,'001','110','损','有孚，元吉，无咎，可贞，利有攸往。曷之用，二簋可用享。','山下有泽，损。君子以惩忿窒欲。','损，损下益上，其道上行。',
+'初九：已事遄往，无咎，酌损之。','九二：利贞，征凶，弗损益之。','六三：三人行则损一人，一人行则得其友。','六四：损其疾，使遄有喜，无咎。','六五：或益之十朋之龟，弗克违，元吉。','上九：弗损益之，无咎，贞吉，利有攸往，得臣无家。'],
+[42,'110','001','益','利有攸往，利涉大川。','风雷益。君子以见善则迁，有过则改。','益，损上益下，民说无疆，自上下下，其道大光。',
+'初九：利用为大作，元吉，无咎。','六二：或益之十朋之龟，弗克违，永贞吉。王用享于帝，吉。','六三：益之用凶事，无咎。有孚中行，告公用圭。','六四：中行告公从，利用为依迁国。','九五：有孚惠心，勿问元吉。有孚惠我德。','上九：莫益之，或击之，立心勿恒，凶。'],
+[43,'110','111','夬','扬于王庭，孚号有厉，告自邑，不利即戎，利有攸往。','泽上于天，夬。君子以施禄及下，居德则忌。','夬，决也，刚决柔也。健而说，决而和。',
+'初九：壮于前趾，往不胜为咎。','九二：惕号，莫夜有戎，勿恤。','九三：壮于頄，有凶。君子夬夬，独行遇雨，若濡有愠，无咎。','九四：臀无肤，其行次且。牵羊悔亡，闻言不信。','九五：苋陆夬夬，中行无咎。','上六：无号，终有凶。'],
+[44,'111','110','姤','女壮，勿用取女。','天下有风，姤。后以施命诰四方。','姤，遇也，柔遇刚也。勿用取女，不可与长也。',
+'初六：系于金柅，贞吉，有攸往，见凶，羸豕孚蹢躅。','九二：包有鱼，无咎，不利宾。','九三：臀无肤，其行次且，厉，无大咎。','九四：包无鱼，起凶。','九五：以杞包瓜，含章，有陨自天。','上九：姤其角，吝，无咎。'],
+[45,'011','000','萃','亨。王假有庙，利见大人，亨，利贞。用大牲吉，利有攸往。','泽上于地，萃。君子以除戎器，戒不虞。','萃，聚也。顺以说，刚中而应，故聚也。',
+'初六：有孚不终，乃乱乃萃，若号一握为笑，勿恤，往无咎。','六二：引吉，无咎，孚乃利用禴。','六三：萃如嗟如，无攸利，往无咎，小吝。','九四：大吉，无咎。','九五：萃有位，无咎。匪孚，元永贞，悔亡。','上六：赍咨涕洟，无咎。'],
+[46,'000','011','升','元亨，用见大人，勿恤，南征吉。','地中生木，升。君子以顺德，积小以高大。','升，柔以时升，巽而顺，刚中而应，是以大亨。',
+'初六：允升，大吉。','九二：孚乃利用禴，无咎。','九三：升虚邑。','六四：王用亨于岐山，吉，无咎。','六五：贞吉，升阶。','上六：冥升，利于不息之贞。'],
+[47,'011','010','困','亨，贞，大人吉，无咎，有言不信。','泽无水，困。君子以致命遂志。','困，刚掩也。险以说，困而不失其所亨，其唯君子乎。',
+'初六：臀困于株木，入于幽谷，三岁不觌。','九二：困于酒食，朱绂方来，利用享祀，征凶，无咎。','六三：困于石，据于蒺藜，入于其宫，不见其妻，凶。','九四：来徐徐，困于金车，吝，有终。','九五：劓刖，困于赤绂，乃徐有说，利用祭祀。','上六：困于葛藟，于臲卼，曰动悔。有悔，征吉。'],
+[48,'010','011','井','改邑不改井，无丧无得，往来井井。汔至亦未繘井，羸其瓶，凶。','木上有水，井。君子以劳民劝相。','井，巽乎水而上水，井。井养而不穷也。',
+'初六：井泥不食，旧井无禽。','九二：井谷射鲋，瓮敝漏。','九三：井渫不食，为我心恻，可用汲，王明，并受其福。','六四：井甃，无咎。','九五：井冽，寒泉食。','上六：井收勿幕，有孚元吉。'],
+[49,'011','101','革','已日乃孚，元亨利贞，悔亡。','泽中有火，革。君子以治历明时。','革，水火相息，二女同居，其志不相得，曰革。',
+'初九：巩用黄牛之革。','六二：已日乃革之，征吉，无咎。','九三：征凶，贞厉，革言三就，有孚。','九四：悔亡，有孚改命，吉。','九五：大人虎变，未占有孚。','上六：君子豹变，小人革面，征凶，居贞吉。'],
+[50,'101','011','鼎','元吉，亨。','木上有火，鼎。君子以正位凝命。','鼎，象也。以木巽火，亨饪也。',
+'初六：鼎颠趾，利出否，得妾以其子，无咎。','九二：鼎有实，我仇有疾，不我能即，吉。','九三：鼎耳革，其行塞，雉膏不食，方雨亏悔，终吉。','九四：鼎折足，覆公餗，其形渥，凶。','六五：鼎黄耳金铉，利贞。','上九：鼎玉铉，大吉，无不利。'],
+[51,'100','100','震','亨。震来虩虩，笑言哑哑。震惊百里，不丧匕鬯。','洊雷震。君子以恐惧修省。','震亨，震来虩虩，恐致福也。笑言哑哑，后有则也。',
+'初九：震来虩虩，后笑言哑哑，吉。','六二：震来厉，亿丧贝，跻于九陵，勿逐，七日得。','六三：震苏苏，震行无眚。','九四：震遂泥。','六五：震往来厉，亿无丧，有事。','上六：震索索，视矍矍，征凶。震不于其躬，于其邻，无咎。婚媾有言。'],
+[52,'001','001','艮','艮其背，不获其身，行其庭，不见其人，无咎。','兼山艮。君子以思不出其位。','艮，止也。时止则止，时行则行，动静不失其时，其道光明。',
+'初六：艮其趾，无咎，利永贞。','六二：艮其腓，不拯其随，其心不快。','九三：艮其限，列其夤，厉薰心。','六四：艮其身，无咎。','六五：艮其辅，言有序，悔亡。','上九：敦艮，吉。'],
+[53,'011','001','渐','女归吉，利贞。','山上有木，渐。君子以居贤德善俗。','渐，之进也。女归吉也。进得位，往有功也。',
+'初六：鸿渐于干，小子厉，有言，无咎。','六二：鸿渐于磐，饮食衎衎，吉。','九三：鸿渐于陆，夫征不复，妇孕不育，凶。利御寇。','六四：鸿渐于木，或得其桷，无咎。','九五：鸿渐于陵，妇三岁不孕，终莫之胜，吉。','上九：鸿渐于逵，其羽可用为仪，吉。'],
+[54,'100','011','归妹','征凶，无攸利。','泽上有雷，归妹。君子以永终知敝。','归妹，天地之大义也。天地不交，而万物不兴。归妹，人之终始也。',
+'初九：归妹以娣，跛能履，征吉。','九二：眇能视，利幽人之贞。','六三：归妹以须，反归以娣。','九四：归妹愆期，迟归有时。','六五：帝乙归妹，其君之袂，不如其娣之袂良。月几望，吉。','上六：女承筐无实，士刲羊无血，无攸利。'],
+[55,'100','101','丰','亨，王假之，勿忧，宜日中。','雷电皆至，丰。君子以折狱致刑。','丰，大也。明以动，故丰。',
+'初九：遇其配主，虽旬无咎，往有尚。','六二：丰其蔀，日中见斗，往得疑疾，有孚发若，吉。','九三：丰其沛，日中见沫，折其右肱，无咎。','九四：丰其蔀，日中见斗，遇其夷主，吉。','六五：来章，有庆誉，吉。','上六：丰其屋，蔀其家，窥其户，阒其无人，三岁不觌，凶。'],
+[56,'101','001','旅','小亨，旅贞吉。','山上有火，旅。君子以明慎用刑而不留狱。','旅，小亨，柔得中乎外，而顺乎刚，止而丽乎明，是以小亨旅贞吉也。',
+'初六：旅琐琐，斯其所取灾。','六二：旅即次，怀其资，得童仆贞。','九三：旅焚其次，丧其童仆，贞厉。','九四：旅于处，得其资斧，我心不快。','六五：射雉一矢亡，终以誉命。','上九：鸟焚其巢，旅人先笑后号咷。慎之，旅即次之，丧牛于易，凶。'],
+[57,'011','011','巽','小亨，利有攸往，利见大人。','随风巽。君子以申命行事。','巽，重巽以申命。刚巽乎中正而志行，柔皆顺乎刚，是以小亨。',
+'初六：进退，利武人之贞。','九二：巽在床下，用史巫纷若，吉，无咎。','九三：频巽，吝。','六四：悔亡，田获三品。','九五：贞吉悔亡，无不利。无初有终，先庚三日，后庚三日，吉。','上九：巽在床下，丧其资斧，贞凶。'],
+[58,'110','110','兑','亨，利贞。','丽泽兑。君子以朋友讲习。','兑，说也。刚中而柔外，说以利贞，是以顺乎天而应乎人。',
+'初九：和兑，吉。','九二：孚兑，吉，悔亡。','六三：来兑，凶。','九四：商兑未宁，介疾有喜。','九五：孚于剥，有厉。','上六：引兑。'],
+[59,'011','010','涣','亨。王假有庙，利涉大川，利贞。','风行水上，涣。先王以享于帝立庙。','涣亨，刚来而不穷，柔得位乎外而上同。',
+'初六：用拯马壮，吉。','九二：涣奔其机，悔亡。','六三：涣其躬，无悔。','六四：涣其群，元吉。涣有丘，匪夷所思。','九五：涣汗其大号，涣王居，无咎。','上九：涣其血，去逖出，无咎。'],
+[60,'010','110','节','亨。苦节不可贞。','泽上有水，节。君子以制数度，议德行。','节亨，刚柔分而刚得中。苦节不可贞，其道穷也。',
+'初九：不出户庭，无咎。','九二：不出门庭，凶。','六三：不节若，则嗟若，无咎。','六四：安节，亨。','九五：甘节，吉，往有尚。','上六：苦节，贞凶，悔亡。'],
+[61,'011','110','中孚','豚鱼吉，利涉大川，利贞。','泽上有风，中孚。君子以议狱缓死。','中孚，柔在内而刚得中，说而巽，孚乃化邦也。',
+'初九：虞吉，有他不燕。','九二：鸣鹤在阴，其子和之。我有好爵，吾与尔靡之。','六三：得敌，或鼓或罢，或泣或歌。','六四：月几望，马匹亡，无咎。','九五：有孚挛如，无咎。','上九：翰音登于天，贞凶。'],
+[62,'100','001','小过','亨，利贞，可小事，不可大事。飞鸟遗之音，不宜上宜下，大吉。','山上有雷，小过。君子以行过乎恭，丧过乎哀，用过乎俭。','小过，小者过而亨也。过以利贞，与时行也。',
+'初六：飞鸟以凶。','六二：过其祖，遇其妣。不及其君，遇其臣，无咎。','九三：弗过防之，从或戕之，凶。','九四：无咎，弗过遇之。往厉必戒，勿用永贞。','六五：密云不雨，自我西郊，公弋取彼在穴。','上六：弗遇过之，飞鸟离之，凶，是谓灾眚。'],
+[63,'010','101','既济','亨小，利贞，初吉终乱。','水在火上，既济。君子以思患而预防之。','既济亨，小者亨也。利贞，刚柔正而位当也。',
+'初九：曳其轮，濡其尾，无咎。','六二：妇丧其茀，勿逐，七日得。','九三：高宗伐鬼方，三年克之，小人勿用。','六四：繻有衣袽，终日戒。','九五：东邻杀牛，不如西邻之禴祭，实受其福。','上六：濡其首，厉。'],
+[64,'101','010','未济','亨，小狐汔济，濡其尾，无攸利。','火在水上，未济。君子以慎辨物居方。','未济亨，柔得中也。小狐汔济，未出中也。濡其尾，无攸利，不续终也。',
+'初六：濡其尾，吝。','九二：曳其轮，贞吉。','六三：未济，征凶，利涉大川。','九四：贞吉悔亡，震用伐鬼方，三年有赏于大国。','六五：贞吉，无悔，君子之光，有孚，吉。','上九：有孚于饮酒，无咎，濡其首，有孚失是。']
+];
+
+/* Helper: get trigram binary from lines (0=yin, 1=yang) */
+function trigramBin(lines){ return lines.map(l=>l?'1':'0').join(''); }
+
+/* Build hexagram lookup by upper+lower trigram binary */
+const GUA_MAP = {};
+GUA64.forEach(g=>{
+  GUA_MAP[g[1]+g[2]] = g;
+});
+
+function getGuaByTrigrams(upper, lower){
+  return GUA_MAP[upper+lower] || null;
+}
+
+/* Draw yao line HTML */
+function yaoLineHTML(isYang, isChanging, pos){
+  const labels = ['初','二','三','四','五','上'];
+  const changeStr = isChanging ? '○' : '';
+  if(isYang){
+    return `<div class="yao-line">
+      <span class="yao-label">${labels[pos]}</span>
+      <div class="yao-bar yang"></div>
+      <span class="yao-change" style="color:${isChanging?'var(--gold)':'transparent'}">${changeStr}</span>
+    </div>`;
+  } else {
+    return `<div class="yao-line">
+      <span class="yao-label">${labels[pos]}</span>
+      <div class="yin-group"><div class="yao-bar yin"></div><div class="yao-bar yin"></div></div>
+      <span class="yao-change" style="color:${isChanging?'var(--gold)':'transparent'}">${changeStr}</span>
+    </div>`;
+  }
+}
+
+/* ============================================================
+   GUA ANALYSIS DATA (hexagrams 1-16)
+   ============================================================ */
+const GUA_ANALYSIS = {
+  '乾': {
+    时运:'刚健进取，万事亨通，宜积极奋发。',财运:'财源广进，利于大规模投资经营。',家宅:'家道兴隆，宜修缮整顿，利迁居。',身体:'注意头部及筋骨之疾，宜多运动。',特性:'刚毅果断，自强不息，具领导才能。',运势:'大吉大利，万象更新，功名可成。',家运:'家庭和睦，长辈康健，家道昌盛。',疾病:'病在头部或肺部，宜速就医可愈。',胎孕:'生产顺利，得贵子之兆。',子女:'子女聪慧有为，前途光明。',周转:'资金充裕，周转顺利无碍。',买卖:'交易顺利，获利丰厚，宜果断。',等人:'会来，且带来好消息。',寻人:'在西北方向，可寻得。',失物:'难以寻回，注意高处或金属旁。',外出:'出行大吉，利远行，一路平安。',考试:'成绩优异，金榜题名之象。',诉讼:'宜和解，强势应对反有不利。',求事:'贵人相助，求职顺利可成。',改行:'时机成熟，改行有利可图。',开业:'大吉，开业兴旺，利润丰厚。',事业:'大有作为，宜开拓进取，忌骄傲。',经商:'顺利拓展，宜诚信经营，忌冒进。',求名:'功名可就，宜持之以恒努力。',婚恋:'门当户对，婚姻美满幸福。',决策:'具备坚强意志，宜自强不息。'
+  },
+  '坤': {
+    时运:'柔顺谦和，厚德载物，宜守不宜攻。',财运:'稳健理财，不宜冒险投机。',家宅:'家宅安宁，以和为贵，利田产。',身体:'注意脾胃消化系统，宜调养。',特性:'温厚包容，任劳任怨，善于辅佐。',运势:'顺从自然，以静制动，厚积薄发。',家运:'和顺安康，家人和睦，宜守成。',疾病:'脾胃之疾或腹部不适，宜调养。',胎孕:'孕妇宜多休养，生产平安。',子女:'子女孝顺温良，家庭和睦。',周转:'需耐心等待，不可急躁强求。',买卖:'宜稳健交易，薄利多销为佳。',等人:'会来，但可能迟到。',寻人:'在西南方向，需耐心寻找。',失物:'在土中或低处，可慢慢找回。',外出:'宜结伴同行，不宜独行远方。',考试:'成绩平稳，需加倍用功。',诉讼:'宜忍让和解，不宜争讼。',求事:'宜从辅助性职位做起。',改行:'不宜操之过急，宜深思熟虑。',开业:'宜稳步经营，不宜铺张。',事业:'宜辅佐他人，合作共事为佳。',经商:'薄利多销，诚实经营可获利。',求名:'以德服人，循序渐进可成。',婚恋:'贤良淑德之配，婚姻和美。',决策:'胸怀宽广，以柔克刚为上策。'
+  },
+  '屯': {
+    时运:'创业维艰，万事开头难，宜忍耐。',财运:'初期投入大，回报需等待。',家宅:'家宅初建，诸事不顺，宜坚守。',身体:'注意足部及肾脏，防寒湿之症。',特性:'坚韧不拔，能在困境中成长。',运势:'处于困难初期，守正待时为宜。',家运:'家道初创，虽有困难终可成。',疾病:'初起之病，及时医治可愈。',胎孕:'怀孕初期宜小心，有虚惊之象。',子女:'养育辛苦，但终有回报。',周转:'资金困难，需多方筹措。',买卖:'初期不顺，耐心等待时机。',等人:'不会准时到来，需耐心等候。',寻人:'难寻，在东北方可问讯。',失物:'不易找到，被杂物遮掩。',外出:'不宜远行，出行多有阻碍。',考试:'成绩不理想，需加倍努力。',诉讼:'纠纷不断，宜早日和解。',求事:'求职不顺，宜降低期望。',改行:'时机尚未成熟，暂缓为宜。',开业:'初始困难重重，宜充分准备。',事业:'起步艰难，需坚持不懈。',经商:'创业维艰，需谨慎经营。',求名:'暂时受挫，持之以恒终可成。',婚恋:'初有波折，坚持则终成眷属。',决策:'面对困难不退缩，终获成功。'
+  },
+  '蒙': {
+    时运:'蒙昧未开，需虚心求教学习。',财运:'理财知识不足，宜请教专业人士。',家宅:'家中有蒙昧之象，宜重教育。',身体:'心神不宁，宜静心调养。',特性:'纯真好学，虚心受教可成才。',运势:'智慧未开，需求贤师指引。',家运:'家运平平，注重子女教育为要。',疾病:'病因不明，宜多方诊治。',胎孕:'孕妇宜安心静养，忌忧虑。',子女:'子女需悉心教导，不可放任。',周转:'贵人相助方可周转成功。',买卖:'判断不明，宜请教后再决定。',等人:'对方迷路或犹豫，恐不来。',寻人:'在东北山林间，不易寻。',失物:'被遮蔽不见，短期难寻。',外出:'宜有人引导同行，忌独往。',考试:'需更加用功，成绩方能提升。',诉讼:'是非不明，宜请高人调解。',求事:'经验不足，宜先学习充实。',改行:'认识不足，暂不宜改行。',开业:'准备不充分，宜再等待。',事业:'虚心学习，积累经验为先。',经商:'经验不足，宜从小做起学习。',求名:'刻苦求学，终可成就功名。',婚恋:'双方了解不够，宜多相处。',决策:'保持谦虚好学之心态。'
+  },
+  '需': {
+    时运:'等待时机，蓄势待发，急则生变。',财运:'财运渐至，不宜急于求成。',家宅:'家宅平安，饮食丰足。',身体:'注意饮食健康，防水湿之症。',特性:'沉稳耐心，善于等待时机。',运势:'时机未到，耐心等候必有收获。',家运:'安泰和顺，衣食无忧。',疾病:'饮食不调之症，注意脾胃。',胎孕:'孕期顺利，安心等待生产。',子女:'子女福禄双全，无须担忧。',周转:'暂时不顺，稍待即可如愿。',买卖:'宜等待好价位再出手。',等人:'会来但需耐心等候。',寻人:'在北方水边，耐心可寻得。',失物:'在水边或潮湿处，可找回。',外出:'暂缓出行，等待好时机。',考试:'准备充分后考试，成绩可佳。',诉讼:'宜等待时机，不宜急于求成。',求事:'耐心等候机会，终会到来。',改行:'等待适当时机再行动。',开业:'时机未到，宜再等待筹备。',事业:'蓄积力量，等待时机成熟。',经商:'耐心等待商机，不可冒进。',求名:'厚积薄发，时机到必成名。',婚恋:'缘分将至，耐心等候佳偶。',决策:'沉着冷静，善于把握时机。'
+  },
+  '讼': {
+    时运:'争讼之象，凡事宜退让和解。',财运:'因财起争端，宜谨慎理财。',家宅:'家中不和，宜忍让化解。',身体:'心火旺盛，注意血压心脏。',特性:'好辩善争，宜修身养性。',运势:'争端频起，退一步海阔天空。',家运:'家庭不睦，口舌是非多。',疾病:'头痛心疾，因郁结所致。',胎孕:'孕妇心情不安，宜放宽心。',子女:'子女叛逆难管，宜耐心教导。',周转:'有争议纠纷，周转困难。',买卖:'买卖有纠纷，宜谨慎签约。',等人:'不会来，有误会或争执。',寻人:'因争吵离去，在西北方。',失物:'被人拿走，难以追回。',外出:'出行有口舌之争，宜慎行。',考试:'成绩有争议，需申诉。',诉讼:'不宜诉讼，和解为上策。',求事:'有竞争对手，求职不顺。',改行:'会有纠纷，不宜此时改行。',开业:'开业恐有争端，宜三思。',事业:'避免与人争斗，以和为贵。',经商:'防合同纠纷，诚信经营。',求名:'竞争激烈，需谨慎应对。',婚恋:'双方争执多，婚事有阻碍。',决策:'遇事冷静，切忌争强好胜。'
+  },
+  '师': {
+    时运:'纪律严明，统领有方可成大事。',财运:'宜集体合作投资，忌单打独斗。',家宅:'家风严谨，长幼有序。',身体:'注意劳累过度，宜适当休息。',特性:'组织能力强，善于统率众人。',运势:'以正道行事，统帅群伦可成。',家运:'家中有威严之人主持大局。',疾病:'积劳成疾，宜休养调理。',胎孕:'生产平安，得子有望。',子女:'子女众多，需严格管教。',周转:'集众人之力可成，单独难行。',买卖:'团队合作经营，买卖可成。',等人:'会来，带领众人一同前来。',寻人:'在军营或集体所在处可寻。',失物:'在众人聚集处或队伍中。',外出:'宜与众人同行，结伴出发。',考试:'中上成绩，纪律严格则佳。',诉讼:'众人支持则胜，宜团结一致。',求事:'宜从事管理统领之职。',改行:'宜转向组织管理领域。',开业:'团队合作开业，可获成功。',事业:'需有组织纪律，严格管理。',经商:'大规模经营，纪律严明可成。',求名:'以正道求名，终获认可。',婚恋:'感情忠诚可靠，婚姻稳固。',决策:'善于组织领导，以正治事。'
+  },
+  '比': {
+    时运:'亲和团结，与人合作吉利。',财运:'合伙经营有利，财运渐旺。',家宅:'邻里和睦，家宅安宁。',身体:'注意社交过度导致疲劳。',特性:'亲和力强，善于与人合作。',运势:'吉利亨通，宜亲近贤能之人。',家运:'家人和睦，互相帮衬。',疾病:'病情得友人关心照顾，可愈。',胎孕:'孕妇平安，有贵人相助。',子女:'子女和睦友爱，互相扶持。',周转:'朋友相助可顺利周转。',买卖:'合作交易顺利，互利共赢。',等人:'会来，且结伴而来。',寻人:'在亲友处，近处可寻得。',失物:'在朋友或邻居处可找回。',外出:'结伴同行，出行顺利。',考试:'同学互助，成绩良好。',诉讼:'有人从中调解，宜和解。',求事:'经人介绍推荐可顺利。',改行:'与人合伙改行为佳。',开业:'合伙开业，团结经营可成。',事业:'团结协作，事业兴旺。',经商:'合伙经营，诚信待人获利。',求名:'得师长提携，功名可成。',婚恋:'由亲友介绍，婚姻美满。',决策:'以诚待人，广结善缘。'
+  },
+  '小畜': {
+    时运:'小有积蓄，量力而行，不宜冒进。',财运:'小有收获，大财暂时难得。',家宅:'家境小康，勤俭持家为要。',身体:'小恙无大碍，注意风寒。',特性:'谦逊节俭，善于积累小成。',运势:'力量不足，宜小事积累。',家运:'家运平平，小有积蓄。',疾病:'小病，风寒咳嗽之类。',胎孕:'孕期平安，但需注意调养。',子女:'子女平顺，需悉心培养。',周转:'小额可周转，大额有困难。',买卖:'小额交易可成，大买卖不利。',等人:'会来，但有小延迟。',寻人:'不远处，近日可寻得。',失物:'在近处不远，可寻回。',外出:'短途出行可，长途暂缓。',考试:'成绩中等，尚有进步空间。',诉讼:'小事化了，不宜闹大。',求事:'小职位可得，大位暂难。',改行:'小规模调整可以，大改不宜。',开业:'小本经营可行，规模宜小。',事业:'从小事做起，逐步积累。',经商:'小本经营，积少成多。',求名:'暂时小有名气，需继续努力。',婚恋:'缘分渐近，需耐心培养感情。',决策:'量力而行，不可贪大求全。'
+  },
+  '履': {
+    时运:'如履薄冰，谨慎行事方可无咎。',财运:'稳中求进，不可贪心冒险。',家宅:'注意家中安全，小心防范。',身体:'注意足部及下肢疾患。',特性:'谨慎小心，行事稳妥有礼。',运势:'谨慎行事，循礼而行则吉。',家运:'家中需守礼节规矩。',疾病:'足部或筋骨之患，宜小心。',胎孕:'孕期需小心谨慎，注意安全。',子女:'子女需教以礼仪规矩。',周转:'小心行事，周转尚可。',买卖:'谨慎交易，注意合同细节。',等人:'会来，但行程谨慎缓慢。',寻人:'在危险之地，宜谨慎寻找。',失物:'在路上或脚边，注意低处。',外出:'出行需小心谨慎，注意安全。',考试:'细心答题可取得好成绩。',诉讼:'守礼依法，结果尚可。',求事:'循规蹈矩，可得稳定职位。',改行:'谨慎评估后方可改行。',开业:'谨慎起步，守规矩可成。',事业:'稳步推进，不可冒险激进。',经商:'诚信守法经营，稳步发展。',求名:'以德行服人，循序渐进。',婚恋:'以礼相待，婚姻可成。',决策:'行事谨慎，如履薄冰方安。'
+  },
+  '泰': {
+    时运:'否极泰来，万事亨通，吉祥如意。',财运:'财运亨通，投资获利丰厚。',家宅:'家宅兴旺，上下和睦通泰。',身体:'身体康健，旧疾可愈。',特性:'胸怀坦荡，上下交融，贵人多助。',运势:'大吉大利，通泰之象，万事顺利。',家运:'家道昌盛，和气生财。',疾病:'病情好转，可以痊愈。',胎孕:'生产顺利，母子平安。',子女:'子女昌盛，前程似锦。',周转:'资金充裕，周转顺畅无阻。',买卖:'交易顺利，获利丰厚。',等人:'一定会来，带来好消息。',寻人:'可以寻得，不必担忧。',失物:'很快找回，在南方近处。',外出:'出行大吉，万事顺利。',考试:'成绩优秀，金榜题名。',诉讼:'胜诉在望，结果有利。',求事:'顺利如愿，可得理想职位。',改行:'吉利，改行必有良好发展。',开业:'大吉，开业兴隆旺盛。',事业:'事业亨通，前途光明远大。',经商:'生意兴隆，利润丰厚。',求名:'功名可就，事半功倍。',婚恋:'天作之合，婚姻美满幸福。',决策:'运势极佳，把握机遇进取。'
+  },
+  '否': {
+    时运:'闭塞不通，万事受阻，宜静守。',财运:'财运不佳，投资宜守不宜攻。',家宅:'家宅不安，上下不和。',身体:'气血不通，注意心肺肠胃。',特性:'能忍耐逆境，静待时机转变。',运势:'运势低迷，诸事不顺，宜忍耐。',家运:'家运衰退，不和睦之象。',疾病:'久病难愈，注意调养。',胎孕:'孕期不顺，宜多加注意。',子女:'子女与父母沟通不畅。',周转:'资金不足，周转困难。',买卖:'买卖不成，市场低迷。',等人:'不会来，有阻隔之象。',寻人:'找不到，被阻隔在远方。',失物:'被隐藏，短期难以找回。',外出:'不宜出行，出行有阻碍。',考试:'成绩不佳，需加倍努力。',诉讼:'不利，宜暂时搁置。',求事:'求职受阻，暂时难以如愿。',改行:'时运不济，不宜改行。',开业:'时机不佳，暂缓开业。',事业:'事业受阻，宜守不宜进。',经商:'生意清淡，宜收缩经营。',求名:'暂时受阻，蛰伏待时。',婚恋:'双方有隔阂，婚事难成。',决策:'逆境中坚守正道，等待转机。'
+  },
+  '同人': {
+    时运:'志同道合，与人同心协力吉利。',财运:'合作投资有利，共同获益。',家宅:'家人同心，其利断金。',身体:'心情愉快有利健康恢复。',特性:'合群友善，善于团队合作。',运势:'与人和同，团结协作顺利。',家运:'家庭和睦同心，万事兴。',疾病:'得友人关照，病情可好转。',胎孕:'孕期有人帮助照料，平安。',子女:'子女友爱和睦，互相帮助。',周转:'志同道合者相助可成。',买卖:'合伙交易，互利共赢。',等人:'会来，且与友人同来。',寻人:'在朋友聚集处可寻得。',失物:'请朋友帮忙可找回。',外出:'与志同道合者同行大吉。',考试:'与同学互帮互助，成绩佳。',诉讼:'有人支持帮助，结果有利。',求事:'经朋友推荐引荐可得。',改行:'与人合伙改行为宜。',开业:'合伙开业，同心协力可成。',事业:'团队协作，事业可成大器。',经商:'合伙经营，志同道合获利。',求名:'得同道之助，功名可成。',婚恋:'志趣相投，婚姻幸福美满。',决策:'以诚待人，团结众人成事。'
+  },
+  '大有': {
+    时运:'大有收获，丰收之象，万事如意。',财运:'财运极佳，大有斩获。',家宅:'家道丰裕，富贵之象。',身体:'身体壮健，精力充沛。',特性:'光明磊落，才华出众，福禄双全。',运势:'丰收之象，事业有成，名利双收。',家运:'家运鼎盛，富贵荣华。',疾病:'虽有病恙，可顺利痊愈。',胎孕:'大吉，生产顺利，得贵子。',子女:'子女有出息，光宗耀祖。',周转:'资金充裕，周转毫无困难。',买卖:'大笔交易可成，获利甚丰。',等人:'必来，且带来丰厚之物。',寻人:'可以找到，在南方光明处。',失物:'可以找回，在显眼之处。',外出:'出行大吉，收获满满。',考试:'名列前茅，成绩出众。',诉讼:'胜诉无疑，结果有利。',求事:'如愿以偿，得到理想职位。',改行:'大吉，改行必有大收获。',开业:'大吉大利，开业兴旺发达。',事业:'事业鼎盛，成就非凡。',经商:'生意兴隆，利润丰厚。',求名:'功成名就，声名远播。',婚恋:'良缘天定，婚姻圆满幸福。',决策:'才能出众，善用资源成大事。'
+  },
+  '谦': {
+    时运:'谦虚为怀，以德服人，吉祥。',财运:'不贪不求，财运稳定。',家宅:'家风谦和，邻里敬重。',身体:'脾胃虚弱，宜温补调养。',特性:'谦逊有礼，不骄不躁。',运势:'谦逊待人，处处受益，吉利。',家运:'家风淳朴谦和，和睦安康。',疾病:'脾胃之症，调养即可痊愈。',胎孕:'孕期平安，母子均安。',子女:'子女谦和有礼，品行端正。',周转:'谦虚请求，他人乐意相助。',买卖:'以诚相待，买卖可成。',等人:'会来，态度谦和。',寻人:'谦让退让之人，在低处可寻。',失物:'在低处或不起眼处可找回。',外出:'出行平安，以谦和待人。',考试:'踏实用功，成绩稳步提升。',诉讼:'以谦和态度处理，宜和解。',求事:'态度谦虚，可得人赏识。',改行:'谦虚学习新领域，可行。',开业:'低调起步，稳健经营可成。',事业:'谦虚谨慎，事业稳步发展。',经商:'薄利多销，谦和经营得客。',求名:'谦虚好学，终可成名。',婚恋:'谦让体贴，婚姻和谐幸福。',决策:'谦虚使人进步，万事亨通。'
+  },
+  '豫': {
+    时运:'预备充分，顺势而为，乐在其中。',财运:'把握先机，投资有利可图。',家宅:'家中喜气洋洋，有庆贺之事。',身体:'心情愉悦利健康，防乐极生悲。',特性:'热情开朗，善于鼓舞人心。',运势:'吉利顺遂，宜未雨绸缪。',家运:'家中有喜事临门，欢乐和谐。',疾病:'心情舒畅则病愈，忌忧郁。',胎孕:'孕妇心情愉快，生产顺利。',子女:'子女活泼聪明，天真快乐。',周转:'提前准备，周转顺利。',买卖:'预先准备充分，交易顺利。',等人:'会来，心情愉快地前来。',寻人:'在欢乐场所或南方可寻。',失物:'在娱乐场所或热闹处。',外出:'出行愉快顺利，心旷神怡。',考试:'准备充分，成绩可喜。',诉讼:'有利之象，但不可得意忘形。',求事:'充分准备后求职，可成功。',改行:'准备充分可改行，前景乐观。',开业:'择吉日开业，生意兴隆。',事业:'充分准备，顺势而为成大事。',经商:'把握商机，提前布局获利。',求名:'才华横溢，功名可成。',婚恋:'两情相悦，婚姻美满欢乐。',决策:'乐观积极，但忌乐极生悲。'
+  },
+  '随': {
+    时运:'顺应时势，灵活应变，随机而动。',财运:'随缘得财，不宜强求，顺势可获利。',家宅:'家中宜随和，以柔化刚则安宁。',身体:'注意口腔及肝胆之疾，宜顺应调养。',特性:'灵活变通，善于适应环境。',运势:'顺时而动，随遇而安，诸事可成。',家运:'家人随和互让，家道顺遂。',疾病:'肝胆口齿之疾，顺从医嘱可愈。',胎孕:'孕期顺遂，顺其自然则安。',子女:'子女性情随和，善于交际。',周转:'随缘而至，贵人相助可成。',买卖:'随行就市，灵活经营可获利。',等人:'会来，但时间不定。',寻人:'随人而去，在东方或泽边可寻。',失物:'随手放置，在常用之处可寻。',外出:'出行顺利，随遇而安。',考试:'灵活应变，成绩不错。',诉讼:'宜顺势和解，不宜强争。',求事:'随缘而得，不可强求。',改行:'顺势而为，改行可行。',开业:'随时而动，开业可成。',事业:'灵活应变，顺势而为可成大事。',经商:'随机应变，顺应市场则获利。',求名:'顺应潮流，随势可成名。',婚恋:'两情相悦，随缘结合幸福。',决策:'善于适应变化，顺势而为。'
+  },
+  '蛊': {
+    时运:'整治积弊，革故鼎新，宜大刀阔斧。',财运:'清理旧账，整顿财务，方可转盈。',家宅:'家宅有败象，宜修缮整顿。',身体:'积病已久，宜彻底调理。',特性:'勇于改革，善于拨乱反正。',运势:'积弊丛生，需大力整治方可好转。',家运:'家道衰败须整顿，振作有望。',疾病:'久病缠身，需根治旧疾。',胎孕:'孕期需格外小心，防意外。',子女:'子女宜严加管教，纠正不良习气。',周转:'清理旧债方可顺利周转。',买卖:'旧货清理可获利，新进宜慎。',等人:'不来，因旧事纠缠。',寻人:'因旧怨离去，在西南山中。',失物:'被杂物掩埋，清理可寻回。',外出:'整理行装再出发，不宜仓促。',考试:'旧学不牢需补习，用功可进。',诉讼:'旧案重提，宜彻底解决。',求事:'先解决遗留问题再求新职。',改行:'宜改行，除旧布新有利。',开业:'整顿后开业为佳，忌草率。',事业:'整治弊病，革新进取可兴。',经商:'清除积弊，改革经营方式获利。',求名:'改过自新，刻苦用功可成。',婚恋:'修正自身不足，方得良缘。',决策:'勇于面对问题，拨乱反正。'
+  },
+  '临': {
+    时运:'居高临下，权威日增，大有可为。',财运:'财运渐盛，投资获利时机已到。',家宅:'家运兴旺，尊卑有序，和睦安康。',身体:'注意脾胃之疾，宜未病先防。',特性:'宽厚临下，具有领导统率之才。',运势:'亨通渐进，居上临下，万事如意。',家运:'家道兴隆，长辈受敬，家运昌盛。',疾病:'脾土之症，初病易治，久则难愈。',胎孕:'孕期安顺，得子吉祥。',子女:'子女孝顺可教，前途光明。',周转:'资金渐充裕，周转无碍。',买卖:'居上位而观市，交易有利。',等人:'会来，且恭敬而至。',寻人:'在近处低洼之地可寻得。',失物:'在近处或桌下方可寻。',外出:'出行顺利，逢贵人相助。',考试:'成绩优良，有望名列前茅。',诉讼:'占理有利，上方支持可胜。',求事:'有长辈提携，求职顺利。',改行:'时机适宜，改行有利。',开业:'开业大吉，管理得当必兴。',事业:'宜主动进取，施展抱负。',经商:'拓展经营，稳步上升获利。',求名:'名声渐起，功成名就有望。',婚恋:'以诚相待，婚姻美满和谐。',决策:'以宽厚之德临人处事。'
+  },
+  '观': {
+    时运:'静观其变，洞察时势，宜审时度势。',财运:'观望为宜，不可轻举妄动。',家宅:'家宅宜肃穆端正，注重风水。',身体:'注意眼疾及风邪之症。',特性:'善于观察思考，洞察力强。',运势:'以观待变，审慎行事，不宜冒进。',家运:'家风端正，宜内省修德。',疾病:'风邪之症或眼目之疾，宜调养。',胎孕:'宜多观察身体变化，谨慎为安。',子女:'子女聪明善观察，但需引导。',周转:'观望态势，暂缓周转为佳。',买卖:'观察市场行情后再决定。',等人:'对方在观望犹豫，可能不来。',寻人:'在高处或庙宇附近可寻。',失物:'仔细观察周围，可寻得。',外出:'先观察路况天气再出行。',考试:'审题仔细，成绩可佳。',诉讼:'宜冷静观察形势再行动。',求事:'先观察了解行业再做决定。',改行:'宜先观察市场，不可急于改行。',开业:'时机需再观察，暂缓开业。',事业:'审时度势，静观其变待时机。',经商:'观望市场走向，谨慎决策。',求名:'潜心修学，静待时机扬名。',婚恋:'宜多了解对方，慎重决定。',决策:'冷静观察，明辨是非后行动。'
+  },
+  '噬嗑': {
+    时运:'刚正执法，明断是非，障碍可除。',财运:'排除阻碍后财路亨通。',家宅:'家中有阻隔之事，需强力化解。',身体:'口腔及颌面之疾，需果断治疗。',特性:'刚正果决，善于破除障碍。',运势:'有阻碍之象，刚毅果断可突破。',家运:'家中有口舌纷争，宜果断解决。',疾病:'口齿咽喉之疾，宜速治可愈。',胎孕:'生产虽有阻碍，终可平安。',子女:'子女性格刚强，管教宜严。',周转:'有阻碍须排除，方可周转。',买卖:'交易有障碍，强力推进可成。',等人:'有阻隔来迟，终会到来。',寻人:'有人阻拦，在东北方可寻。',失物:'被障碍物遮挡，移开可见。',外出:'排除障碍后出行顺利。',考试:'需克服困难，努力可取佳绩。',诉讼:'宜果断诉讼，正义可伸张。',求事:'排除阻力后求职可成。',改行:'破旧立新，果断改行有利。',开业:'排除万难开业，可获成功。',事业:'果断决策，破除障碍成大事。',经商:'排除竞争障碍，果断经营。',求名:'克服困难，坚持不懈终成名。',婚恋:'化解误会，婚事终可成就。',决策:'果断刚毅，扫除障碍前行。'
+  },
+  '贲': {
+    时运:'文饰修饰，注重外在，小事亨通。',财运:'外观包装得当可获利，忌虚浮。',家宅:'家宅装饰一新，美观宜居。',身体:'外表光鲜但需注意内在调理。',特性:'注重仪表修养，文雅有礼。',运势:'外表光彩，内实不足，宜小事。',家运:'家中注重礼仪装饰，表面和睦。',疾病:'表面轻症，但需注意内在病根。',胎孕:'孕期注意外在保养，可顺产。',子女:'子女注重外表，宜培养内在。',周转:'表面容易，实质需多费心。',买卖:'包装得当可售出，利润有限。',等人:'会来，衣着光鲜而至。',寻人:'在繁华热闹之处可寻。',失物:'在装饰品或华丽之物旁。',外出:'出行顺利，注重仪表有利。',考试:'成绩中等，文科较佳。',诉讼:'表面和解，实质问题仍在。',求事:'仪表端正有助求职，注重形象。',改行:'可适当调整，注重包装形象。',开业:'注重店面装潢，小本开业可。',事业:'注重形式美感，适合文化事业。',经商:'注重品牌包装，可提升销量。',求名:'文采出众，以才华扬名。',婚恋:'注重外表易结缘，需深入了解。',决策:'文质彬彬，注重内外兼修。'
+  },
+  '剥': {
+    时运:'运势衰退，万事剥落，宜守不宜进。',财运:'财运衰败，投资恐有亏损。',家宅:'家宅不安，有损坏之象，宜修补。',身体:'体质虚弱，注意皮肤及脾胃。',特性:'能忍耐逆境，善于保存实力。',运势:'阴盛阳衰，小人当道，宜静守。',家运:'家道中落，诸事不顺，忍耐为要。',疾病:'慢性消耗之症，宜长期调养。',胎孕:'孕期不安，需格外小心。',子女:'子女运势平平，需多加关爱。',周转:'资金困窘，周转极为困难。',买卖:'市场低迷，不宜交易。',等人:'不会来，已中途变卦。',寻人:'已远去难寻，在东北方。',失物:'已损坏或被拿走，难以追回。',外出:'不宜出行，途中恐有不测。',考试:'成绩不佳，需从头温习。',诉讼:'不利，宜忍让退步。',求事:'时运不济，求职暂缓。',改行:'时机不对，不宜改行。',开业:'不宜开业，恐有亏损。',事业:'事业受挫，宜守成待变。',经商:'市道萧条，宜收缩经营。',求名:'暂时受挫，蛰伏等待时机。',婚恋:'感情有裂痕，婚事恐不成。',决策:'忍耐退守，等待否极泰来。'
+  },
+  '复': {
+    时运:'一阳来复，否极泰来，生机初现。',财运:'财运开始回升，小有收获。',家宅:'家运回春，渐趋兴旺。',身体:'病后初愈，体力渐复，宜温养。',特性:'善于反省自新，能东山再起。',运势:'时运好转，万象更新，宜积极。',家运:'家运复兴，否极泰来之兆。',疾病:'旧病复发但可痊愈，宜调养。',胎孕:'孕期平安，有再孕之象。',子女:'子女运势回升，渐入佳境。',周转:'资金渐宽裕，周转有望。',买卖:'市场回暖，交易渐可获利。',等人:'会来，虽迟但终会到达。',寻人:'离去之人将归来，在西南方。',失物:'失而复得，可寻回。',外出:'宜择日出行，回程顺利。',考试:'成绩回升，温故知新有效。',诉讼:'旧案重审，可获有利结果。',求事:'机会重新出现，可再争取。',改行:'时机初现，改行可考虑。',开业:'重新开业有利，否极泰来。',事业:'事业复兴，重新出发可成。',经商:'商机重现，恢复经营获利。',求名:'卷土重来，功名终可成就。',婚恋:'旧情复燃，破镜可重圆。',决策:'善于反省改过，把握新生机。'
+  },
+  '无妄': {
+    时运:'至诚无妄，顺天而行，不可妄为。',财运:'意外之财不可取，正道生财。',家宅:'家宅宜守正道，勿有非分之想。',身体:'突发之疾，宜顺其自然调理。',特性:'纯真坦率，不做作，顺天应人。',运势:'守正不妄，顺应自然，意外之事多。',家运:'家道纯正，勿贪非分之福。',疾病:'无名之疾，不宜乱投医药。',胎孕:'顺其自然，不必过忧。',子女:'子女天真无邪，性情率直。',周转:'不可用不正当手段周转。',买卖:'诚信交易，不可有欺诈之心。',等人:'出乎意料可能不来，勿强求。',寻人:'意外走失，不经意间可寻得。',失物:'无心之失，不期然可寻回。',外出:'顺其自然出行，勿强求。',考试:'平常心应考，成绩尚可。',诉讼:'无妄之灾引发，宜据实申辩。',求事:'随缘而定，不可强求。',改行:'顺势而为，勿勉强改行。',开业:'诚信经营可开业，勿投机。',事业:'顺天应人，正道而行可成。',经商:'诚实经营，不可投机取巧。',求名:'以真才实学求名，勿虚饰。',婚恋:'以真心待人，自然得良缘。',决策:'至诚守正，不妄动则吉。'
+  },
+  '大畜': {
+    时运:'厚积蓄德，大有积蓄，宜充实自我。',财运:'积蓄丰厚，财运亨通。',家宅:'家底殷实，积蓄充裕。',身体:'体质壮实，注意饮食过量。',特性:'学识渊博，涵养深厚。',运势:'大有积蓄，厚积薄发，利有所往。',家运:'家业丰厚，积累深厚，家道兴旺。',疾病:'积食或肿胀之症，宜节制饮食。',胎孕:'孕期安稳，胎儿健壮。',子女:'子女才学出众，前途远大。',周转:'积蓄充裕，周转无碍。',买卖:'大宗交易可成，库存丰盈。',等人:'会来，满载而归。',寻人:'在山中或学府中可寻。',失物:'在仓库或储藏室中。',外出:'准备充分后出行，收获丰厚。',考试:'学识积累深厚，成绩优异。',诉讼:'证据充分，胜诉有望。',求事:'才学兼备，求职顺利。',改行:'充分积累后改行，时机成熟。',开业:'资金充裕，开业大吉。',事业:'积累实力，厚积薄发成大业。',经商:'资本雄厚，稳健经营大获利。',求名:'博学多才，功名显赫。',婚恋:'条件优越，婚姻美满。',决策:'充实自我，积蓄力量待时而发。'
+  },
+  '颐': {
+    时运:'注重修养，颐养身心，谨言慎行。',财运:'以节俭养财，不可奢侈浪费。',家宅:'家中饮食丰足，宜注意养生。',身体:'注意饮食起居，脾胃调养为要。',特性:'注重养生修身，言行谨慎。',运势:'颐养正道，慎言节食，修身为本。',家运:'家运平稳，注重饮食养生。',疾病:'脾胃消化系统之疾，宜节制饮食。',胎孕:'孕妇注意营养均衡，勿过补。',子女:'子女需注意饮食习惯，宜节制。',周转:'量入为出，节俭方可周转。',买卖:'食品餐饮行业有利，其余平平。',等人:'因饮食之约会来，稍迟。',寻人:'在饮食场所或山下可寻。',失物:'在厨房餐厅或食物旁。',外出:'注意旅途饮食卫生。',考试:'用功适度，劳逸结合成绩佳。',诉讼:'因饮食或口舌引发，宜和解。',求事:'餐饮养生行业适合，其余不定。',改行:'转向养生餐饮行业可行。',开业:'餐饮养生类开业有利。',事业:'修身养性为先，事业稳步发展。',经商:'饮食养生行业经营有利。',求名:'修身齐家，以德养名。',婚恋:'以真心相待，感情需慢慢培养。',决策:'谨言慎行，注重自我修养。'
+  },
+  '大过': {
+    时运:'非常之时，行非常之事，压力巨大。',财运:'大起大落，高风险高收益。',家宅:'栋梁弯曲，家宅有危之象，宜加固。',身体:'身体不堪重负，需减轻压力。',特性:'能承受巨大压力，非常时行非常事。',运势:'非常时期，独立承担，压力甚大。',家运:'家中负担沉重，宜共同分担。',疾病:'重症须及时就医，不可拖延。',胎孕:'高危孕期，需格外注意。',子女:'对子女期望过高，宜适度减压。',周转:'大额周转困难，风险极高。',买卖:'大额交易风险大，宜慎重。',等人:'不来，有意外变故。',寻人:'在水边或危险之处，速寻。',失物:'在重物之下或水边。',外出:'出行有风险，宜三思而行。',考试:'压力过大影响发挥，需调适。',诉讼:'案件重大，须谨慎应对。',求事:'能力需非凡才能胜任。',改行:'非常时期，大胆改行或可成。',开业:'风险甚高，须有充足准备。',事业:'承担重任，独力支撑可成大器。',经商:'高风险投资，量力而行。',求名:'非常之才方可成非常之名。',婚恋:'感情压力大，需坦诚沟通。',决策:'非常时期果断行事，量力而为。'
+  },
+  '坎': {
+    时运:'险象环生，四面楚歌，宜坚守正道。',财运:'财运多阻，谨防破财受骗。',家宅:'家宅不安，防水患盗贼。',身体:'肾脏泌尿系统或耳疾，宜慎医。',特性:'临危不惧，能在逆境中坚持。',运势:'重重险难，坚守正道方可脱险。',家运:'多灾多难之时，家人需同心。',疾病:'肾水之症或血液之疾，宜速治。',胎孕:'孕期多险，需格外小心。',子女:'子女成长多有波折，需关爱。',周转:'周转极为困难，四处碰壁。',买卖:'交易有风险，谨防欺诈。',等人:'不来，路途有险阻。',寻人:'在北方水边或险地，难寻。',失物:'落入水中或暗处，难寻回。',外出:'不宜出行，途中多险。',考试:'成绩不佳，需加倍努力。',诉讼:'险讼缠身，宜谨慎应对。',求事:'困难重重，暂缓求职。',改行:'时运险阻，不宜改行。',开业:'风险过大，暂缓开业。',事业:'险中求存，坚守正道方可成。',经商:'经营艰险，须防风险谨慎行。',求名:'道路坎坷，百折不挠终可成。',婚恋:'感情多波折，需经考验。',决策:'面对困难坚守信念，终可脱险。'
+  },
+  '离': {
+    时运:'光明附丽，前途光明，宜依附正道。',财运:'财运明朗，文化艺术类投资有利。',家宅:'家宅明亮，宜防火灾。',身体:'注意心脏眼目之疾，防上火。',特性:'聪明才智，光彩照人，善于表达。',运势:'光明美丽，附丽正道，前途光明。',家运:'家道光明兴旺，宜注意防火。',疾病:'心火旺盛或目疾，宜清心降火。',胎孕:'孕妇宜安心养胎，防心火。',子女:'子女聪慧机敏，才华出众。',周转:'文书契约相助，周转可成。',买卖:'市场明朗，交易顺利。',等人:'会来，光彩照人而至。',寻人:'在南方光明热闹处可寻。',失物:'在明亮之处或灯火旁。',外出:'出行光明顺利，宜向南。',考试:'成绩优异，文科尤佳。',诉讼:'真相大白，公正审判有利。',求事:'文化教育类职位顺利。',改行:'转向文化艺术领域有利。',开业:'光明正大开业，前景美好。',事业:'光明磊落，依附正道事业可成。',经商:'文化创意产业经营有利。',求名:'才华横溢，声名远播。',婚恋:'才貌双全，婚姻美满幸福。',决策:'附丽光明正道，智慧照耀前程。'
+  },
+  '咸': {
+    时运:'感应灵通，人缘极佳，宜交往合作。',财运:'感应商机，人脉得财。',家宅:'家庭和睦，夫妻感情深厚。',身体:'注意心神及口腔之疾。',特性:'感受力强，善于社交，重感情。',运势:'感应吉祥，人缘广结，万事如意。',家运:'夫妻恩爱，家庭和美幸福。',疾病:'心脏或口齿之疾，宜静心调养。',胎孕:'孕期夫妻和谐，生产顺利。',子女:'子女善感敏锐，感情丰富。',周转:'人缘好则周转容易。',买卖:'以诚感人，交易顺利。',等人:'会来，心有灵犀。',寻人:'在西方近处，彼此有感应。',失物:'凭感觉寻找，可寻回。',外出:'出行有良缘，社交顺利。',考试:'用心感悟，成绩优良。',诉讼:'以诚感化对方，宜和解。',求事:'人际关系助力，求职顺利。',改行:'凭感觉选择，改行可行。',开业:'人缘好利开业，客源不断。',事业:'以心感人，事业顺遂。',经商:'以诚待客，感动客户获利。',求名:'感化他人，以德成名。',婚恋:'两情相悦，天作之合。',决策:'以真心感人，广结善缘。'
+  },
+  '恒': {
+    时运:'持之以恒，坚守正道，恒久不变。',财运:'长期投资有利，忌短线投机。',家宅:'家宅稳固，长久安宁。',身体:'慢性疾病需长期调养，持之以恒。',特性:'意志坚定，持之以恒，忠贞不渝。',运势:'守常不变，坚持正道，恒久亨通。',家运:'家道稳固，夫妻恒久和睦。',疾病:'慢性病症，需长期坚持治疗。',胎孕:'孕期平稳，持续注意保养。',子女:'子女性情稳定，做事有恒心。',周转:'长期合作伙伴可助周转。',买卖:'长期经营客户，交易稳定。',等人:'必来，一如既往守信。',寻人:'在常去之处，习惯之地可寻。',失物:'在常放之处，仔细寻找可得。',外出:'常走之路出行平安。',考试:'持之以恒用功，成绩稳定。',诉讼:'旷日持久，宜早日了结。',求事:'坚持不懈，终可求得稳定职位。',改行:'不宜轻易改行，坚守为佳。',开业:'持之以恒经营，开业可久。',事业:'坚守岗位，持之以恒必有成。',经商:'长期稳健经营，利润持续。',求名:'坚持不懈，功到自然成。',婚恋:'忠贞不渝，婚姻长久幸福。',决策:'坚定信念，持之以恒终获成功。'
+  },
+  '遁': {
+    时运:'宜退不宜进，韬光养晦，避开锋芒。',财运:'财运渐退，宜收不宜放，保守为上。',家宅:'家宅宜静，有迁居或隐退之象。',身体:'注意肺部及呼吸系统，宜静养。',特性:'善于审时度势，知进退之道。',运势:'退避三舍，以退为进，暂避小人。',家运:'家运暂时不振，宜低调度日。',疾病:'久病宜调养，不宜操劳。',胎孕:'孕期宜静养安胎，忌劳累奔波。',子女:'子女宜离家发展，远行有利。',周转:'资金宜收回，不宜借贷周转。',买卖:'市场不利，宜暂时退出观望。',等人:'不会来，对方有退缩之意。',寻人:'已远遁他方，短期难寻。',失物:'已远离原处，不易寻回。',外出:'宜隐退不宜远行，出则低调。',考试:'成绩平平，宜暂时蛰伏再战。',诉讼:'宜退让和解，不可强争。',求事:'时运不利，暂缓求职为宜。',改行:'宜退守旧业，暂不改行。',开业:'时机未到，暂缓开业。',事业:'以退为进，保存实力待机而动。',经商:'宜收缩经营，保守理财。',求名:'暂隐才华，韬光养晦终成大器。',婚恋:'缘分暂远，强求不得，宜等待。',决策:'善于退让，知进退存亡之理。'
+  },
+  '大壮': {
+    时运:'声势壮盛，气势如虹，宜刚而有节。',财运:'财运旺盛，宜大胆投资，忌骄横。',家宅:'家势兴旺，人丁壮盛，防刚愎自用。',身体:'体质强壮但防过劳损伤，忌逞强。',特性:'精力充沛，果敢刚强，行动力强。',运势:'壮盛之势，刚强有力，凡事可为。',家运:'家道兴旺壮盛，但须谦和守礼。',疾病:'气血过旺之症，宜疏导平和。',胎孕:'胎儿健壮，生产顺利。',子女:'子女刚强有为，精力充沛。',周转:'资金充裕，周转顺利无碍。',买卖:'交易旺盛，大买卖可成，忌鲁莽。',等人:'会来，声势浩大而至。',寻人:'在大路或宽阔之处可寻得。',失物:'在大物件旁或显眼处。',外出:'出行顺利，精力充沛一路无阻。',考试:'成绩优异，势如破竹。',诉讼:'占理则胜，但不可恃强凌弱。',求事:'实力雄厚，求职顺利可成。',改行:'时机已到，大胆改行可成。',开业:'大吉，声势壮盛开业兴旺。',事业:'大有作为，勇猛精进忌骄傲。',经商:'大规模经营获利丰厚，忌冒进。',求名:'才华卓著，功名显赫可期。',婚恋:'热烈追求，婚姻可成，宜柔和。',决策:'刚强有力，行事需知止知足。'
+  },
+  '晋': {
+    时运:'旭日东升，光明进取，步步高升。',财运:'财运上升，事业带动财富增长。',家宅:'家运昌盛，步步高升之兆。',身体:'气色渐佳，旧病可望痊愈。',特性:'积极进取，光明正大，追求上进。',运势:'晋升之象，前途光明，宜积极进取。',家运:'家道日渐兴隆，蒸蒸日上。',疾病:'病情好转，渐有起色可愈。',胎孕:'孕期顺利，母子康泰。',子女:'子女聪颖进取，前途光明。',周转:'资金渐宽裕，周转日益顺畅。',买卖:'市场向好，交易日渐兴旺。',等人:'会来，且带来好消息。',寻人:'在南方光明处，不久可寻得。',失物:'在明亮高处可寻，不难找回。',外出:'出行顺利，步步高升之象。',考试:'成绩进步，名次上升。',诉讼:'形势有利，胜诉在望。',求事:'晋升有望，求职顺利。',改行:'时机有利，改行可获提升。',开业:'开业大吉，事业蒸蒸日上。',事业:'步步高升，前途光明远大。',经商:'生意日渐兴隆，利润攀升。',求名:'名声日隆，功名可就。',婚恋:'感情升温，婚姻美满幸福。',决策:'积极向上，光明磊落进取不息。'
+  },
+  '明夷': {
+    时运:'光明受损，怀才不遇，宜韬光养晦。',财运:'财运受阻，宜暗中积蓄，不可张扬。',家宅:'家宅蒙尘，宜低调隐忍。',身体:'注意眼目及心脏之疾，防暗疾。',特性:'内明外暗，忍辱负重，深藏不露。',运势:'明入地中，光明受伤，宜隐忍待时。',家运:'家道暗淡，需忍耐度过难关。',疾病:'暗疾缠身，病情不明，宜详查。',胎孕:'孕期宜谨慎，多暗中忧虑。',子女:'子女才华被掩，宜耐心引导。',周转:'暗中周转方可成，不可声张。',买卖:'市场暗淡，交易不宜公开。',等人:'不来，被困于暗处或有难。',寻人:'隐匿暗处难寻，在南方或地下。',失物:'被遮蔽隐藏，短时难以寻回。',外出:'出行不利，宜暂缓避祸。',考试:'发挥失常，成绩不理想。',诉讼:'受冤难伸，宜忍耐待时。',求事:'怀才不遇，暂时蛰伏。',改行:'时运不济，暂不宜改行。',开业:'时机暗淡，不宜此时开业。',事业:'韬光养晦，保存实力待时而发。',经商:'市道低迷，暗中经营保本为上。',求名:'才华被掩，忍辱待时终可扬名。',婚恋:'感情受挫，暗中忍耐等待转机。',决策:'内心光明，外显柔顺，隐忍待时。'
+  },
+  '家人': {
+    时运:'家和万事兴，宜齐家治内，不宜外求。',财运:'家庭理财有方，勤俭持家可聚财。',家宅:'家宅兴旺，上下和睦，阖家安康。',身体:'注意家人健康，防风寒入体。',特性:'重视家庭伦理，尽责守分。',运势:'家道和顺，内外有别，宜治家为先。',家运:'家运兴盛，夫妻和睦，子女孝顺。',疾病:'家人照料下病情好转，宜调养。',胎孕:'孕妇家中安养，生产平安。',子女:'子女温良孝顺，家风端正。',周转:'家人相助可顺利周转。',买卖:'家族经营有利，外求不宜。',等人:'家人会来，团聚之象。',寻人:'在家中或亲戚处可寻得。',失物:'在家中某处，仔细搜寻可找。',外出:'宜守家中，外出平平。',考试:'家人督促下用功，成绩可佳。',诉讼:'家务事宜内部和解，忌外扬。',求事:'家族相关事业有利。',改行:'家族事业为佳，不宜独闯。',开业:'家族合力开业可成。',事业:'齐家治内，以家业为根基。',经商:'家族经营管理，齐心可获利。',求名:'以家学渊源成名，继承发扬。',婚恋:'家庭和美，婚姻幸福圆满。',决策:'治家有方，正己化人方可安。'
+  },
+  '睽': {
+    时运:'意见相左，离心离德，宜求同存异。',财运:'合作不顺，独自经营反有小利。',家宅:'家中不和，意见分歧，宜各退一步。',身体:'气血不调，寒热交替，宜平衡调理。',特性:'独立思考，见解独到，不随波逐流。',运势:'乖违背离，事多分歧，宜小事可为。',家运:'家人意见不合，需调和矛盾。',疾病:'寒热错杂之症，宜综合调理。',胎孕:'孕期心情不安，宜放宽心态。',子女:'子女各有主见，管教费心。',周转:'合伙周转不利，独自筹措为宜。',买卖:'买卖双方分歧大，交易不易成。',等人:'不来，双方有误解隔阂。',寻人:'因意见不合离去，在东南方。',失物:'因疏忽而失，在意料之外处。',外出:'出行有不顺，宜独行不宜同伴。',考试:'偏科严重，总成绩平平。',诉讼:'双方争执不下，调解困难。',求事:'与面试官意见不合，暂不顺。',改行:'意见分歧，独自改行或可行。',开业:'合伙不利，独自开业小成。',事业:'独立行事，小事可成大事难就。',经商:'各自为政，小本经营尚可。',求名:'另辟蹊径，独树一帜可成名。',婚恋:'双方性格不合，需多磨合。',决策:'求同存异，化解矛盾方可行。'
+  },
+  '蹇': {
+    时运:'前路艰险，步履维艰，宜守正待援。',财运:'财运受阻，投资不利，宜守不宜进。',家宅:'家运多舛，诸事不顺，需坚忍。',身体:'足部或关节之疾，行动不便，宜休养。',特性:'坚韧不拔，困难中不失正道。',运势:'前行有险，困难重重，宜止步反省。',家运:'家道多难，需合力共度难关。',疾病:'足疾或风湿之症，难以速愈。',胎孕:'孕期多波折，需格外小心保养。',子女:'子女成长多磨难，宜耐心呵护。',周转:'资金极度困难，贵人相助方可。',买卖:'市场困难，交易受阻不顺。',等人:'不来，路途险阻难行。',寻人:'被困于险处，在西南方，难寻。',失物:'在险处或难以到达之地。',外出:'不宜出行，路途多险阻。',考试:'成绩不佳，困难重重。',诉讼:'不利，宜暂缓退让。',求事:'处处碰壁，暂缓求职。',改行:'困难时期，不宜改行。',开业:'时运不济，不宜开业。',事业:'知难而退，反省自身后再进。',经商:'经营困难，宜收缩守成。',求名:'道路坎坷，需百折不挠。',婚恋:'婚事多阻碍，成就不易。',决策:'面对困难坚守正道，求贤自辅。'
+  },
+  '解': {
+    时运:'困难消散，柳暗花明，万象更新。',财运:'财运好转，旧债可清，新利可图。',家宅:'家中纷争化解，重归和睦安宁。',身体:'病情缓解，渐趋康复，宜继续调养。',特性:'善于化解矛盾，宽宏大量。',运势:'难题消解，拨云见日，宜速决速行。',家运:'家中祸患消除，否极泰来。',疾病:'病情好转痊愈，旧疾可除。',胎孕:'孕期转安，之前忧虑可解。',子女:'子女困境解除，渐入佳境。',周转:'困境解除，资金周转恢复顺畅。',买卖:'障碍消除，交易可顺利达成。',等人:'会来，之前的阻碍已消除。',寻人:'可以寻得，阻碍已解除。',失物:'障碍去除后可寻回。',外出:'出行顺利，之前的阻碍已消散。',考试:'难题迎刃而解，成绩回升。',诉讼:'纠纷化解，宜速调解了结。',求事:'机会来临，求职顺利可成。',改行:'旧困已解，改行时机到来。',开业:'时机已到，开业可获成功。',事业:'困难化解，事业重新顺利发展。',经商:'商场障碍清除，经营回春。',求名:'困境已过，功名可期。',婚恋:'误会化解，感情重归于好。',决策:'善于解纷排难，宽以待人。'
+  },
+  '损': {
+    时运:'有所损失，减少欲望，以退为进。',财运:'破财消灾，减少投入，节俭为要。',家宅:'家用宜节俭，减少开支保平安。',身体:'身体虚损，宜清淡饮食调养。',特性:'克己奉公，舍小利顾大义。',运势:'损己利人，先损后益，诚心可亨。',家运:'家中有损失，但因祸得福之象。',疾病:'气血亏损之症，宜滋补调养。',胎孕:'孕期虚弱，宜多休息进补。',子女:'子女教养虽费心力，终有回报。',周转:'有所损失方可周转，舍小保大。',买卖:'利润微薄，薄利多销为上策。',等人:'不来，有损失变故之故。',寻人:'损失已定，在东北山中难寻。',失物:'已损坏或消耗，难以完好寻回。',外出:'出行有小损，宜轻装简行。',考试:'成绩有退步，需加倍努力。',诉讼:'有所损失，宜忍让了结。',求事:'暂有牺牲，先低就后可升。',改行:'需有所牺牲才能改行成功。',开业:'初期有损失，坚持方见成效。',事业:'先苦后甜，忍受损失终获益。',经商:'薄利经营，减少规模保安全。',求名:'暂时名利有损，坚持终可成。',婚恋:'有所付出牺牲，感情方可成就。',决策:'损下益上，克制私欲行正道。'
+  },
+  '益': {
+    时运:'利益增长，好运渐来，宜积极进取。',财运:'财运亨通，投资获利，利益增加。',家宅:'家运增盛，添丁进财之喜。',身体:'身体渐强，气血充盈，调养有效。',特性:'乐善好施，助人为乐，福报丰厚。',运势:'利益增加，损上益下，大有可为。',家运:'家道兴旺，人财两旺之象。',疾病:'病情好转，用药有效可愈。',胎孕:'孕期顺利，有添丁之喜。',子女:'子女增多，福泽绵长。',周转:'资金充裕，周转顺利有余。',买卖:'交易兴旺，利润丰厚可期。',等人:'会来，且带来好处利益。',寻人:'可以寻得，在东南方向。',失物:'可以找回，且有额外收获。',外出:'出行大吉，收获丰厚。',考试:'成绩进步明显，名次上升。',诉讼:'有利结果，可获赔偿。',求事:'求职顺利，薪资优厚。',改行:'改行有利，前景光明可期。',开业:'大吉，开业兴旺利润丰厚。',事业:'事业蒸蒸日上，前途广阔。',经商:'生意兴隆，利润增长可观。',求名:'功名日增，声望日隆。',婚恋:'感情甜蜜增进，婚姻幸福。',决策:'济世利民，善行积德终有福报。'
+  },
+  '夬': {
+    时运:'果决刚毅，当机立断，铲除障碍。',财运:'果断出手，财运可得，忌优柔寡断。',家宅:'家中宜果断除弊，整顿家风。',身体:'口腔或肺部之疾，宜果断治疗。',特性:'果敢决断，嫉恶如仇，行事雷厉。',运势:'决断之时，以正胜邪，宜刚决果敢。',家运:'家中积弊一扫而清，焕然一新。',疾病:'急症宜速治，果断就医可愈。',胎孕:'生产迅速，宜早做准备。',子女:'子女果断刚毅，做事干脆利落。',周转:'果断处理可周转成功。',买卖:'当断则断，交易迅速达成。',等人:'会来，来得迅速果断。',寻人:'下定决心寻找，可在西方寻得。',失物:'果断行动寻找，尚可找回。',外出:'出行果断迅速，一路顺畅。',考试:'果断答题，成绩优良。',诉讼:'果断出击，胜诉在握。',求事:'果断把握机会，可得理想职位。',改行:'当机立断改行，前景可期。',开业:'果断开业，迅速占领市场。',事业:'决断进取，铲除障碍成大事。',经商:'果断决策，把握商机获利。',求名:'当仁不让，果断求取功名。',婚恋:'主动果敢表白，婚事可成。',决策:'刚毅果断，除恶务尽守正道。'
+  },
+  '姤': {
+    时运:'意外相遇，机缘忽至，宜慎防诱惑。',财运:'意外之财可遇，但须防贪念误事。',家宅:'家中有不速之客，宜谨慎应对。',身体:'防风邪入侵，注意下腹之疾。',特性:'善于把握偶然机遇，交际广泛。',运势:'不期而遇，阴渐长盛，宜防小人。',家运:'家中有变故之象，宜防外来影响。',疾病:'隐疾初现，宜及早防治。',胎孕:'意外受孕之象，宜多加注意。',子女:'子女性情多变，宜加以引导。',周转:'偶遇贵人可助周转，不可依赖。',买卖:'偶然商机不可错过，但须辨真伪。',等人:'不期而至，出乎意料会来。',寻人:'偶然相遇可寻得，在西南方。',失物:'意外之处可寻回，不经意间。',外出:'出行有奇遇，但须防意外。',考试:'发挥时好时坏，需谨慎作答。',诉讼:'有意外情况介入，变数较多。',求事:'偶遇机会可得，但不可掉以轻心。',改行:'偶然机缘改行，需慎重考虑。',开业:'时机偶至，把握可开业但须谨慎。',事业:'把握偶然机遇，防范不测。',经商:'偶遇商机可获利，忌贪心。',求名:'偶然扬名，不可恃以为常。',婚恋:'偶然相遇结缘，需深入了解。',决策:'善辨善察，不为表象所惑。'
+  },
+  '萃': {
+    时运:'人心汇聚，众志成城，宜合力而为。',财运:'众人聚财有利，集资合作可获利。',家宅:'家人团聚，人气旺盛，和睦兴旺。',身体:'气血聚集，防淤滞之症，宜疏导。',特性:'凝聚力强，善于团结众人。',运势:'聚集之象，众人团结，大事可成。',家运:'家人齐聚一堂，和乐融融。',疾病:'气滞血瘀之象，宜活血化瘀。',胎孕:'孕期平安，有合家欢庆之兆。',子女:'子女团结友爱，齐心向上。',周转:'众人集资，周转顺利。',买卖:'集中交易有利，团购更佳。',等人:'会来，且众人一同前来。',寻人:'在人群聚集之处可寻得。',失物:'在聚会场所或人多之处。',外出:'结伴出行，众人同行顺利。',考试:'集中精力复习，成绩可佳。',诉讼:'众人支持，胜诉有望。',求事:'团体推荐，求职顺利。',改行:'众人合力改行，可获成功。',开业:'合力开业，人气旺盛可成。',事业:'凝聚众人之力，事业可成大器。',经商:'集资合伙经营，团结获利。',求名:'得众人推崇，名声远扬。',婚恋:'众人祝福，婚姻美满幸福。',决策:'团结众人，凝心聚力共进。'
+  },
+  '升': {
+    时运:'步步上升，积小成大，前途远大。',财运:'财运渐升，稳步增长，利长期投资。',家宅:'家运上升，搬迁高处更佳。',身体:'气血上行，注意头部血压。',特性:'谦逊上进，脚踏实地，循序渐进。',运势:'上升之象，积少成多，稳步晋升。',家运:'家道日渐兴隆，稳步上升。',疾病:'气火上升之症，宜清降调理。',胎孕:'孕期平安，胎气上升之象。',子女:'子女上进有为，步步高升。',周转:'资金渐充裕，周转顺利。',买卖:'市场渐好，交易稳步增长。',等人:'会来，由远而近渐至。',寻人:'在南方高处可寻得。',失物:'在高处或楼上可寻。',外出:'出行向上，登高远行顺利。',考试:'成绩稳步提升，进步明显。',诉讼:'形势渐好，结果有利可期。',求事:'逐步晋升，求职顺利可成。',改行:'稳步转型，改行渐见成效。',开业:'稳步开业，循序渐进可兴旺。',事业:'脚踏实地，事业稳步上升。',经商:'生意渐入佳境，利润上升。',求名:'功名日进，循序渐进终成。',婚恋:'感情稳步升温，婚姻可成。',决策:'积善积德，谦逊进取步步高。'
+  },
+  '困': {
+    时运:'困顿受阻，身心俱疲，宜坚守待变。',财运:'财运困顿，资金枯竭，宜节俭度日。',家宅:'家运穷困，诸事受阻，需忍耐。',身体:'体力衰竭，精神不振，宜休息调养。',特性:'处困不失志，穷且益坚不坠志。',运势:'四面楚歌，困顿之极，守正待时。',家运:'家运困窘，需节俭度日以待转机。',疾病:'病重体虚，多方求治方可缓解。',胎孕:'孕期艰难，需格外注意保养。',子女:'子女处境困难，需多加关怀。',周转:'资金匮乏，周转极为困难。',买卖:'市场萧条，交易不成。',等人:'不来，困于途中难以前行。',寻人:'被困于某处，在西方水涸之地。',失物:'被压在重物之下，难以取出。',外出:'不宜出行，途中多困阻。',考试:'成绩不佳，身心俱疲。',诉讼:'不利，有口难言之苦。',求事:'求职困难，处处碰壁。',改行:'时运困顿，不宜改行。',开业:'时机不利，开业恐有困厄。',事业:'困境中坚守正道，以待时运。',经商:'经营困难，宜守不宜进。',求名:'暂时困厄，坚持终可出头。',婚恋:'感情受困，难以如愿。',决策:'身处困境不失正道，终见光明。'
+  },
+  '井': {
+    时运:'取之不尽，养民济世，宜修德养人。',财运:'财源如井水，源源不断，利长远。',家宅:'家宅得水之利，安居乐业。',身体:'肾水调和，泌尿系统宜注意保养。',特性:'乐善好施，普济众人，润物无声。',运势:'井养不穷，利人利己，宜修身利民。',家运:'家道如井水清澈，和乐安康。',疾病:'泌尿肾水之症，宜滋阴补肾。',胎孕:'孕期得养，母子康健。',子女:'子女如泉涌之才，源源不绝。',周转:'资源不断，周转无碍。',买卖:'如井水供给不断，生意长久。',等人:'会来，如汲井水必得。',寻人:'在水源附近或村落中可寻。',失物:'在水边或井旁之处可寻。',外出:'出行顺利，所到之处有助益。',考试:'知识如井水取之不竭，成绩佳。',诉讼:'公正如水，结果公平合理。',求事:'才华如泉涌，求职顺利。',改行:'改行从事利民之业为佳。',开业:'开业如掘井得水，持久可营。',事业:'造福社会，事业长久不衰。',经商:'以利民为本，经营持久获利。',求名:'以学问济世，名声长存不朽。',婚恋:'感情如甘泉滋润，婚姻持久。',决策:'修德养人，如井润物泽被苍生。'
+  },
+  '革': {
+    时运:'变革之时，除旧布新，宜果断求变。',财运:'财运逢变，旧业宜舍，新路可图。',家宅:'家宅有变动之象，搬迁或翻新皆宜。',身体:'体质需调理改善，旧疾宜换新方。',特性:'勇于革新，敢于打破陈规旧习。',运势:'变革之象，顺时而变则吉，逆势守旧则凶。',家运:'家运逢变革，破旧立新方兴旺。',疾病:'旧病需换新疗法，宜果断就医。',胎孕:'孕期有变化之兆，宜顺应调养。',子女:'子女思想新锐，敢于创新突破。',周转:'旧路不通，另辟蹊径可周转。',买卖:'市场变动，宜抓住变革之机。',等人:'会来，但时间或方式有变。',寻人:'已远走他乡，另寻新路可得。',失物:'旧处难寻，在新环境中查找。',外出:'出行有变动，灵活应对为佳。',考试:'改变学习方法，成绩方能突破。',诉讼:'局势有变，适时调整策略。',求事:'转换方向求职，可获新机遇。',改行:'大吉，正是变革转型之良机。',开业:'革新创业，推陈出新可兴旺。',事业:'顺应时势变革，事业焕然一新。',经商:'经营模式宜改革创新求突破。',求名:'变革图新，名声因改革而起。',婚恋:'感情有变化，宜坦诚面对革新。',决策:'审时度势，当断则断勇于变革。'
+  },
+  '鼎': {
+    时运:'鼎新之运，文明教化，宜开创新局。',财运:'财运亨通，投资新事业可获丰利。',家宅:'家宅鼎盛，烹饪饮食丰足有余。',身体:'注意脾胃消化，饮食宜调和。',特性:'文明高雅，善于创造与革新。',运势:'鼎新之象，去旧迎新，大业可成。',家运:'家运兴隆，如鼎之稳固昌盛。',疾病:'脾胃之疾，宜调理饮食可愈。',胎孕:'孕期安稳，有添丁之喜兆。',子女:'子女贤能有才，前途光明。',周转:'贵人鼎力相助，周转顺利。',买卖:'新产品新业务，交易顺利可成。',等人:'会来，带来新的好消息。',寻人:'在南方或厨灶之处可寻得。',失物:'在厨房或火炉附近可找到。',外出:'出行顺利，有新的收获。',考试:'成绩优异，学业有新突破。',诉讼:'有贵人调解，结果有利。',求事:'新职位新机遇，求职大吉。',改行:'鼎新之时，改行创业皆吉。',开业:'开业大吉，新事业蒸蒸日上。',事业:'开创新局面，事业鼎盛辉煌。',经商:'创新经营，生意兴隆如火。',求名:'名望日盛，因创新而受敬重。',婚恋:'新的姻缘将至，婚姻美满。',决策:'以创新之心成就文明之业。'
+  },
+  '震': {
+    时运:'雷声震动，惊醒奋起，宜积极行动。',财运:'财运骤起，把握机遇快速行动。',家宅:'家宅不安，有惊扰之象，宜镇定。',身体:'注意肝胆及神经系统，防惊悸。',特性:'行动果敢，反应敏锐，敢为人先。',运势:'震动之象，惊后有喜，奋起可成。',家运:'家中有惊动之事，镇定方安。',疾病:'惊悸肝胆之症，宜安神调理。',胎孕:'孕期有惊但无险，宜安心。',子女:'子女活泼好动，精力旺盛。',周转:'快速行动可周转成功。',买卖:'市场波动，快进快出为宜。',等人:'会突然到来，出人意料。',寻人:'在东方，因惊动而离开。',失物:'因震动而移位，在原处附近。',外出:'出行有惊无险，宜果断前行。',考试:'临场发挥出色，成绩超预期。',诉讼:'有突发变化，宜快速应对。',求事:'机遇突然降临，宜迅速把握。',改行:'时机突至，果断改行可成。',开业:'开业有声势，声名远播。',事业:'奋起行动，事业一鸣惊人。',经商:'抓住商机，雷厉风行获利。',求名:'一鸣惊人，名声因行动而起。',婚恋:'感情如雷电般迅猛，宜把握。',决策:'居安思危，雷厉风行成大事。'
+  },
+  '艮': {
+    时运:'静止不动，修身养性，宜止则止。',财运:'财运平稳，不宜妄动求财。',家宅:'家宅安稳，山居静养为佳。',身体:'注意背部脊椎，宜静养调理。',特性:'沉稳内敛，善于静思冥想。',运势:'止而不动，静观其变为宜。',家运:'家运平稳，宜安守本分。',疾病:'背脊手指之疾，宜静养为主。',胎孕:'孕期宜静养安胎，忌劳累。',子女:'子女性格沉稳，学业宜静心。',周转:'暂时不动为佳，等待时机。',买卖:'市场平淡，暂停交易为宜。',等人:'不会来，对方按兵不动。',寻人:'在东北山中，不愿被找到。',失物:'在山边或高处角落中。',外出:'不宜出行，宜留守原地。',考试:'静心复习方可取得好成绩。',诉讼:'宜停止争讼，各退一步。',求事:'暂不宜求职，宜充实自己。',改行:'时机未到，宜静待不动。',开业:'暂缓开业，等待更好时机。',事业:'适可而止，守成为上策。',经商:'暂停扩张，稳守现有经营。',求名:'静心修学，厚积方能薄发。',婚恋:'感情宜静观其变，不可强求。',决策:'知止而后安，当止则止。'
+  },
+  '渐': {
+    时运:'循序渐进，稳步前行，不可急躁。',财运:'财运渐增，细水长流，稳中有升。',家宅:'家宅渐安，逐步改善向好。',身体:'慢性调理，循序渐进可恢复。',特性:'稳健踏实，做事有条不紊。',运势:'渐进之象，按部就班终达目标。',家运:'家运渐好，循序渐进日益兴旺。',疾病:'慢性之症，耐心调养渐可愈。',胎孕:'孕期平顺，循序发育良好。',子女:'子女稳步成长，进步可期。',周转:'逐步积累，周转渐趋顺利。',买卖:'生意逐步好转，不可急于求成。',等人:'会来，但迟缓渐至。',寻人:'渐行渐远，在南方可寻。',失物:'慢慢找寻，终可寻回。',外出:'出行宜缓不宜急，渐行渐顺。',考试:'成绩稳步提升，进步明显。',诉讼:'事态渐趋明朗，耐心等待。',求事:'按部就班求职，渐有结果。',改行:'循序渐进转型，不可操之过急。',开业:'稳步筹备开业，渐入佳境。',事业:'脚踏实地，事业稳步发展。',经商:'生意渐入正轨，稳步经营获利。',求名:'循序渐进求学，终获功名。',婚恋:'感情稳步发展，水到渠成。',决策:'循序渐进，稳扎稳打方成事。'
+  },
+  '归妹': {
+    时运:'行事需守本分，不可逾越规矩。',财运:'财运平淡，不宜贪多冒进。',家宅:'家中有婚嫁之事，宜守礼节。',身体:'注意妇科或生殖系统健康。',特性:'谦逊柔顺，甘居辅助之位。',运势:'有所行动但难如愿，宜安守本分。',家运:'家有喜事但需守礼，否则生变。',疾病:'妇科之疾或情志之症，宜调养。',胎孕:'孕期需谨慎，防小产之象。',子女:'女儿乖巧懂事，宜善加教养。',周转:'周转不顺，勉强为之恐有损。',买卖:'交易条件不利，宜慎重考虑。',等人:'会来，但非自愿前来。',寻人:'在西方或泽边，可渐寻得。',失物:'被人移走，难以完整找回。',外出:'出行有阻碍，不甚顺利。',考试:'成绩不理想，需调整方法。',诉讼:'处于不利地位，宜委曲求和。',求事:'职位不如意，宜暂时接受。',改行:'勉强改行恐不顺，宜三思。',开业:'时机不佳，开业宜谨慎。',事业:'甘居辅助之位，积累经验为先。',经商:'经营条件有限，宜小心谨慎。',求名:'暂居人下，韬光养晦待时。',婚恋:'婚嫁之事宜守礼法，仓促不利。',决策:'安守本分，不可越位妄为。'
+  },
+  '丰': {
+    时运:'盛极之时，光明盛大，宜珍惜把握。',财运:'财运丰隆，收入丰厚可喜。',家宅:'家宅丰盈，富贵荣华之象。',身体:'精力旺盛但防过盛，注意心火。',特性:'才华横溢，光芒四射，气势恢宏。',运势:'丰盛之象，盛大光明，但盛极宜慎。',家运:'家运兴旺至极，宜居安思危。',疾病:'阳亢之症，心火过旺宜清降。',胎孕:'孕期丰盈，母子健康可喜。',子女:'子女才华出众，成就非凡。',周转:'资金充裕丰沛，周转无碍。',买卖:'市场繁荣，交易兴旺获利丰。',等人:'会来，且满载而归。',寻人:'在繁华热闹之处可寻得。',失物:'在明亮显眼之处可找到。',外出:'出行大吉，光明坦途。',考试:'成绩优异，才华得以展现。',诉讼:'占理有利，可得公正裁决。',求事:'大好时机，求职顺利可成。',改行:'盛时改行，资源充足可成。',开业:'开业大吉，生意兴隆丰盈。',事业:'事业鼎盛，宜居安思危守成。',经商:'生意兴隆至极，宜防盛极而衰。',求名:'名声大振，声望达到巅峰。',婚恋:'感情丰盈美满，婚姻幸福。',决策:'盛极之时宜思退，居安思危。'
+  },
+  '旅': {
+    时运:'漂泊在外，居无定所，宜谨慎低调。',财运:'财运不稳，流动资金宜谨慎管理。',家宅:'家宅不安定，有迁移之象。',身体:'旅途劳顿，注意水土不服。',特性:'适应力强，善于在变化中求存。',运势:'羁旅之象，漂泊不定，宜谨慎行事。',家运:'家运不安，有离散奔波之象。',疾病:'旅途疲劳所致，水土不服之症。',胎孕:'孕期不安定，宜静养忌奔波。',子女:'子女有远行之象，聚少离多。',周转:'流动周转，小额可成大额难。',买卖:'流动交易可，固定经营不宜。',等人:'不来，对方在旅途中。',寻人:'远行在外，在南方可得讯息。',失物:'在旅途中遗失，难以找回。',外出:'出行频繁，宜轻装简行。',考试:'心神不定，成绩不稳定。',诉讼:'在外地起诉讼，不利己方。',求事:'流动性工作可得，稳定职难。',改行:'可转向流动性行业经营。',开业:'流动经营可，固定店面不宜。',事业:'事业漂泊不定，宜灵活应变。',经商:'流动经商为佳，忌大规模投资。',求名:'在异乡发展，可得名声。',婚恋:'感情不稳定，聚少离多。',决策:'以柔顺谦卑之态应对变局。'
+  },
+  '巽': {
+    时运:'柔顺渗透，以柔克刚，宜谦逊行事。',财运:'财运渐入，如风渗透，不疾不徐。',家宅:'家宅通风宜人，和顺安宁。',身体:'注意风邪入体，防感冒风湿。',特性:'柔顺灵活，善于变通协调。',运势:'柔顺之象，以退为进，顺势而为。',家运:'家运平顺，以柔和待人则安。',疾病:'风邪之症，感冒或风湿之患。',胎孕:'孕期平顺，宜保持心情舒畅。',子女:'子女性格温和，善于沟通。',周转:'柔和沟通可达成周转。',买卖:'耐心谈判，以柔制胜可成。',等人:'会来，如风般轻快而至。',寻人:'在东南方，随风飘荡不定。',失物:'被风吹散或移位，在门窗附近。',外出:'出行顺风，旅途顺利。',考试:'成绩中上，需灵活应变。',诉讼:'宜柔和处理，低姿态有利。',求事:'以谦逊之态求职，可得青睐。',改行:'顺势而变，改行可成。',开业:'柔和起步，渐入佳境可成。',事业:'以柔克刚，灵活变通成事业。',经商:'灵活经营，顺应市场变化。',求名:'以谦逊之德，渐获名望。',婚恋:'温柔体贴，感情和顺美满。',决策:'以柔顺之道行事，进退有度。'
+  },
+  '兑': {
+    时运:'喜悦和悦，人际和谐，宜广结善缘。',财运:'财运喜人，因人际交往而获利。',家宅:'家中欢乐和谐，喜气洋洋。',身体:'注意口腔及呼吸系统健康。',特性:'开朗乐观，善于沟通交际。',运势:'喜悦之象，和悦相处，万事顺遂。',家运:'家庭和乐融融，喜事连连。',疾病:'口腔咽喉之疾，宜注意调理。',胎孕:'孕期愉悦，母子平安吉祥。',子女:'子女活泼开朗，人缘极佳。',周转:'沟通顺畅，周转如意。',买卖:'和气生财，交易愉快顺利。',等人:'会来，且带来欢喜之事。',寻人:'在西方水泽之处，喜笑可寻。',失物:'在聚会娱乐场所可找到。',外出:'出行愉快，旅途充满欢乐。',考试:'心情愉悦发挥好，成绩佳。',诉讼:'和气调解，双方欢喜和解。',求事:'以良好沟通获得职位。',改行:'转向服务交际行业为佳。',开业:'开业喜庆，人气旺盛可兴。',事业:'以和悦之态经营，事业顺遂。',经商:'和气生财，广结客户获利。',求名:'以才艺沟通之能获得名声。',婚恋:'两情相悦，婚姻欢乐美满。',决策:'以喜悦之心待人接物。'
+  },
+  '涣': {
+    时运:'涣散之象，人心离散，宜重新凝聚。',财运:'财运分散，不宜集中投资。',家宅:'家人分散各地，宜设法团聚。',身体:'精神涣散，注意心神不宁。',特性:'心思活跃但易分散注意力。',运势:'涣散之象，人心不齐，宜以诚聚人。',家运:'家运涣散，需重新凝聚人心。',疾病:'心神不宁，精神恍惚宜安神。',胎孕:'孕期心绪不定，宜安心静养。',子女:'子女分散各方，聚少离多。',周转:'资金分散，周转不太顺利。',买卖:'市场分散，集中力量方可成。',等人:'不来，心思涣散难以赴约。',寻人:'已远散他方，在水边可得线索。',失物:'被水冲散或流失，难以找回。',外出:'出行宜有目标，忌漫无目的。',考试:'心神不定，成绩恐不理想。',诉讼:'人心涣散，宜尽早调解。',求事:'目标不明确，宜先定方向。',改行:'方向不明，暂不宜改行。',开业:'人心未齐，开业宜再凝聚。',事业:'重新凝聚团队，事业方可振兴。',经商:'经营需集中精力，忌分散投资。',求名:'心志不坚，宜先定志再求名。',婚恋:'感情飘忽不定，需用心经营。',决策:'凝聚人心，以诚信化解涣散。'
+  },
+  '节': {
+    时运:'节制有度，量入为出，不可过分。',财运:'财运平稳，节俭理财方可积蓄。',家宅:'家宅宜俭朴，节制开支。',身体:'饮食节制，起居有度保健康。',特性:'自律性强，善于节制约束自己。',运势:'节制之象，适可而止，过犹不及。',家运:'家运平稳，勤俭节约方兴旺。',疾病:'因过度不节所致，宜节制调养。',胎孕:'孕期宜节制饮食，适度运动。',子女:'教导子女节制有度，养成好习。',周转:'量入为出，适度周转为宜。',买卖:'适度交易，不可贪多冒进。',等人:'会来，但按时有节制地到。',寻人:'在近处，不会走太远。',失物:'在固定范围内，可寻回。',外出:'适度出行，不宜远行。',考试:'适度用功，成绩中等偏上。',诉讼:'适可而止，不宜纠缠不休。',求事:'适合自身条件的职位可得。',改行:'量力而行，适度调整可以。',开业:'量力开业，规模适中为佳。',事业:'适可而止，不过度扩张为上。',经商:'节制经营，适度发展为佳。',求名:'有节制地追求，知足常乐。',婚恋:'感情有节制，相敬如宾。',决策:'凡事有度，节制方能长久。'
+  },
+  '中孚': {
+    时运:'诚信为本，以心感人，万事可成。',财运:'诚信经营，财运自然亨通。',家宅:'家中信义为重，和谐安宁。',身体:'心态平和真诚，身体自然康健。',特性:'真诚守信，以德感人。',运势:'诚信之象，至诚感物，逢凶化吉。',家运:'家人以诚相待，家运昌盛。',疾病:'心态积极乐观，病可渐愈。',胎孕:'孕期安心，以诚待之母子安。',子女:'教子以信，子女诚实可靠。',周转:'以诚信交往，周转顺利可成。',买卖:'诚信交易，买卖双方皆满意。',等人:'会来，以诚相约必守信。',寻人:'以真诚之心寻找，可得消息。',失物:'以诚求之，在近处可寻回。',外出:'出行以诚待人，旅途平安。',考试:'真诚用功，成绩必然优良。',诉讼:'以诚化解纷争，和解为上。',求事:'以真诚打动人，求职可成。',改行:'秉持诚信改行，可获信任。',开业:'以诚信立业，开业顺利。',事业:'以诚信为本，事业稳固长久。',经商:'诚信经营，客户信赖获利。',求名:'以真才实学求名，名至实归。',婚恋:'真心诚意对待，婚姻美满。',决策:'以至诚之心行事，必有善果。'
+  },
+  '小过': {
+    时运:'小事可为，大事不宜，宜谦卑低调。',财运:'小财可得，大财勿贪，知足为宜。',家宅:'家宅平平，小事需注意处理。',身体:'小恙无妨，注意日常细节保养。',特性:'谨小慎微，注重细节，不好高骛远。',运势:'小有过失之象，宜处小事忌谋大。',家运:'家运平淡，小事谨慎方安。',疾病:'小病在身，不可忽视需调理。',胎孕:'孕期需注意小节，防微杜渐。',子女:'子女在小事上需多加教导。',周转:'小额周转可成，大额不宜。',买卖:'小额交易可，大买卖暂缓。',等人:'会来，但稍有延误。',寻人:'在近处不远，往低处寻找。',失物:'在低处或角落中，细找可得。',外出:'短途出行可，远行不宜。',考试:'成绩普通，在细节上失分。',诉讼:'小事化了为佳，不宜扩大。',求事:'小职位可得，不宜好高骛远。',改行:'小幅调整可以，大改不宜。',开业:'小本经营可行，规模不宜过大。',事业:'从小事做起，脚踏实地。',经商:'小本薄利经营，稳健为上。',求名:'积小成大，不可急于求成。',婚恋:'感情中注意小细节，体贴入微。',决策:'谨慎处理小事，切忌好高骛远。'
+  },
+  '既济': {
+    时运:'功成事遂，万事已成，宜守成防衰。',财运:'财运已达顶峰，宜保守理财。',家宅:'家宅完备，诸事圆满安定。',身体:'身体尚可，宜保持不可大意。',特性:'做事有始有终，善于完成任务。',运势:'既济之象，事已成就，宜慎防退。',家运:'家运圆满，但盛极宜防衰。',疾病:'旧病初愈，宜小心保养防复发。',胎孕:'孕期圆满，生产顺利可期。',子女:'子女学业有成，事事顺遂。',周转:'资金到位，周转已成。',买卖:'交易圆满完成，宜见好就收。',等人:'会来，一切如约而至。',寻人:'已在途中，不久即可归来。',失物:'在原处可找回，完好无损。',外出:'出行圆满，一切顺利。',考试:'成绩理想，功课已成。',诉讼:'案件已了结，结果尚可。',求事:'求职成功，已获心仪职位。',改行:'改行已成，宜守成经营。',开业:'开业已成，宜稳健经营。',事业:'事业有成，宜守成防骄。',经商:'生意圆满，宜稳固不宜扩张。',求名:'功名已就，宜谦虚自守。',婚恋:'婚事已成，宜珍惜经营。',决策:'成功之后更需谨慎，防微杜渐。'
+  },
+  '未济': {
+    时运:'事未成就，仍需努力，黎明前之黑暗。',财运:'财运将至未至，再坚持即可成。',家宅:'家宅尚未安定，需继续努力经营。',身体:'身体欠佳，坚持调养即可恢复。',特性:'坚韧不拔，在困境中看到希望。',运势:'未济之象，事未完成，坚持则终成。',家运:'家运尚待经营，曙光就在前方。',疾病:'病未痊愈，继续治疗方可康复。',胎孕:'孕期尚需注意，临产前宜谨慎。',子女:'子女尚在成长中，需继续培养。',周转:'资金尚未到位，再努力可成。',买卖:'交易尚未达成，坚持谈判可成。',等人:'尚未动身，再等等会来。',寻人:'尚未找到，继续寻找有望。',失物:'尚未寻得，再仔细查找可得。',外出:'出行尚有阻碍，稍待即可成行。',考试:'成绩尚待提高，再加把劲。',诉讼:'案件未了，需继续争取。',求事:'尚未如愿，坚持求索终可成。',改行:'时机将到未到，再等待为宜。',开业:'筹备尚未完成，再完善后开业。',事业:'事业尚在途中，坚持终达目标。',经商:'生意尚待突破，坚持经营可成。',求名:'功名将至，坚持不懈终成就。',婚恋:'姻缘将至未至，耐心等待佳缘。',决策:'坚持到底，胜利就在眼前。'
+  }
+};
+
+/* ============================================================
+   LIUYAO DIVINATION
+   ============================================================ */
+let shakeState = { step:0, lines:[], changing:[] };
+
+function startShake(){
+  shakeState = { step:0, lines:[], changing:[] };
+  document.getElementById('yaoLines').innerHTML = '';
+  document.getElementById('guaResult').innerHTML = '';
+
+  const btn = document.getElementById('shakeBtn');
+  btn.classList.add('shaking');
+  btn.disabled = true;
+  document.getElementById('coinsDisplay').style.display = 'flex';
+  document.getElementById('yaoProgress').textContent = '摇卦中...';
+
+  // 6 coins, each coin = one yao; face(面)=3=yang, back(背)=2=yin
+  // Each coin also has a small chance of being a "changing" line
+  const results = [];
+  for(let i = 0; i < 6; i++){
+    const mainFace = Math.random() < 0.5 ? 3 : 2; // 3=面(yang), 2=背(yin)
+    const isYang = mainFace === 3;
+    // ~25% chance of being a changing/dynamic line
+    const isChanging = Math.random() < 0.25;
+    results.push({ face: mainFace, isYang, isChanging });
+  }
+
+  const coins = [];
+  for(let i = 1; i <= 6; i++){
+    coins.push(document.getElementById('coin' + i));
+  }
+
+  // Animate: all 6 coins flip together
+  coins.forEach(c => { c.textContent = '?'; c.classList.add('flipping'); });
+
+  setTimeout(() => {
+    // Reveal all 6 coins at once
+    coins.forEach((c, i) => {
+      c.classList.remove('flipping');
+      c.textContent = results[i].face === 3 ? '面' : '背';
+      c.style.borderColor = results[i].isChanging ? 'var(--red)' : 'var(--gold)';
+      c.style.color = results[i].isChanging ? 'var(--red)' : 'var(--gold)';
+    });
+
+    document.getElementById('yaoProgress').textContent = '卦象已成';
+
+    // Build all 6 yao lines
+    const linesEl = document.getElementById('yaoLines');
+    results.forEach((r, i) => {
+      shakeState.lines.push(r.isYang ? 1 : 0);
+      shakeState.changing.push(r.isChanging);
+      linesEl.innerHTML += yaoLineHTML(r.isYang, r.isChanging, i);
+    });
+
+    // After a short pause, show result
+    setTimeout(() => {
+      btn.classList.remove('shaking');
+      btn.disabled = false;
+      document.getElementById('coinsDisplay').style.display = 'none';
+      document.getElementById('yaoProgress').textContent = '';
+      showGuaResult();
+    }, 600);
+  }, 800);
+}
+
+function showGuaResult(){
+  const lines = shakeState.lines;
+  const changing = shakeState.changing;
+  const lower = trigramBin(lines.slice(0,3));
+  const upper = trigramBin(lines.slice(3,6));
+  const benGua = getGuaByTrigrams(upper, lower);
+
+  // Compute changed lines for bian gua
+  const changedLines = lines.map((l,i)=>changing[i]?(l?0:1):l);
+  const lowerC = trigramBin(changedLines.slice(0,3));
+  const upperC = trigramBin(changedLines.slice(3,6));
+  const bianGua = getGuaByTrigrams(upperC, lowerC);
+
+  const hasChange = changing.some(c=>c);
+
+  let html = '<div class="gua-result">';
+
+  if(benGua){
+    const upperName = TRIGRAMS[upper]||'?';
+    const lowerName = TRIGRAMS[lower]||'?';
+    html += `<div class="card gua-card">
+      <h3>本卦</h3>
+      <div style="color:var(--text-dim);font-size:.85rem">${TRIGRAM_NATURE[upperName]||''}${TRIGRAM_NATURE[lowerName]||''}</div>
+      <div class="gua-symbol">第${benGua[0]}卦</div>
+      <h3>${benGua[3]}</h3>
+      <div class="gua-ci"><strong>卦辞：</strong>${benGua[4]}</div>
+      <div class="gua-ci"><strong>象辞：</strong>${benGua[5]}</div>
+      <div class="gua-ci" style="margin-top:12px"><strong>动爻解读：</strong></div>`;
+    changing.forEach((c,i)=>{
+      if(c) html += `<div class="gua-ci">${benGua[7+i]}</div>`;
+    });
+    if(!hasChange) html += `<div class="gua-ci" style="color:var(--text-dim)">无动爻，以卦辞断。</div>`;
+    html += '</div>';
+  }
+
+  if(hasChange && bianGua){
+    const upperCName = TRIGRAMS[upperC]||'?';
+    const lowerCName = TRIGRAMS[lowerC]||'?';
+    html += `<div class="card gua-card">
+      <h3>变卦</h3>
+      <div style="color:var(--text-dim);font-size:.85rem">${TRIGRAM_NATURE[upperCName]||''}${TRIGRAM_NATURE[lowerCName]||''}</div>
+      <div class="gua-symbol">第${bianGua[0]}卦</div>
+      <h3>${bianGua[3]}</h3>
+      <div class="gua-ci"><strong>卦辞：</strong>${bianGua[4]}</div>
+      <div class="gua-ci"><strong>象辞：</strong>${bianGua[5]}</div>
+    </div>`;
+  } else if(!hasChange){
+    html += `<div class="card gua-card" style="display:flex;align-items:center;justify-content:center;color:var(--text-dim)">
+      <div>无变卦<br><span style="font-size:.8rem">六爻皆不变，以本卦卦辞断吉凶</span></div>
+    </div>`;
+  }
+
+  html += '</div>';
+
+  // Add analysis for ben gua
+  if(benGua){
+    const analysis = GUA_ANALYSIS[benGua[3]];
+    if(analysis){
+      html += '<div class="card" style="margin-top:20px">';
+      html += renderAnalysis(analysis);
+      html += '</div>';
+    }
+  }
+
+  document.getElementById('guaResult').innerHTML = html;
+}
+
+/* ============================================================
+   64 GUA GRID
+   ============================================================ */
+function buildGuaGrid(){
+  const grid = document.getElementById('guaGrid');
+  let html = '';
+  GUA64.forEach(g=>{
+    html += `<div class="gua-cell" onclick="showGuaDetail(${g[0]-1})">
+      <div class="gua-sym">${drawMiniGua(g[1],g[2])}</div>
+      <span class="gua-nm">${g[0]}.${g[3]}</span>
+    </div>`;
+  });
+  grid.innerHTML = html;
+}
+
+function drawMiniGua(upper, lower){
+  // Combine: lower 3 lines (bottom) + upper 3 lines (top), display top-to-bottom = upper[2],upper[1],upper[0],lower[2],lower[1],lower[0]
+  const allLines = lower.split('').concat(upper.split('')); // index 0=bottom
+  let html = '';
+  // Render from top (line 5) to bottom (line 0)
+  for(let i=5;i>=0;i--){
+    if(allLines[i]==='1'){
+      html += '<div class="yao-r"><div class="yb yang"></div></div>';
+    } else {
+      html += '<div class="yao-r"><div class="yb yin"></div><div class="yb yin"></div></div>';
+    }
+  }
+  return html;
+}
+
+function showGuaDetail(idx){
+  const g = GUA64[idx];
+  const upperName = TRIGRAMS[g[1]]||'?';
+  const lowerName = TRIGRAMS[g[2]]||'?';
+
+  document.getElementById('guaGridWrap').style.display = 'none';
+  const wrap = document.getElementById('guaDetailWrap');
+  wrap.style.display = 'block';
+
+  let html = `<button class="back-btn" onclick="backToGrid()">← 返回卦象列表</button>
+    <div class="card gua-detail">
+      <h2>第${g[0]}卦 · ${g[3]}</h2>
+      <div class="meta">上${upperName}（${TRIGRAM_NATURE[upperName]}）下${lowerName}（${TRIGRAM_NATURE[lowerName]}）</div>
+      <div class="ci-block"><h4>卦辞</h4><p>${g[4]}</p></div>
+      <div class="ci-block"><h4>象辞</h4><p>${g[5]}</p></div>
+      <div class="ci-block"><h4>彖辞</h4><p>${g[6]}</p></div>
+      <div class="ci-block"><h4>爻辞</h4>`;
+  for(let i=0;i<6;i++){
+    html += `<p style="margin:8px 0">${g[7+i]}</p>`;
+  }
+  html += '</div>';
+
+  // Add analysis section
+  const analysis = GUA_ANALYSIS[g[3]];
+  if(analysis){
+    html += renderAnalysis(analysis);
+  }
+
+  html += '</div>';
+  wrap.innerHTML = html;
+}
+
+function renderAnalysis(analysis){
+  const categories = [
+    ['运势','运势'],['时运','时运'],['财运','财运'],['事业','事业'],['经商','经商'],['求名','求名'],
+    ['婚恋','婚恋'],['家宅','家宅'],['家运','家运'],['子女','子女'],['胎孕','胎孕'],
+    ['身体','身体'],['疾病','疾病'],['考试','考试'],['求事','求事'],['改行','改行'],['开业','开业'],
+    ['买卖','买卖'],['周转','周转'],['外出','外出'],['等人','等人'],['寻人','寻人'],['失物','失物'],
+    ['诉讼','诉讼'],['决策','决策'],['特性','特性']
+  ];
+  let h = '<div class="analysis-section"><h4>卦象详解</h4><div class="analysis-grid">';
+  categories.forEach(([label, key])=>{
+    if(analysis[key]){
+      h += `<div class="analysis-item"><div class="a-label">${label}</div><div class="a-value">${analysis[key]}</div></div>`;
+    }
+  });
+  h += '</div></div>';
+  return h;
+}
+
+function backToGrid(){
+  document.getElementById('guaGridWrap').style.display = 'block';
+  document.getElementById('guaDetailWrap').style.display = 'none';
+}
+
+/* ============================================================
+   DREAM INTERPRETATION - 周公解梦 (comprehensive narrative analysis)
+   ============================================================ */
+const DREAM_DATA = {
+  '动物':[
+    {kw:['蛇'],title:'梦见蛇',text:'蛇为财运之兆。梦见蛇缠身主有财至；蛇咬人则主口舌是非；蛇入怀中主贵子降临。若梦见白蛇，大吉，主有贵人相助。',ji:1},
+    {kw:['龙'],title:'梦见龙',text:'龙为至尊之象。梦见龙飞天主大富大贵；骑龙入水主贵；龙入井中主受困。金龙现身大吉大利。',ji:2},
+    {kw:['鱼'],title:'梦见鱼',text:'鱼主财禄。梦见鱼在水中游主事事顺遂；抓鱼得财；鱼跃龙门主升迁之喜。死鱼则主失财。',ji:1},
+    {kw:['虎'],title:'梦见虎',text:'虎主权威。梦虎入宅主升官；骑虎主大权在握；被虎追主有小人暗害。白虎主丧事。',ji:0},
+    {kw:['狗','犬'],title:'梦见狗',text:'狗主忠义朋友。梦见狗向己吠主有口舌；狗咬人主与友生隙；被狗追赶防小人。白狗主有喜。',ji:0},
+    {kw:['猫'],title:'梦见猫',text:'猫主暗敌。梦猫捕鼠主得财；被猫抓伤主有暗损；黑猫入宅主不祥。',ji:-1},
+    {kw:['马'],title:'梦见马',text:'马主远行与速达。骑马奔驰主事业有成；落马主失位；白马王子主姻缘将至。',ji:1},
+    {kw:['牛'],title:'梦见牛',text:'牛主勤劳与财富。梦牛耕田主丰收；骑牛主安稳；牛触人主有灾厄。黄牛主吉。',ji:1},
+    {kw:['鸡'],title:'梦见鸡',text:'鸡主勤勉。鸡鸣主有好消息；母鸡下蛋主添丁；斗鸡主争执。',ji:0},
+    {kw:['鸟','飞鸟'],title:'梦见鸟',text:'鸟主自由与消息。鸟飞入怀主有喜讯；群鸟高飞主事业腾达；鸟啼主有忧愁。',ji:1},
+    {kw:['猪'],title:'梦见猪',text:'猪主富足。梦肥猪主财运亨通；杀猪主有喜庆之事；猪跑主财散。',ji:1},
+    {kw:['鼠','老鼠'],title:'梦见老鼠',text:'鼠主暗耗。梦鼠咬物主暗中破财；鼠入宅主有小偷；猫捉鼠主除害得安。',ji:-1},
+    {kw:['凤','凤凰'],title:'梦见凤凰',text:'凤凰大吉之兆。主有大贵之事降临，或遇贵人提携，飞黄腾达。',ji:2},
+    {kw:['龟','乌龟'],title:'梦见龟',text:'龟主长寿安泰。梦龟爬行主事缓而稳；龟入门主有福至；龟缩头主宜守不宜攻。',ji:1},
+    {kw:['兔','兔子'],title:'梦见兔子',text:'兔主机敏。白兔主吉祥如意；追兔主追求目标；兔生子主家中添丁之喜。',ji:1},
+    {kw:['蝴蝶'],title:'梦见蝴蝶',text:'蝶主姻缘与变化。双蝶飞舞主婚恋美满；蝶入户主有客来访。庄周梦蝶，虚实难辨。',ji:1},
+    {kw:['蜘蛛'],title:'梦见蜘蛛',text:'蜘蛛主机巧。梦蜘蛛结网主有陷阱；蜘蛛爬身主有烦扰缠身。',ji:-1},
+    {kw:['蚂蚁'],title:'梦见蚂蚁',text:'蚂蚁主勤劳与小利。群蚁搬家主有变迁；蚁上身主小病小灾。',ji:0},
+    {kw:['羊'],title:'梦见羊',text:'羊主祥瑞温顺。群羊主人丁兴旺；牧羊主安居乐业；杀羊主有祭祀或喜事。',ji:1},
+    {kw:['猴','猴子'],title:'梦见猴子',text:'猴主机变。猴子攀树主有小人作祟；被猴戏弄主受人欺骗；金猴主贵。',ji:-1},
+    {kw:['狼'],title:'梦见狼',text:'狼主危险与竞争。被狼追赶主有强敌环伺；狼群主处境凶险；打死狼主战胜对手。',ji:-1},
+    {kw:['鹿'],title:'梦见鹿',text:'鹿主福禄。梦见白鹿大吉，主有贵人；群鹿主财运亨通；鹿鸣主有好消息传来。',ji:2},
+    {kw:['鹰','老鹰'],title:'梦见鹰',text:'鹰主志向高远。鹰翱翔天际主事业腾飞；被鹰抓主遭强者侵害；训鹰主驾驭权力。',ji:1},
+    {kw:['燕','燕子'],title:'梦见燕子',text:'燕主吉祥与家和。燕子筑巢主家宅安宁；燕子飞来主有喜讯；群燕主人丁兴旺。',ji:2},
+    {kw:['蜂','蜜蜂','马蜂'],title:'梦见蜂',text:'蜂主勤劳与伤害。蜜蜂采蜜主财利；被蜂蜇主有口舌是非；蜂群主众人聚集。',ji:0},
+    {kw:['蝎','蝎子'],title:'梦见蝎子',text:'蝎主暗害与危险。被蝎蜇主遭人暗算；打死蝎子主消除隐患；蝎子入宅需防小人。',ji:-1},
+    {kw:['螃蟹'],title:'梦见螃蟹',text:'蟹主横行与阻碍。抓螃蟹主克服困难；被蟹夹主受人牵制；螃蟹入水主财运流动。',ji:0},
+    {kw:['乌鸦'],title:'梦见乌鸦',text:'乌鸦主不祥之兆。乌鸦鸣叫主有坏消息；群鸦盘旋主灾祸将至。但乌鸦反哺，亦主孝顺。',ji:-2},
+    {kw:['喜鹊','鹊'],title:'梦见喜鹊',text:'喜鹊报喜。梦见喜鹊叫主有喜事将至；鹊桥主姻缘美满；群鹊主诸事大吉。',ji:2},
+    {kw:['虫','虫子','昆虫','毛毛虫'],title:'梦见虫子',text:'虫主烦扰与琐事。虫子爬身主有小麻烦；虫子成群主琐事缠身；除虫主消解烦忧。',ji:-1},
+    {kw:['苍蝇'],title:'梦见苍蝇',text:'苍蝇主烦扰与小人。苍蝇嗡嗡主有人搬弄是非；打死苍蝇主驱除小人；群蝇主环境不佳。',ji:-1},
+    {kw:['蟑螂'],title:'梦见蟑螂',text:'蟑螂主暗处之患。梦见蟑螂主有隐藏的麻烦；打死蟑螂主排除隐患；群蟑螂主忧虑重重。',ji:-1},
+    {kw:['青蛙','蛙'],title:'梦见青蛙',text:'蛙主变化与新生。青蛙鸣叫主有好消息；蛙跳主有进展；蛙变王子主意外之喜。',ji:1},
+    {kw:['熊'],title:'梦见熊',text:'熊主力量与威胁。被熊追赶主遇到强大对手；熊冬眠主需要休养生息；棕熊主有贵人但性情不定。',ji:0},
+    {kw:['象','大象'],title:'梦见大象',text:'象主力量稳重。骑象主地位崇高；象群主有强大靠山；大象喷水主财运亨通。',ji:2},
+    {kw:['鲸鱼','鲸'],title:'梦见鲸鱼',text:'鲸鱼主博大与深邃。鲸鱼跃出水面主有重大突破；骑鲸主志向远大；鲸鱼群主有大机缘。',ji:2},
+    {kw:['蛤蟆','蟾蜍','癞蛤蟆'],title:'梦见蟾蜍',text:'蟾蜍主财运。金蟾主招财进宝；三足蟾蜍主大富；蟾蜍入宅主财源滚滚。',ji:1},
+  ],
+  '自然':[
+    {kw:['水','河','江'],title:'梦见水',text:'水主财运。清水主财来；浑水主灾祸；大水漫溢主财多难守。渡河主化险为夷。',ji:0},
+    {kw:['火','着火'],title:'梦见火',text:'火主兴旺。大火烧天主大吉大利；火烧房主有变动；被火烧伤主有口舌。',ji:0},
+    {kw:['山'],title:'梦见山',text:'山主稳重依靠。登山主升迁有望；山崩主有大变故；青山绿水主安泰。',ji:1},
+    {kw:['雨','下雨'],title:'梦见下雨',text:'雨主恩泽。细雨绵绵主有贵人；暴雨倾盆主有急事；雨过天晴主否极泰来。',ji:0},
+    {kw:['雪','下雪'],title:'梦见雪',text:'雪主清白与阻碍。瑞雪兆丰年主吉；大雪封路主事受阻；雪中行走主孤寂。',ji:0},
+    {kw:['风','刮风'],title:'梦见风',text:'风主变动与消息。和风主顺遂；狂风主波折；风吹门开主有客至。',ji:0},
+    {kw:['雷','打雷'],title:'梦见雷电',text:'雷主震动惊醒。雷声大作主有惊喜；被雷击主有横财或横祸；雷后彩虹主吉。',ji:0},
+    {kw:['地震'],title:'梦见地震',text:'地震主大变革。房屋摇晃主根基动摇；地裂主有分离之事；震后安然主化险为夷。',ji:-1},
+    {kw:['月','月亮'],title:'梦见月亮',text:'月主阴柔与姻缘。明月当空主事业光明；月缺主有别离；圆月主团圆。',ji:1},
+    {kw:['太阳','日'],title:'梦见太阳',text:'日主光明权贵。日出东方大吉；日落主衰；日月同辉主大贵。',ji:1},
+    {kw:['星','星星'],title:'梦见星星',text:'星主希望指引。满天繁星主前途光明；流星主有变化来临；北斗星主有贵人。',ji:1},
+    {kw:['花'],title:'梦见花',text:'花主美好与短暂。鲜花盛开主有喜事；花谢主有遗憾；收到花主有人爱慕。',ji:1},
+    {kw:['树','大树'],title:'梦见树',text:'树主根基与成长。大树参天主家业兴旺；树倒主有变故；植树主有建树。',ji:1},
+    {kw:['海','大海'],title:'梦见大海',text:'海主博大与机遇。风平浪静主安泰；波涛汹涌主有挑战；海中游泳主能力出众。',ji:0},
+    {kw:['云','白云'],title:'梦见云',text:'云主变幻与志向。白云悠悠主心境平和；乌云密布主有忧虑；云开见日主困难消除。',ji:0},
+    {kw:['彩虹'],title:'梦见彩虹',text:'彩虹大吉之兆。主美好愿望即将实现，否极泰来。双彩虹主双喜临门。',ji:2},
+    {kw:['洪水','发大水'],title:'梦见洪水',text:'洪水主大财或大变。洪水滔天主财运极旺或有大难；被洪水冲走主身不由己。',ji:-1},
+    {kw:['森林','密林','丛林'],title:'梦见森林',text:'森林主未知与探索。在森林中行走主面临未知领域；迷失森林主方向不明；走出森林主拨云见日。',ji:0},
+    {kw:['沙漠'],title:'梦见沙漠',text:'沙漠主困境与考验。行走沙漠主前路艰辛；发现绿洲主绝处逢生；沙暴主有大变故。',ji:-1},
+    {kw:['草','草地','草原'],title:'梦见草地',text:'草主生机与平凡。绿草如茵主生活安乐；枯草主衰败；割草主清理旧事。',ji:1},
+    {kw:['雾','大雾'],title:'梦见雾',text:'雾主迷茫与不确定。浓雾弥漫主前路不明；雾散主困惑消解；雾中行走需谨慎。',ji:-1},
+    {kw:['冰','结冰','冰雪'],title:'梦见冰',text:'冰主停滞与冷淡。河面结冰主事业受阻；踩冰主小心行事；冰融主困境将解。',ji:-1},
+    {kw:['泥','泥巴','淤泥','泥潭'],title:'梦见泥',text:'泥主困境与阻碍。陷入泥潭主身陷困境；泥泞行走主前行不易；玩泥巴主返璞归真。',ji:-1},
+    {kw:['瀑布'],title:'梦见瀑布',text:'瀑布主气势磅礴。观瀑布主心胸开阔；瀑布直泻主财运旺盛；瀑布溅身主有意外之财。',ji:1},
+    {kw:['田','田地','稻田','农田'],title:'梦见田地',text:'田地主根基与收获。金黄稻田主丰收将至；荒田主事业待振兴；耕田主辛勤终有回报。',ji:1},
+    {kw:['岛','岛屿','孤岛'],title:'梦见岛屿',text:'岛屿主孤立与独立。登上岛屿主自力更生；荒岛主孤立无援；美丽海岛主有世外桃源。',ji:0},
+    {kw:['湖','湖泊'],title:'梦见湖泊',text:'湖泊主内心世界。平静的湖面主心境安宁；湖水荡漾主内心有波动；湖水清澈主心地纯正。',ji:1},
+    {kw:['泉','泉水','温泉'],title:'梦见泉水',text:'泉主源源不断。清泉涌出主财源不绝；温泉主身体安康；泉水干涸主资源枯竭需蓄力。',ji:1},
+  ],
+  '人物':[
+    {kw:['父','爸','父亲'],title:'梦见父亲',text:'父主权威与保护。父亲微笑主事顺；与父争吵主内心矛盾；已故父亲入梦主思念或有警示。',ji:0},
+    {kw:['母','妈','母亲'],title:'梦见母亲',text:'母主慈爱与牵挂。母亲拥抱主安全感；母亲哭泣主有忧虑之事；梦见已故母亲主需多行善。',ji:0},
+    {kw:['孩子','小孩','婴儿','宝宝'],title:'梦见小孩',text:'小孩主新生与纯真。抱婴儿主有新开始；小孩哭泣主有小烦恼；小孩笑主喜事近。',ji:1},
+    {kw:['老人','老者'],title:'梦见老人',text:'老人主智慧与长寿。老人授物主得指点；白发老人主福寿；老人远去主有失落。',ji:1},
+    {kw:['死人','去世','死'],title:'梦见死人',text:'死人主新生与转变。与死人说话主有远信至；死人复活主有转机；梦见已故亲人多为思念。',ji:0},
+    {kw:['结婚','婚礼','嫁'],title:'梦见结婚',text:'婚主合和与转变。自己结婚主有新变化；参加婚礼主有喜事；婚礼不顺主内心有忧虑。',ji:1},
+    {kw:['怀孕','大肚子'],title:'梦见怀孕',text:'孕主孕育新生。女子梦孕主有新计划酝酿；男子梦孕主事业有新发展。大吉。',ji:2},
+    {kw:['朋友','同学'],title:'梦见朋友',text:'朋友主人际关系。与友欢聚主社交顺利；与友争吵主有隔阂需化解；故友重逢主念旧情。',ji:0},
+    {kw:['陌生人'],title:'梦见陌生人',text:'陌生人主未知与机遇。陌生人帮助主有贵人；被陌生人追主有压力；陌生人微笑主有好事。',ji:0},
+    {kw:['皇帝','国王'],title:'梦见皇帝',text:'帝王主权势大贵。梦见皇帝主有贵人提携；被帝王召见主事业大进；与帝王对话主受重用。',ji:2},
+    {kw:['爷爷','奶奶','外公','外婆','祖父','祖母'],title:'梦见祖辈',text:'祖辈主福佑与根基。祖辈微笑主有福荫庇佑；已故祖辈入梦多为牵挂或警示；祖辈教导主得到人生启示。',ji:1},
+    {kw:['兄弟','姐妹','哥','弟','姐','妹'],title:'梦见兄弟姐妹',text:'兄弟姐妹主手足情谊。与兄弟姐妹团聚主家庭和睦；争吵主家事纷扰；互助主有人相帮。',ji:0},
+    {kw:['丈夫','老公','妻子','老婆','爱人','配偶'],title:'梦见配偶',text:'配偶主婚姻感情。与配偶恩爱主感情美满；争吵主需沟通化解；配偶远行主有思念牵挂。',ji:0},
+    {kw:['恋人','男友','女友','前任','初恋','暗恋'],title:'梦见恋人',text:'恋人主情感与执念。与恋人相见主情深意切；前任入梦主有未了心结；暗恋之人出现主内心渴望爱情。',ji:0},
+    {kw:['老师','师傅','导师','师父'],title:'梦见老师',text:'老师主指引与考验。老师表扬主得到认可；老师批评主需自省；老师授课主有新知识需学习。',ji:1},
+    {kw:['领导','老板','上司','经理'],title:'梦见领导',text:'领导主权威与事业。领导表扬主升迁有望；被领导批评主工作需努力；与领导交谈主有重要机会。',ji:0},
+    {kw:['同事'],title:'梦见同事',text:'同事主职场关系。与同事合作主工作顺利；与同事冲突主职场有变；同事离去主有人事变动。',ji:0},
+    {kw:['医生','大夫'],title:'梦见医生',text:'医生主健康与治愈。医生微笑主身体安康；看医生主需关注健康；医生开药主问题有解。',ji:0},
+    {kw:['警察','公安'],title:'梦见警察',text:'警察主正义与约束。被警察追主内心有愧；警察帮助主有贵人主持公道；与警察交谈主需守法度。',ji:0},
+    {kw:['僧','和尚','道士','尼姑','出家人'],title:'梦见出家人',text:'出家人主清净与超脱。僧人诵经主心灵安宁；道士作法主有灾祸需化解；出家人指路主得高人指点。',ji:1},
+    {kw:['鬼','鬼魂','幽灵','妖','妖怪','魔','恶魔'],title:'梦见鬼怪',text:'鬼主阴暗与恐惧。被鬼追赶主有心事困扰；打鬼主战胜恐惧；与鬼交谈主面对内心阴暗面。女鬼主有暗恋者或暗敌。',ji:-1},
+    {kw:['神','神仙','佛','菩萨','观音','如来'],title:'梦见神佛',text:'神佛主庇佑与吉祥。神仙降临大吉大利；佛光普照主万事如意；菩萨托梦主有善缘福报。',ji:2},
+    {kw:['天使'],title:'梦见天使',text:'天使主守护与好消息。天使出现主有贵人相助；天使微笑主好运将至。',ji:2},
+    {kw:['小偷','盗贼','强盗'],title:'梦见盗贼',text:'盗贼主暗失与变动。被偷主有破财之兆；抓住小偷主挽回损失；家中进贼主需防范。',ji:-1},
+    {kw:['乞丐','要饭'],title:'梦见乞丐',text:'乞丐主同情与警醒。施舍乞丐主善有善报；自己变乞丐主需珍惜现有；乞丐入宅主有不速之客。',ji:0},
+    {kw:['明星','名人','偶像'],title:'梦见名人',text:'名人主理想与追求。与名人交谈主有远大志向；成为名人主内心渴望认可；名人帮助主有意外机遇。',ji:1},
+    {kw:['敌人','仇人'],title:'梦见敌人',text:'敌人主冲突与化解。与敌人战斗主面临挑战；敌人和解主困难消除；被敌人追赶主有压力需面对。',ji:-1},
+    {kw:['士兵','军人','将军'],title:'梦见军人',text:'军人主勇气与纪律。士兵列队主做事有条理；将军指挥主有领导才能；战场主面临重大决断。',ji:0},
+  ],
+  '物品':[
+    {kw:['钱','金钱','钞票','银子','纸币','硬币'],title:'梦见钱',text:'钱主财运。捡钱主有意外之财；丢钱主有破财之兆；数钱主收入增加。',ji:1},
+    {kw:['房子','房屋','盖房'],title:'梦见房子',text:'房主家业与安全。新房主新生活；房屋倒塌主有变故；盖房主事业有建树。',ji:0},
+    {kw:['车','汽车','开车'],title:'梦见车',text:'车主前进与地位。开车顺畅主事业顺利；车祸主有意外；买新车主地位提升。',ji:0},
+    {kw:['刀','剑','武器'],title:'梦见刀剑',text:'刀主决断与危险。持刀主需做决断；被刀伤主有口舌血光；断刀主失势。',ji:-1},
+    {kw:['衣服','穿衣'],title:'梦见衣服',text:'衣主体面与变化。新衣主有新际遇；破衣主有困窘；穿红衣主有喜庆。',ji:0},
+    {kw:['鞋','鞋子'],title:'梦见鞋子',text:'鞋主行走方向。新鞋主有新路可走；丢鞋主迷失方向；破鞋主行事不顺。',ji:0},
+    {kw:['书','读书'],title:'梦见书',text:'书主知识与功名。读书主有进益；买书主求知欲；书被损主学业有碍。',ji:1},
+    {kw:['镜子','照镜子'],title:'梦见镜子',text:'镜主自省与真相。照镜子主反省自身；镜子破碎主有分离；明镜主心明眼亮。',ji:0},
+    {kw:['棺材'],title:'梦见棺材',text:'棺材主升官发财（谐音"官财"）。见棺材大吉；抬棺材主有贵人相助。',ji:2},
+    {kw:['金','黄金'],title:'梦见黄金',text:'金主富贵。得金主有横财；金光闪闪主前途光明；失金主有破财。',ji:1},
+    {kw:['玉','玉石'],title:'梦见玉',text:'玉主高洁富贵。得美玉主遇贵人；碎玉主有遗憾；佩玉主身份尊贵。',ji:1},
+    {kw:['手机','电话'],title:'梦见手机',text:'手机主沟通与消息。手机响主有重要消息；手机丢失主错失良机；手机碎主沟通有障碍。',ji:0},
+    {kw:['船','帆船','轮船'],title:'梦见船',text:'船主渡过与前行。乘船平稳主事业顺利；船沉主有大难；造船主有新事业。扬帆起航主前途一片大好。',ji:0},
+    {kw:['飞机','坐飞机'],title:'梦见飞机',text:'飞机主飞速前进。乘飞机主事业腾飞；飞机坠落主有意外挫折；飞机起飞主有新项目启动。',ji:0},
+    {kw:['钥匙'],title:'梦见钥匙',text:'钥匙主机遇与秘密。得到钥匙主打开新局面；丢钥匙主错失机会；金钥匙主大好机遇。',ji:1},
+    {kw:['锁','门锁'],title:'梦见锁',text:'锁主阻碍与保护。锁住主受限制；开锁主解除障碍；锁坏主防线被破。',ji:0},
+    {kw:['伞','雨伞'],title:'梦见伞',text:'伞主保护与遮蔽。撑伞主有人庇护；伞破主失去保护；借伞主有人相助。',ji:0},
+    {kw:['灯','灯光','蜡烛'],title:'梦见灯',text:'灯主光明与希望。灯火通明主前途光明；灯灭主失去方向；点灯主心中有希望。蜡烛主奉献。',ji:1},
+    {kw:['戒指','指环','首饰','项链','耳环'],title:'梦见首饰',text:'首饰主感情与财富。得到首饰主有人爱慕；丢失首饰主感情有变；金首饰主富贵；碎首饰主分离。',ji:0},
+    {kw:['药','吃药','中药','西药'],title:'梦见药',text:'药主治愈与解决。吃药主问题即将解决；苦药主需忍耐方有好结果；开药方主有良策。',ji:0},
+    {kw:['酒','喝酒','白酒','红酒','啤酒'],title:'梦见酒',text:'酒主情谊与迷醉。饮酒欢歌主有喜事宴请；醉酒主迷失方向；敬酒主人际关系和谐。',ji:0},
+    {kw:['烟','抽烟','香烟'],title:'梦见烟',text:'烟主虚幻与迷惘。烟雾缭绕主事情不明朗；抽烟主有心事难解；烟消云散主困惑消除。',ji:0},
+    {kw:['绳','绳子','绳索'],title:'梦见绳子',text:'绳主束缚与联系。被绳子绑住主受人束缚；解绳主解脱困境；绳子断裂主关系断裂。',ji:0},
+    {kw:['梯子','爬梯'],title:'梦见梯子',text:'梯子主上升通道。爬梯子主步步高升；梯子断裂主升迁受阻；搭梯子主有人相助。',ji:1},
+    {kw:['信','信件','邮件','快递','包裹'],title:'梦见信件',text:'信主消息与音讯。收到信主有远方消息；写信主有话要说；信丢失主消息不通。',ji:0},
+    {kw:['照片','相片'],title:'梦见照片',text:'照片主记忆与过去。看老照片主怀念过去；照片模糊主记忆消退；撕照片主与过去决裂。',ji:0},
+    {kw:['旗','旗帜','红旗'],title:'梦见旗帜',text:'旗帜主胜利与荣耀。旗帜飘扬主事业有成；红旗主喜庆吉祥；旗帜倒下主需防失败。',ji:1},
+    {kw:['笔','毛笔','钢笔'],title:'梦见笔',text:'笔主文才与表达。用笔写字主有好消息或才华展现；笔断主文运受阻；得笔主获得表达机会。',ji:1},
+    {kw:['食物','饭菜','美食','水果','蛋糕','面包'],title:'梦见食物',text:'食物主欲望与满足。丰盛的食物主生活富足；食物腐烂主有隐患；分享食物主人缘佳。',ji:1},
+  ],
+  '行为':[
+    {kw:['飞','飞翔'],title:'梦见飞翔',text:'飞主超越与自由。飞得高主志向远大将有成就；飞不起来主有心无力；坠落主有挫折。',ji:1},
+    {kw:['跑','奔跑','逃跑'],title:'梦见奔跑',text:'跑主追求与逃避。奔跑顺畅主目标将达；跑不动主有压力；逃跑主逃避现实。',ji:0},
+    {kw:['哭','哭泣','流泪','痛哭'],title:'梦见哭泣',text:'哭主释放与喜兆。大哭主有喜事将临（反梦）；默默流泪主有心事；别人哭主有人需要帮助。',ji:0},
+    {kw:['笑','大笑','微笑'],title:'梦见笑',text:'笑主忧愁（反梦）。大笑主有忧虑；微笑主心境平和；被人嘲笑主有口舌。',ji:0},
+    {kw:['打架','打人','吵架','争吵','争执'],title:'梦见打架',text:'打主冲突与宣泄。与人打架主有争执；打赢主能克服困难；被打主受人欺压。',ji:-1},
+    {kw:['考试','考'],title:'梦见考试',text:'考试主自我检验。考试顺利主有信心；考不过主有焦虑；迟到主害怕错过机会。',ji:0},
+    {kw:['游泳'],title:'梦见游泳',text:'游泳主应对人生。水中自如主能力出众；溺水主有困难；教人游泳主助人为乐。',ji:0},
+    {kw:['爬','攀登','登山'],title:'梦见攀登',text:'攀登主努力上进。登顶成功主事业有成；半途而返主遇到瓶颈；登高望远主有远见。',ji:1},
+    {kw:['吃','吃饭','吃东西'],title:'梦见吃东西',text:'吃主欲望与满足。饱食主满足；吃不饱主有欠缺；吃到美食主有好事。',ji:0},
+    {kw:['掉牙','牙齿','拔牙'],title:'梦见掉牙',text:'掉牙主亲人健康。上牙主长辈；下牙主晚辈；满口掉主有变故。也主旧事物的结束。',ji:-1},
+    {kw:['迷路'],title:'梦见迷路',text:'迷路主困惑。在陌生地方迷路主人生方向不明；最终找到路主能走出困境。',ji:-1},
+    {kw:['坠落','掉下','摔','摔倒'],title:'梦见坠落',text:'坠落主不安全感。从高处坠落主担心失败；安全着陆主化险为夷；坠入水中主情感波动。',ji:-1},
+    {kw:['追','追赶','被追'],title:'梦见被追赶',text:'被追赶主逃避与压力。被人追赶主有压力需面对；追到猎物主目标达成；追而不得主欲望未满。',ji:-1},
+    {kw:['杀','杀人','被杀'],title:'梦见杀',text:'杀主决断与变革。杀人主下定决心做重大改变；被杀主旧我消亡新我诞生；目睹杀人主面临重大冲击。',ji:0},
+    {kw:['偷','偷东西','被偷'],title:'梦见偷',text:'偷主暗中得失。偷东西主内心有不当想法；被偷主有暗损；抓住小偷主挽回损失。',ji:-1},
+    {kw:['唱','唱歌','歌唱'],title:'梦见唱歌',text:'唱歌主表达与情绪。高声歌唱主心情舒畅；别人唱歌主有消息传来；悲歌主内心有忧愁。',ji:0},
+    {kw:['跳','跳舞','舞蹈'],title:'梦见跳舞',text:'跳舞主欢乐与表达。翩翩起舞主有喜事；与人共舞主人缘佳；独舞主独立自主。',ji:1},
+    {kw:['睡','睡觉','入睡'],title:'梦见睡觉',text:'梦中睡觉主安逸与警醒。安睡主无忧无虑；睡不着主有心事困扰；被叫醒主有紧急事务。',ji:0},
+    {kw:['洗','洗澡','洗手','洗脸','沐浴'],title:'梦见洗澡',text:'洗澡主清洁与新生。洗澡清爽主消除烦恼；洗不干净主有心结难解；在清水中沐浴主净化心灵。',ji:1},
+    {kw:['搬家','搬'],title:'梦见搬家',text:'搬家主变迁。搬入新居主生活有新变化；搬家忙碌主有重大调整；不愿搬主安于现状。',ji:0},
+    {kw:['旅行','旅游','出行','度假','出国'],title:'梦见旅行',text:'旅行主人生阶段转换。旅途愉快主新阶段顺利；旅途波折主有阻碍；旅途遇友主有贵人相助。',ji:1},
+    {kw:['开门','关门','敲门'],title:'梦见门',text:'门主机会与通道。开门主有新机会；关门主错失良机或保护自身；敲门主机会来临需把握。',ji:0},
+    {kw:['爬山','登顶','上山','下山'],title:'梦见爬山',text:'爬山主奋斗与目标。登顶主功成名就；下山主退隐或回归平凡；山路崎岖主过程艰辛但值得。',ji:1},
+    {kw:['种','种地','种花','种树','播种'],title:'梦见种植',text:'种植主耕耘与希望。播种主有新计划启动；浇水施肥主用心培育；发芽主努力初见成效。',ji:1},
+    {kw:['说话','交谈','对话','聊天'],title:'梦见交谈',text:'交谈主沟通与信息。与人愉快交谈主人际和谐；争论主有分歧需化解；与已故之人交谈主有重要启示。',ji:0},
+    {kw:['上班','工作','加班','办公'],title:'梦见工作',text:'工作主责任与压力。工作顺利主事业有成；工作出错主有焦虑；辞职主渴望改变现状。',ji:0},
+    {kw:['上学','上课','回学校'],title:'梦见上学',text:'上学主成长与怀旧。回到学校主需要学习新事物或怀念旧时光；上课迟到主害怕错过重要机会。',ji:0},
+    {kw:['做饭','炒菜','煮饭','烹饪'],title:'梦见做饭',text:'做饭主创造与付出。做出美食主有成就感；饭糊了主计划有误需调整；为家人做饭主家庭和睦。',ji:0},
+    {kw:['战争','战斗','打仗'],title:'梦见战争',text:'战争主重大冲突与变革。参与战争主面临重大决断；战胜主克服巨大困难；战败主需调整策略。',ji:-1},
+    {kw:['救人','被救','拯救','营救'],title:'梦见救人',text:'救人主善举与贵人。救人主行善积德必有好报；被救主危难中有贵人相助；无法救主有力不从心之感。',ji:1},
+  ],
+  '场景':[
+    {kw:['学校','教室'],title:'梦见学校',text:'学校主学习与成长。回到学校主怀念过去或需要学习；教室考试主有压力。',ji:0},
+    {kw:['医院'],title:'梦见医院',text:'医院主健康与治愈。去医院主需关注健康；在医院治愈主问题将解决。',ji:0},
+    {kw:['坟墓','墓地','墓'],title:'梦见坟墓',text:'坟墓主结束与新生。扫墓主怀念先人；新坟主有新变化；坟墓塌陷主旧事重提。',ji:0},
+    {kw:['寺庙','庙','拜佛','佛寺'],title:'梦见寺庙',text:'寺庙主清净与祈愿。进庙烧香主心愿可成；见佛主有善缘；庙中钟声主警醒。',ji:1},
+    {kw:['桥'],title:'梦见桥',text:'桥主过渡与转变。过桥主顺利转变；桥断主有阻碍；在桥上观景主处于人生转折点。',ji:0},
+    {kw:['路','道路','公路'],title:'梦见道路',text:'路主人生方向。大路平坦主事业顺利；崎岖小路主有困难；岔路主面临选择。',ji:0},
+    {kw:['梯','楼梯','天梯'],title:'梦见楼梯',text:'梯主升降进退。上楼梯主步步高升；下楼梯主有退缩；梯断主有阻碍。',ji:0},
+    {kw:['厕所','卫生间','洗手间'],title:'梦见厕所',text:'厕所主释放与清理。如厕主排解烦恼；脏厕所主有不洁之事；找不到厕所主有急事难解。',ji:0},
+    {kw:['监狱','牢房','坐牢'],title:'梦见监狱',text:'监狱主束缚与限制。被关入监狱主受到约束；越狱主渴望自由突破；探监主有人受困需帮助。',ji:-1},
+    {kw:['宫殿','皇宫','城堡'],title:'梦见宫殿',text:'宫殿主富贵与地位。进入宫殿主有升迁之喜；宫殿辉煌主前途光明；宫殿荒废主辉煌不再。',ji:1},
+    {kw:['地狱','阴间','黄泉','阎王'],title:'梦见地狱',text:'地狱主惩罚与恐惧。堕入地狱主内心有罪恶感；逃离地狱主摆脱困境；在地狱见亲人主思念深切。',ji:-2},
+    {kw:['天堂','天国','仙境','天宫'],title:'梦见天堂',text:'天堂主美好与向往。进入天堂主有极好的运势；仙境主心灵安宁；天宫主大富大贵之兆。',ji:2},
+    {kw:['战场'],title:'梦见战场',text:'战场主重大抉择。在战场上主面临人生重大挑战；战场硝烟主有激烈竞争；战场凯旋主取得重大胜利。',ji:0},
+    {kw:['市场','集市','超市','商场','菜市场'],title:'梦见市场',text:'市场主交易与选择。热闹的市场主有好机会；空荡的市场主萧条之兆；买东西主有新获得。',ji:0},
+    {kw:['电梯'],title:'梦见电梯',text:'电梯主升降际遇。电梯上升主事业上升；电梯下降主运势走低；电梯故障主有意外变故。',ji:0},
+    {kw:['隧道','洞穴','山洞','地洞'],title:'梦见隧道',text:'隧道主迷茫中前行。穿过隧道见光明主困境即将结束；在隧道中迷失主前路不明；洞穴探险主探索未知。',ji:0},
+    {kw:['悬崖','峭壁','深渊','万丈深渊'],title:'梦见悬崖',text:'悬崖主危险与抉择。站在悬崖边主面临重大选择；坠崖主有重大挫折；悬崖勒马主及时止损。',ji:-1},
+    {kw:['废墟','废弃','荒废','破败'],title:'梦见废墟',text:'废墟主结束与重建。在废墟中行走主旧事已矣；废墟中发现宝物主在困境中找到希望；重建废墟主东山再起。',ji:0},
+    {kw:['花园','院子','庭院'],title:'梦见花园',text:'花园主美好与心灵。花园盛开主内心欢喜；荒芜花园主有忧愁；在花园散步主心情舒畅享受生活。',ji:1},
+    {kw:['河岸','海边','海滩','沙滩'],title:'梦见河岸',text:'河岸主边界与过渡。站在岸边主犹豫不决；渡河到对岸主成功过渡；海滩漫步主内心安宁。',ji:0},
+  ],
+  '情感':[
+    {kw:['害怕','恐惧','恐怖','惊恐','可怕'],title:'梦中感到恐惧',text:'恐惧主内心深处的不安。梦中极度恐惧主现实中有被压抑的焦虑需要面对；恐惧后平静主能克服困难。',ji:-1},
+    {kw:['开心','高兴','快乐','幸福','喜悦','欣喜'],title:'梦中感到快乐',text:'快乐主满足与期盼。梦中大喜反主小忧（反梦之说）；但内心真正的愉悦主近期有好事将至。',ji:1},
+    {kw:['悲伤','难过','伤心','痛苦','忧伤'],title:'梦中感到悲伤',text:'悲伤主释放与转化。梦中悲痛大哭主有喜事将临（反梦）；悲伤不止主有心结需要化解。',ji:0},
+    {kw:['愤怒','生气','发火','发怒','暴怒'],title:'梦中感到愤怒',text:'愤怒主压抑与爆发。梦中发怒主现实中有被压制的不满；怒而不发主需要找到宣泄出口。',ji:-1},
+    {kw:['焦虑','紧张','不安','慌张','心慌'],title:'梦中感到焦虑',text:'焦虑主现实压力的映射。梦中焦虑不安主对未来有担忧；焦虑后放松主问题终将解决。',ji:-1},
+    {kw:['孤独','寂寞','孤单','冷清','独自'],title:'梦中感到孤独',text:'孤独主自省与独立。梦中极度孤寂主需要关注社交关系；独自行走主自立自强之兆。',ji:0},
+    {kw:['思念','想念','牵挂','惦记'],title:'梦中感到思念',text:'思念主牵挂与连接。梦中思念远人主内心深处的牵挂；思念已故之人主灵魂的慰藉。',ji:0},
+    {kw:['惊讶','震惊','意外','吃惊'],title:'梦中感到惊讶',text:'惊讶主突变与发现。梦中大为震惊主现实中将有意外之事发生；惊喜主有好运降临。',ji:0},
+    {kw:['嫉妒','羡慕','眼红'],title:'梦中感到嫉妒',text:'嫉妒主欲望与不足。梦中嫉妒他人主对自身现状有不满；化解嫉妒主能够自我调和。',ji:-1},
+    {kw:['迷茫','困惑','茫然','不知所措'],title:'梦中感到迷茫',text:'迷茫主方向不明。梦中极度困惑主现实中正处于选择的十字路口；走出迷茫主终将找到方向。',ji:0},
+    {kw:['安宁','平静','安心','释然','轻松'],title:'梦中感到平静',text:'平静主内心和谐。梦中感到极度安宁主心灵得到净化；安然自在主近期生活顺遂无忧。',ji:1},
+    {kw:['温暖','感动','被爱','关怀'],title:'梦中感到温暖',text:'温暖主被爱与守护。梦中被温暖包围主身边有人默默关心；感动流泪主有真情在侧。',ji:1},
+  ],
+  '身体':[
+    {kw:['头','头发','秃','白发','剃头','理发','剪头发'],title:'梦见头发',text:'头发主烦恼与精力。长发飘逸主有魅力；掉发主有烦恼；白发主忧思过度或有智慧；剃头主去除烦恼。',ji:0},
+    {kw:['眼','眼睛','失明','瞎'],title:'梦见眼睛',text:'眼主观察与洞察。明亮的眼睛主洞察力强；失明主对某事视而不见；第三只眼主有超凡洞察力。',ji:0},
+    {kw:['手','手指','断手','手臂'],title:'梦见手',text:'手主能力与行动。手灵巧主做事有能力；断手主失去能力或帮手；握手主合作之兆。',ji:0},
+    {kw:['脚','腿','断腿','跛'],title:'梦见脚',text:'脚主根基与行动。行走自如主前路顺畅；脚受伤主行动受阻；赤脚行走主清贫但自在。',ji:0},
+    {kw:['血','流血','出血','血液'],title:'梦见血',text:'血主生命力与财运。见血主有财至（血财）；流血不止主有破财或精力消耗；他人流血主有人需要帮助。',ji:0},
+    {kw:['骨','骨头','骷髅','骨折'],title:'梦见骨',text:'骨主根本与坚强。骨折主根基受损；白骨主已成过去之事；筋骨强健主身体安康。',ji:-1},
+    {kw:['心','心脏','心跳'],title:'梦见心脏',text:'心主感情与核心。心跳加速主有激动之事；心痛主感情受伤；心脏强健主意志坚定。',ji:0},
+    {kw:['嘴','嘴唇','舌头'],title:'梦见嘴',text:'嘴主言语与欲望。嘴唇红润主有口福；舌头打结主有话说不出；开口大笑主有喜事。',ji:0},
+    {kw:['肚子','腹部','肠胃'],title:'梦见肚子',text:'肚子主容纳与孕育。肚子饱满主富足；肚子疼主有心事难消化；大腹便便主有所承载。',ji:0},
+    {kw:['怀里','拥抱','抱'],title:'梦见拥抱',text:'拥抱主温暖与接纳。与人拥抱主感情深厚；被陌生人拥抱主有人暗中关心；拥抱后分别主有离别之情。',ji:1},
+    {kw:['生病','疾病','病','发烧','感冒'],title:'梦见生病',text:'生病主需要关注自身。梦中生病主需注意健康或心理状态；病愈主问题即将解决；重病主有重大转变。',ji:-1},
+    {kw:['受伤','伤口','伤疤','创伤'],title:'梦见受伤',text:'受伤主挫折与成长。梦中受伤主有挫折来临但能承受；伤口愈合主痛苦终将过去；旧伤复发主旧事重提。',ji:-1},
+    {kw:['裸体','光身','没穿衣服','赤裸'],title:'梦见裸体',text:'裸体主真实与坦诚。梦中赤裸主内心渴望展现真我；在人前裸露主害怕被看穿；裸体自在主内心坦荡。',ji:0},
+  ],
+  '颜色数字':[
+    {kw:['红','红色'],title:'梦见红色',text:'红主喜庆与热情。红色光芒主有喜事；红衣主吉庆；红色火焰主兴旺。血红色则需注意健康。',ji:1},
+    {kw:['白','白色'],title:'梦见白色',text:'白主清白与丧事。洁白之物主心地纯正；白衣主有丧事（古说）或清白；白光主有贵人指引。',ji:0},
+    {kw:['黑','黑色','黑暗','暗','漆黑'],title:'梦见黑色',text:'黑主未知与阴暗。黑暗笼罩主有困难；黑色物品主有隐秘之事；走出黑暗主柳暗花明。',ji:-1},
+    {kw:['绿','绿色'],title:'梦见绿色',text:'绿主生机与希望。绿色植物主有新希望；翠绿主春意盎然事业有生机；绿光主平安吉祥。',ji:1},
+    {kw:['蓝','蓝色'],title:'梦见蓝色',text:'蓝主宁静与深远。蓝天主心胸开阔；蓝色海洋主内心平静而深邃；蓝光主智慧清明。',ji:1},
+    {kw:['紫','紫色'],title:'梦见紫色',text:'紫主尊贵与神秘。紫色光芒主有贵气；紫衣主地位尊崇；紫气东来主大吉大利。',ji:2},
+    {kw:['黄','黄色'],title:'梦见黄色',text:'黄主皇家与富贵。金黄色主有财运；黄色光芒主前途光明；黄花主思念与等待。',ji:1},
+    {kw:['三','三个'],title:'数字三',text:'三主生发与变化。三生万物，主有新事物诞生；三人同行主有贵人。',ji:1},
+    {kw:['七','七个'],title:'数字七',text:'七主变化与转折。七日为一周期，主有周期性变化；七星主有贵人指引。',ji:0},
+    {kw:['八','八个'],title:'数字八',text:'八主发达与丰收。八方来财主大吉；八仙主有多方贵人相助。',ji:2},
+    {kw:['九','九个'],title:'数字九',text:'九主至尊与长久。九五之尊主权贵；九九归一主圆满完成；长长久久之兆。',ji:2},
+  ],
+  '时间天象':[
+    {kw:['白天','晴天','阳光明媚'],title:'梦见晴天',text:'晴天主光明与顺利。阳光普照主万事顺遂；晴空万里主心胸开阔前途光明。',ji:1},
+    {kw:['黑夜','夜晚','深夜','半夜'],title:'梦见夜晚',text:'夜晚主隐秘与内省。月夜主有浪漫之事；漆黑之夜主有不明之事需查清；黎明前主即将转好。',ji:0},
+    {kw:['黎明','日出','破晓','天亮'],title:'梦见黎明',text:'黎明主新的开始。日出东方主万事更新大吉；破晓主困难即将过去；天亮主真相大白。',ji:2},
+    {kw:['黄昏','日落','傍晚','夕阳'],title:'梦见黄昏',text:'黄昏主衰落与结束。夕阳西下主某事即将结束；黄昏之美主虽有遗憾但美好；傍晚归家主回归本心。',ji:0},
+    {kw:['春天','春季','春暖花开'],title:'梦见春天',text:'春主新生与希望。春暖花开主事业焕发生机；春风拂面主有好运来临；春天播种主收获可期。',ji:2},
+    {kw:['夏天','夏季','炎热','酷暑'],title:'梦见夏天',text:'夏主鼎盛与炎热。烈日炎炎主热情高涨但需防燥；夏日清凉主在繁忙中得到休息。',ji:0},
+    {kw:['秋天','秋季','秋风','落叶'],title:'梦见秋天',text:'秋主收获与萧瑟。金秋丰收主有所获得；秋风落叶主有别离或感伤；秋高气爽主心境开阔。',ji:0},
+    {kw:['冬天','冬季','严寒','寒冷'],title:'梦见冬天',text:'冬主沉寂与蓄力。严冬主有困难需坚持；冬去春来主否极泰来；冬日暖阳主困境中有希望。',ji:0},
+  ]
+};
+
+/* Extended narrative interpretation patterns */
+const DREAM_NARRATIVE_PATTERNS = [
+  {pattern:['从高处','高空','高楼','楼顶','天上','云端','空中'],theme:'高处',interp:'梦在高处，主志向与地位。高处不胜寒，亦主需谨慎。身处高位者宜稳重自持，未在高处者主有上升机会。'},
+  {pattern:['水中','水里','水下','河里','海里','湖里','潜水','沉入水'],theme:'水中',interp:'梦在水中，主深入内心或陷入情感。水清则顺，水浊则困。能在水中自如主能力超群。'},
+  {pattern:['追赶','追我','追着我','后面追','赶不上','逃不掉'],theme:'被追',interp:'梦中被追赶，主现实中有压力或逃避之事。追赶者代表内心恐惧，需正面面对方能解脱。'},
+  {pattern:['找不到','寻找','到处找','怎么找也','找来找去'],theme:'寻找',interp:'梦中寻找不得，主内心有所缺失或渴望。所寻之物即为内心所需，应审视自身真正需要。'},
+  {pattern:['回到过去','小时候','回到家乡','以前的','童年','回到从前'],theme:'回忆',interp:'梦回过去，主怀念旧时或有未完之事。内心有未了结的心结，或对过往有所眷恋需要释怀。'},
+  {pattern:['变成','变身','变化','化身','自己成了'],theme:'变化',interp:'梦中变化，主自我认知的转换。变为何物即揭示内心渴望成为的样子，主有重大转变将至。'},
+  {pattern:['重复','反复','一直','不断','循环','总是','又一次'],theme:'循环',interp:'梦中重复之事，主有未解之结。反复出现的梦境意象，代表现实中需要重视但被忽略的问题。'},
+  {pattern:['来不及','迟到','赶不上','错过','晚了'],theme:'错过',interp:'梦中错过，主对时间与机会的焦虑。内心恐惧错过人生中的重要事物，需把握当下珍惜机缘。'},
+  {pattern:['掉进','陷入','深渊','无底洞','深坑','掉入'],theme:'陷落',interp:'梦中陷入深处，主面临重大困境。但跌入低谷方知上行，困境中往往蕴含转机。'},
+  {pattern:['光','光芒','发光','光亮','亮光','金光','光照'],theme:'光明',interp:'梦中有光，大吉之兆。光明驱散黑暗，主困难消解、前路明朗。金光尤为吉利。'},
+  {pattern:['裂开','破碎','碎裂','崩塌','倒塌','断裂','破裂'],theme:'破碎',interp:'梦中破碎，主有旧事物终结。虽有不舍，但旧的不去新的不来，主迎来新的开始。'},
+  {pattern:['藏','躲藏','隐藏','藏起来','躲起来'],theme:'躲藏',interp:'梦中躲藏，主有逃避心理。面对困难不敢正视，需鼓起勇气直面问题方为上策。'},
+  {pattern:['钥匙打不开','门打不开','进不去','出不去','困住','困在','被锁'],theme:'困锁',interp:'梦中被困，主有困境难以突破。需要寻找新的方法或等待时机，终有破局之日。'},
+  {pattern:['说不出','喊不出','发不出声','无法说话','张不开嘴','叫不出','没有声音'],theme:'失语',interp:'梦中失语，主有话憋在心中不得表达。现实中或有沟通障碍，需找到倾诉渠道。'},
+  {pattern:['看不清','模糊','朦胧','看不见','眼前一片','视线'],theme:'模糊',interp:'梦中视线不清，主对未来方向感到迷茫。看不清前路时宜静心思考，理清思路后再行动。'},
+  {pattern:['突然','忽然','一下子','猛然','瞬间'],theme:'突变',interp:'梦中突变，主有意外之事。突如其来的变化提示做好心理准备，以应对现实中的变数。'},
+  {pattern:['好多人','人群','人山人海','众人','大家','所有人'],theme:'人群',interp:'梦中见众人，主人际关系与社交状态。人群热闹主社交活跃；被人群包围主有被审视之感。'},
+  {pattern:['考不过','答不上','不会做','题目','试卷'],theme:'考验',interp:'梦中考验失败，主对自身能力有所怀疑。实际上是对自己要求过高的心理投射，需自我肯定。'},
+  {pattern:['回不了家','回家','找不到家','家的方向'],theme:'归家',interp:'梦中回家困难，主内心渴望安全感与归属感。需要审视内心，找到真正的心灵归宿。'},
+  {pattern:['很大','巨大','庞大','巨型','超大','无边'],theme:'巨大',interp:'梦中事物巨大，主该事物对梦者影响深远。巨大之物代表不可忽视的力量或问题。'},
+  {pattern:['很小','缩小','微小','变小','渺小','微不足道'],theme:'渺小',interp:'梦中事物极小或自觉渺小，主有自卑感或感到力不从心。需要调整心态，认识自身价值。'},
+  {pattern:['两个','一对','双','两只','左右','两条'],theme:'双生',interp:'梦中成双之物，主有两面性或面临二选一的抉择。双数亦主成双成对、好事成双之兆。'},
+  {pattern:['消失','不见了','凭空消失','无影无踪','突然没了'],theme:'消失',interp:'梦中事物消失，主有所失去或害怕失去。提醒珍惜当下所拥有，勿待失去方觉可惜。'},
+  {pattern:['等待','等人','等车','等','排队','久等'],theme:'等待',interp:'梦中等待，主现实中有所期盼。等待之苦虽难耐，但所等之事终将到来，需耐心守候。'},
+  {pattern:['会说话','开口说话','动物说话','植物说话','物品说话'],theme:'异语',interp:'梦中非人之物开口说话，主有重要启示。所言之语即为内心深处的声音，需认真对待。'},
+];
+
+/* Emotional tone analysis patterns */
+const DREAM_EMOTIONS = {
+  positive:['开心','快乐','高兴','幸福','温暖','美好','欣喜','感动','安心','释然','轻松','自在','舒服','愉快','满足','欣慰','喜悦','激动','兴奋','自豪','骄傲','感恩'],
+  negative:['害怕','恐惧','恐怖','紧张','焦虑','担心','难过','悲伤','痛苦','绝望','无助','孤独','寂寞','愤怒','生气','厌恶','嫉妒','羞耻','尴尬','内疚','懊悔','后悔','不安','慌张','压抑','憋屈','委屈','崩溃'],
+  neutral:['奇怪','好奇','惊讶','震惊','困惑','迷茫','平静','沉默','无感','冷漠','淡然']
+};
+
+function updateDreamCharCount(){
+  const ta = document.getElementById('dreamInput');
+  const span = document.getElementById('dreamCharNum');
+  const len = ta.value.length;
+  span.textContent = len;
+  span.classList.toggle('over', len>1000);
+}
+
+function buildDreamCats(){
+  const cats = Object.keys(DREAM_DATA);
+  const el = document.getElementById('dreamCats');
+  el.innerHTML = cats.map(c=>`<button class="dream-cat-btn" onclick="filterDreams('${c}')">${c}</button>`).join('');
+}
+
+function filterDreams(cat){
+  document.querySelectorAll('.dream-cat-btn').forEach(b=>b.classList.toggle('active',b.textContent===cat));
+  const items = DREAM_DATA[cat]||[];
+  showDreamCards(items, cat);
+}
+
+function showDreamCards(items, cat){
+  const el = document.getElementById('dreamResults');
+  el.style.gridTemplateColumns = 'repeat(auto-fill,minmax(280px,1fr))';
+  el.innerHTML = items.map(item=>`<div class="card dream-card">
+    <h4>${item.title}</h4>
+    <p>${item.text}</p>
+    ${item.cat?`<span class="dream-tag">${item.cat}</span>`:(cat?`<span class="dream-tag">${cat}</span>`:'')}
+  </div>`).join('');
+}
+
+function searchDream(){
+  const text = document.getElementById('dreamInput').value.trim();
+  if(!text) return;
+  document.querySelectorAll('.dream-cat-btn').forEach(b=>b.classList.remove('active'));
+
+  /* 1. Extract all matching dream elements from the narrative */
+  const matchedElements = [];
+  Object.entries(DREAM_DATA).forEach(([cat,items])=>{
+    items.forEach(item=>{
+      if(item.kw.some(k=> text.includes(k))){
+        matchedElements.push({...item, cat});
+      }
+    });
+  });
+
+  /* 2. Match narrative patterns */
+  const matchedPatterns = [];
+  DREAM_NARRATIVE_PATTERNS.forEach(p=>{
+    if(p.pattern.some(kw=> text.includes(kw))){
+      matchedPatterns.push(p);
+    }
+  });
+
+  /* 3. Analyze emotional tone */
+  let posCount=0, negCount=0, neuCount=0;
+  const foundEmotions = [];
+  DREAM_EMOTIONS.positive.forEach(e=>{ if(text.includes(e)){posCount++;foundEmotions.push({word:e,type:'吉'})} });
+  DREAM_EMOTIONS.negative.forEach(e=>{ if(text.includes(e)){negCount++;foundEmotions.push({word:e,type:'凶'})} });
+  DREAM_EMOTIONS.neutral.forEach(e=>{ if(text.includes(e)){neuCount++;foundEmotions.push({word:e,type:'平'})} });
+
+  /* If nothing matched at all, try character-by-character matching */
+  if(matchedElements.length===0 && matchedPatterns.length===0){
+    Object.entries(DREAM_DATA).forEach(([cat,items])=>{
+      items.forEach(item=>{
+        if(item.title.includes(text) || item.text.includes(text)){
+          matchedElements.push({...item, cat});
+        }
+      });
+    });
+  }
+
+  /* 4. Calculate overall fortune */
+  let jiScore = 0;
+  matchedElements.forEach(e=>{ jiScore += (e.ji||0); });
+  matchedPatterns.forEach(p=>{
+    if(p.theme==='光明'||p.theme==='变化') jiScore+=1;
+    if(p.theme==='陷落'||p.theme==='失语'||p.theme==='困锁') jiScore-=1;
+  });
+  jiScore += posCount - negCount;
+
+  /* 5. Render full analysis */
+  const el = document.getElementById('dreamResults');
+  el.style.gridTemplateColumns = '1fr';
+
+  if(matchedElements.length===0 && matchedPatterns.length===0 && foundEmotions.length===0){
+    /* Pure narrative with no keyword matches - generate general interpretation */
+    el.innerHTML = renderGeneralInterpretation(text);
+    return;
+  }
+
+  let html = '';
+
+  /* Overview section */
+  html += `<div class="card dream-overview">
+    <h3>梦境解析总览</h3>
+    <div class="dream-summary">
+      此梦共识别出 <strong style="color:var(--gold)">${matchedElements.length}</strong> 个梦境意象，
+      <strong style="color:var(--gold)">${matchedPatterns.length}</strong> 个叙事模式${foundEmotions.length>0?`，
+      <strong style="color:var(--gold)">${foundEmotions.length}</strong> 种情感色彩`:''}。
+      以下为逐一解析：
+    </div>
+  </div>`;
+
+  /* Matched elements */
+  if(matchedElements.length>0){
+    html += `<div class="dream-elements-grid">`;
+    matchedElements.forEach(item=>{
+      html += `<div class="card dream-element-card">
+        <h4><span class="el-icon">${getElementIcon(item.cat)}</span>${item.title}</h4>
+        <p>${item.text}</p>
+        <span class="dream-tag">${item.cat}</span>
+        <span class="dream-tag" style="${item.ji>0?'color:var(--gold);border-color:var(--gold)':item.ji<0?'color:var(--red);border-color:var(--red)':''}">${item.ji>0?'吉':item.ji<0?'凶':'中平'}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  /* Narrative patterns */
+  if(matchedPatterns.length>0){
+    html += `<div style="margin-top:20px"><h3 style="font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;color:var(--gold);margin-bottom:16px;letter-spacing:2px">梦境叙事解读</h3>`;
+    html += `<div class="dream-elements-grid">`;
+    matchedPatterns.forEach(p=>{
+      html += `<div class="card dream-element-card">
+        <h4><span class="el-icon">📖</span>「${p.theme}」之象</h4>
+        <p>${p.interp}</p>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  /* Emotional analysis */
+  if(foundEmotions.length>0){
+    html += `<div class="card" style="margin-top:20px;padding:20px">
+      <h3 style="font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;color:var(--gold);margin-bottom:12px">梦中情感色彩</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">`;
+    foundEmotions.forEach(em=>{
+      const c = em.type==='吉'?'var(--gold)':em.type==='凶'?'var(--red)':'var(--text-dim)';
+      html += `<span style="padding:4px 12px;border:1px solid ${c};color:${c};border-radius:20px;font-size:.8rem">${em.word}（${em.type}）</span>`;
+    });
+    html += `</div>
+      <p style="font-size:.85rem;line-height:1.8;color:var(--text-main)">${getEmotionAnalysis(posCount,negCount,neuCount)}</p>
+    </div>`;
+  }
+
+  /* Overall verdict */
+  const verdictClass = jiScore>0?'ji':jiScore<0?'xiong':'zhong';
+  const verdictText = jiScore>=3?'大吉':jiScore>=1?'吉':jiScore===0?'中平':jiScore>=-2?'小凶':'大凶';
+  html += `<div class="dream-verdict ${verdictClass}">
+    <h3>${verdictText}</h3>
+    <div class="verdict-text">${getVerdictText(jiScore, matchedElements, matchedPatterns, text)}</div>
+  </div>`;
+
+  /* Advice */
+  html += `<div class="dream-advice">
+    <h4>化解建议</h4>
+    <p>${getAdvice(jiScore, matchedElements, matchedPatterns)}</p>
+  </div>`;
+
+  el.innerHTML = html;
+}
+
+function getElementIcon(cat){
+  const icons = {'动物':'🐾','自然':'🌿','人物':'👤','物品':'📦','行为':'🏃','场景':'🏛','情感':'💭','身体':'🫀','颜色数字':'🎨','时间天象':'🌅'};
+  return icons[cat]||'✦';
+}
+
+function getEmotionAnalysis(pos,neg,neu){
+  if(pos>neg && pos>0) return '梦中情感以积极正面为主，显示近期内心状态良好，潜意识中对未来抱有期望。正面的情绪暗示着好运即将降临，宜保持乐观心态，积极面对生活中的各种挑战。';
+  if(neg>pos && neg>0) return '梦中情感偏向消极，显示内心有积压的压力或忧虑。此类梦境多为心理的自然释放，不必过于忧虑。古人云"日有所思夜有所梦"，建议关注自身情绪健康，适当放松身心，化解心中郁结。';
+  if(pos===neg && pos>0) return '梦中情感喜忧参半，显示内心处于矛盾交织的状态。正在经历某种选择或变化，内心尚未做出决定。此梦提示需静心思考，权衡利弊，方能做出正确的选择。';
+  return '梦中情感较为平淡，显示内心较为沉稳。此梦以象征意义为主，需结合具体意象综合分析。';
+}
+
+function getVerdictText(score, elements, patterns, text){
+  const len = text.length;
+  if(score>=3){
+    return '此梦整体大吉大利。梦中诸多意象均指向吉祥如意之兆，近期运势旺盛，宜积极进取、把握机会。财运、事业、人际关系均有向好之势，可大胆行事。';
+  } else if(score>=1){
+    return '此梦整体偏吉。虽有小波折之象，但总体走势向好。梦中所见之物多为积极信号，提示近期会有好的变化发生。宜保持平和心态，顺势而为。';
+  } else if(score===0){
+    return '此梦吉凶参半，属中平之象。梦中意象有好有坏，提示近期运势平稳，不宜冒进也不必过于保守。凡事谨慎行事，把握分寸，自能趋吉避凶。';
+  } else if(score>=-2){
+    return '此梦略有凶兆，但不必过虑。梦境中有一些不太顺利的意象，提示近期需注意防范小人、口舌是非或意外之事。保持警醒、行事谨慎即可化险为夷。';
+  } else {
+    return '此梦凶兆较重，宜多加小心。梦中多处意象显示近期运势有波动，可能面临挑战或困难。但凡事预则立，提前做好准备便能化解。古人有言"大凶之后必有大吉"，困难过后往往迎来转机。';
+  }
+}
+
+function getAdvice(score, elements, patterns){
+  const advices = [];
+  if(score<0){
+    advices.push('近期宜保守行事，不可贸然决断大事。凡遇抉择应三思而后行，避免冲动。');
+  }
+  const hasDeath = elements.some(e=>e.kw&&(e.kw.includes('死')||e.kw.includes('死人')));
+  const hasGhost = elements.some(e=>e.kw&&(e.kw.includes('鬼')||e.kw.includes('鬼魂')));
+  const hasSnake = elements.some(e=>e.kw&&e.kw.includes('蛇'));
+  const hasWater = elements.some(e=>e.kw&&(e.kw.includes('水')||e.kw.includes('河')||e.kw.includes('海')));
+  const hasFire = elements.some(e=>e.kw&&(e.kw.includes('火')||e.kw.includes('着火')));
+  const hasChase = patterns.some(p=>p.theme==='被追');
+  const hasLost = patterns.some(p=>p.theme==='寻找'||p.theme==='归家');
+
+  if(hasDeath) advices.push('梦见与死亡相关之事，主有旧事终结新事开始。建议放下执念，迎接新的变化。可到寺庙祈福或行善积德以增福运。');
+  if(hasGhost) advices.push('梦见鬼魅之物，主有阴气侵扰。建议近期少去阴暗潮湿之地，可佩戴红绳或玉石辟邪。心怀正气则百邪不侵。');
+  if(hasSnake) advices.push('蛇入梦境，主有财运变化。宜关注财务状况，可适当理财。但也需防小人暗算，行事低调为宜。');
+  if(hasWater) advices.push('水为财之象征。清水主财来，浑水主灾祸。建议近期注意与水相关的安全事项，同时可关注投资理财机会。');
+  if(hasFire) advices.push('火主兴旺亦主变动。建议注意用火安全，同时把握事业上的热情与冲劲，但需防急躁冲动之举。');
+  if(hasChase) advices.push('梦中被追赶，提示有逃避之事。建议正面面对困难与挑战，逃避只会让问题更加严重。鼓起勇气，直面问题。');
+  if(hasLost) advices.push('梦中迷失方向，提示需要重新审视人生方向与目标。可找信任之人倾诉交流，或静坐冥想以理清思路。');
+
+  if(advices.length===0){
+    if(score>0){
+      advices.push('此梦主吉，宜趁运势旺盛之时积极行动。保持善心善行，好运自会延续。可以适当把握机会，主动出击。');
+    } else {
+      advices.push('无论梦境吉凶，保持内心平和最为重要。古人云"心正则梦正"，修身养性、行善积德，自能逢凶化吉、遇难呈祥。日常可多读经典、静心修炼，以正气化解一切不祥之兆。');
+    }
+  }
+
+  return advices.join('<br>');
+}
+
+function renderGeneralInterpretation(text){
+  /* When no specific keywords matched, do a general analysis based on text characteristics */
+  const len = text.length;
+  const hash = Array.from(text).reduce((h,c)=>((h<<5)-h)+c.charCodeAt(0),0);
+  const absHash = Math.abs(hash);
+
+  const guaIndex = absHash % 8;
+  const guaNames = ['乾','兑','离','震','巽','坎','艮','坤'];
+  const guaAttrs = [
+    {name:'乾',nature:'天',desc:'乾为天，刚健中正。此梦显示你内心有坚定的意志和远大的目标，主事业心强，适宜积极进取。'},
+    {name:'兑',nature:'泽',desc:'兑为泽，喜悦和谐。此梦显示你内心渴望快乐与交流，主人际关系良好，近期有欢聚之喜。'},
+    {name:'离',nature:'火',desc:'离为火，光明热情。此梦显示你内心充满热情与能量，主有展现才华的机会，但需防急躁。'},
+    {name:'震',nature:'雷',desc:'震为雷，震动奋起。此梦显示你正经历或即将经历重大变化，虽有惊恐之感，但主有新的开始。'},
+    {name:'巽',nature:'风',desc:'巽为风，灵活变通。此梦显示你具有柔顺灵活的特质，主能随机应变，但需防优柔寡断。'},
+    {name:'坎',nature:'水',desc:'坎为水，险中有智。此梦显示你可能面临一些挑战与困难，但只要运用智慧，便能化险为夷。'},
+    {name:'艮',nature:'山',desc:'艮为山，沉稳安定。此梦显示你需要停下来思考与沉淀，主宜静不宜动，守正待时方为上策。'},
+    {name:'坤',nature:'地',desc:'坤为地，厚德载物。此梦显示你具有包容宽厚的品质，主有坚实的基础，宜以柔克刚。'},
+  ];
+
+  const gua = guaAttrs[guaIndex];
+  const wuxingIndex = absHash % 5;
+  const wuxing = ['金','木','水','火','土'][wuxingIndex];
+  const wuxingDescs = {
+    '金':'此梦五行属金，主决断与变革。近期可能面临重要抉择，宜果断行事。金主义，待人以诚则能得到贵人相助。',
+    '木':'此梦五行属木，主生长与发展。近期正处于成长期，各方面都在蓄力向上。木主仁，以善心待人必有好报。',
+    '水':'此梦五行属水，主智慧与流通。近期思维活跃，适合学习与规划。水主智，运用聪明才智可化解一切难题。',
+    '火':'此梦五行属火，主热情与光明。近期精力充沛，适合积极表现自己。火主礼，以礼待人则人际和谐。',
+    '土':'此梦五行属土，主稳重与包容。近期宜稳扎稳打，不宜冒进。土主信，守信用则能赢得他人信赖。',
+  };
+
+  const jiArr = ['中平','小吉','吉','中平','小吉','吉','小凶','中平','大吉','小吉'];
+  const jiResult = jiArr[absHash % jiArr.length];
+  const verdictClass = jiResult.includes('凶')?'xiong':jiResult.includes('吉')?'ji':'zhong';
+
+  const generalAdvices = [
+    '平日多行善事，积德修福，梦中所示之兆自会趋吉避凶。保持正念正行，好运自来。',
+    '梦为心之映照，宜多关注自身内心状态。静坐冥想、读经养性，可助心神安定。',
+    '近期宜注意作息规律，调养身心。身体康健则心神安定，自然梦境祥和。',
+    '古人云："善为玉宝一生用，心作良田百世耕。"保持善心善行，运势自然亨通。',
+    '此梦虽有深意，但无需过度解读。保持平常心，顺其自然即可。',
+  ];
+  const advice = generalAdvices[absHash % generalAdvices.length];
+
+  return `
+    <div class="card dream-overview">
+      <h3>梦境玄机解析</h3>
+      <div class="dream-summary">
+        您所描述的梦境内容丰富，虽无明显的传统梦象关键词，但可依据梦境整体气象进行八卦与五行推演分析。
+      </div>
+    </div>
+    <div class="dream-elements-grid">
+      <div class="card dream-element-card">
+        <h4><span class="el-icon">☰</span>卦象分析 · ${gua.name}卦（${gua.nature}）</h4>
+        <p>${gua.desc}</p>
+      </div>
+      <div class="card dream-element-card">
+        <h4><span class="el-icon">🔮</span>五行属性 · ${wuxing}</h4>
+        <p>${wuxingDescs[wuxing]}</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;padding:20px">
+      <h3 style="font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;color:var(--gold);margin-bottom:12px">整体意境解读</h3>
+      <p style="font-size:.9rem;line-height:2;color:var(--text-main)">
+        ${generateNarrativeReading(text, gua, wuxing)}
+      </p>
+    </div>
+    <div class="dream-verdict ${verdictClass}">
+      <h3>${jiResult}</h3>
+      <div class="verdict-text">综合卦象、五行及梦境整体气象分析，此梦判为「${jiResult}」。${jiResult.includes('吉')?'近期运势向好，宜积极把握机遇。':'凡事谨慎为上，静待时运转变。'}</div>
+    </div>
+    <div class="dream-advice">
+      <h4>化解建议</h4>
+      <p>${advice}</p>
+    </div>
+  `;
+}
+
+function generateNarrativeReading(text, gua, wuxing){
+  const sentences = [];
+  const len = text.length;
+
+  sentences.push(`您的梦境描述共计${len}字，字数${len>200?'较长，梦境内容丰富':len>50?'适中，梦境较为清晰':'简短，梦境印象深刻'}。`);
+
+  /* Analyze text for verbs, nouns, emotional words */
+  const actionWords = ['走','跑','飞','跳','看','听','说','做','拿','吃','喝','开','关','找','去','来','回','坐','站','睡','醒','笑','哭','想','等','追','逃','爬','游','骑','踩','抱','摸','推','拉','打','切','种','洗','穿','脱','买','卖','送','接','扔','丢','搬','建','拆','修','画','写','读','弹','唱','跳舞'];
+  const foundActions = actionWords.filter(a=>text.includes(a));
+
+  if(foundActions.length>3){
+    sentences.push(`梦中行为丰富，涉及${foundActions.slice(0,5).join('、')}等动作，显示梦者潜意识活跃，近期可能处于多事之秋，内心有诸多事务需要处理。`);
+  } else if(foundActions.length>0){
+    sentences.push(`梦中主要涉及"${foundActions.join('、')}"等行为，显示梦者对这些方面有所关注或思虑。`);
+  }
+
+  sentences.push(`依据${gua.name}卦之象，${gua.nature}之属性与此梦相合——${gua.name}卦代表的核心含义将影响近期的运势走向。`);
+  sentences.push(`五行属${wuxing}，${wuxing}行之气贯穿此梦，主导了梦境的基本格调与走向。`);
+
+  /* Detect if dream has a narrative arc */
+  if(text.includes('然后')||text.includes('后来')||text.includes('接着')||text.includes('突然')||text.includes('最后')){
+    sentences.push('此梦具有完整的叙事脉络，梦境层层递进，显示潜意识在进行深度的心理整合与自我对话。梦中的转折与发展，正映射着现实中正在经历或即将面对的变化。');
+  }
+
+  if(text.includes('醒')||text.includes('惊醒')||text.includes('吓醒')){
+    sentences.push('梦中有惊醒之象，此为潜意识的重要提醒信号。所惊之事即为内心最需关注之处，宜认真反思。');
+  }
+
+  return sentences.join('');
+}
+
+document.getElementById('dreamInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();searchDream()}});
+
+/* ============================================================
+   CHARACTER ANALYSIS (测字)
+   ============================================================ */
+// Stroke count data for common characters (simplified)
+const STROKE_DATA = {};
+// We'll compute strokes from Unicode CJK range heuristically + known data
+const KNOWN_STROKES = {
+  '一':1,'二':2,'三':3,'四':5,'五':4,'六':4,'七':2,'八':2,'九':2,'十':2,
+  '人':2,'大':3,'天':4,'地':6,'山':3,'水':4,'火':4,'木':4,'金':8,'土':3,
+  '日':4,'月':4,'风':4,'云':4,'雨':8,'雷':13,'电':5,'龙':5,'虎':8,'马':3,
+  '牛':4,'羊':6,'鸡':7,'狗':8,'猪':11,'鼠':13,'兔':8,'蛇':11,'猴':12,'鱼':8,
+  '花':7,'草':9,'竹':6,'松':8,'梅':11,'兰':5,'菊':11,'莲':10,
+  '福':13,'禄':12,'寿':7,'喜':12,'财':7,'官':8,'运':7,'命':8,
+  '爱':10,'情':11,'心':4,'思':9,'想':13,'念':8,'忆':4,'梦':11,
+  '家':10,'国':8,'民':5,'安':6,'和':8,'平':5,'乐':5,'康':11,
+  '东':5,'西':6,'南':9,'北':5,'中':4,'上':3,'下':3,'左':5,'右':5,
+  '春':9,'夏':10,'秋':9,'冬':5,'晨':11,'暮':14,'昼':9,'夜':8,
+  '吉':6,'凶':4,'祥':10,'瑞':13,'善':12,'恶':10,'美':9,'丑':4,
+  '明':8,'暗':13,'光':6,'影':15,'静':14,'动':6,'开':4,'关':6,
+  '生':5,'死':6,'新':13,'旧':5,'始':8,'终':11,'成':6,'败':8,
+  '学':8,'文':4,'武':8,'才':3,'德':15,'道':12,'法':8,'理':11,
+  '仁':4,'义':3,'礼':5,'智':12,'信':9,'忠':8,'孝':7,'廉':13,
+  '王':4,'帝':9,'皇':9,'后':6,'臣':6,'将':9,'相':9,'士':3,
+  '父':4,'母':5,'兄':5,'弟':7,'姐':8,'妹':8,'子':3,'女':3,
+  '手':4,'足':7,'目':5,'口':3,'耳':6,'鼻':14,'身':7,'头':5,
+  '红':6,'黄':11,'蓝':13,'绿':11,'白':5,'黑':12,'紫':12,'青':8,
+  '富':12,'贵':9,'贫':8,'贱':9,'强':12,'弱':10,'勇':9,'怯':8,
+  '飞':3,'走':7,'跑':12,'站':10,'坐':7,'卧':8,'行':6,'止':4,
+  '食':9,'饮':7,'衣':6,'住':7,'用':5,'买':6,'卖':8,'送':9,
+  '车':4,'船':11,'飞机':3,'路':13,'桥':10,'门':3,'窗':12,'楼':13,
+  '刀':2,'剑':9,'弓':3,'箭':15,'盾':9,'枪':8,'炮':9,
+  '书':4,'画':8,'诗':8,'歌':14,'舞':14,'琴':12,'棋':12,
+  '酒':10,'茶':9,'饭':7,'菜':11,'肉':6,'果':8,'米':6,'面':9,
+  '石':5,'铁':10,'铜':11,'银':11,'钢':9,'玉':5,'珠':10,'宝':8,
+  '田':5,'林':8,'河':8,'湖':12,'海':10,'池':6,'泉':9,'井':4,
+  '城':9,'村':7,'镇':15,'街':12,'市':5,'店':8,'院':9,'园':7,
+  '狼':10,'鹿':11,'象':11,'熊':14,'鹰':18,'燕':16,'蝶':15,'蜂':13,
+  '星':9,'辰':7,'宇':6,'宙':8,'乾':11,'坤':8,'阴':6,'阳':6,
+  '气':4,'血':6,'精':14,'神':9,'魂':13,'魄':14,'灵':7,'仙':5,
+};
+
+function getStrokes(char){
+  if(KNOWN_STROKES[char]) return KNOWN_STROKES[char];
+  // Fallback: use unicode code point based estimation
+  const code = char.charCodeAt(0);
+  if(code >= 0x4e00 && code <= 0x9fff){
+    // Rough estimation based on code ranges
+    return ((code - 0x4e00) % 20) + 3;
+  }
+  return 8; // default
+}
+
+const WUXING = ['金','水','木','火','土'];
+const WUXING_ATTR = {
+  '金':{nature:'刚毅果断',element:'西方，秋季',color:'白色',organ:'肺',fortune:'主决断、变革'},
+  '水':{nature:'智慧灵动',element:'北方，冬季',color:'黑色',organ:'肾',fortune:'主智谋、流通'},
+  '木':{nature:'仁慈正直',element:'东方，春季',color:'青色',organ:'肝',fortune:'主生长、仁爱'},
+  '火':{nature:'热情礼义',element:'南方，夏季',color:'红色',organ:'心',fortune:'主光明、礼仪'},
+  '土':{nature:'厚重诚信',element:'中央，长夏',color:'黄色',organ:'脾',fortune:'主稳重、包容'},
+};
+
+const FORTUNE_POEMS = [
+  '大吉大利，万事亨通，如日中天，前途光明。',
+  '吉祥如意，顺风顺水，贵人相助，福泽绵长。',
+  '中上之吉，稳步前行，虽有小阻，终得善果。',
+  '平平稳稳，不骄不躁，守正待时，自有转机。',
+  '先难后易，忍耐为要，拨云见日，终获吉祥。',
+  '小有波折，谨慎为上，退一步海阔天空。',
+  '时运未至，宜静不宜动，韬光养晦，以待天时。',
+  '有惊无险，逢凶化吉，守住本心，可保平安。',
+];
+
+// Letter & digit stroke mappings
+const LETTER_STROKES = {
+  'A':3,'B':3,'C':1,'D':2,'E':4,'F':3,'G':2,'H':3,'I':3,'J':2,'K':3,'L':2,'M':4,
+  'N':3,'O':1,'P':2,'Q':2,'R':3,'S':1,'T':2,'U':1,'V':2,'W':4,'X':2,'Y':2,'Z':3,
+  'a':2,'b':2,'c':1,'d':2,'e':1,'f':2,'g':2,'h':2,'i':2,'j':2,'k':3,'l':1,'m':3,
+  'n':2,'o':1,'p':2,'q':2,'r':1,'s':1,'t':2,'u':1,'v':2,'w':3,'x':2,'y':2,'z':3,
+  '0':1,'1':1,'2':1,'3':1,'4':2,'5':2,'6':2,'7':2,'8':2,'9':2
+};
+
+function getCharType(ch){
+  const code = ch.charCodeAt(0);
+  if(code >= 0x4e00 && code <= 0x9fff) return 'cjk';
+  if(code >= 48 && code <= 57) return 'digit';
+  if((code >= 65 && code <= 90)||(code >= 97 && code <= 122)) return 'letter';
+  return 'other';
+}
+
+function getCharStrokes(ch){
+  const type = getCharType(ch);
+  if(type === 'cjk') return getStrokes(ch);
+  if(type === 'digit' || type === 'letter') return LETTER_STROKES[ch] || 2;
+  return 2;
+}
+
+function getCharTypeName(ch){
+  const t = getCharType(ch);
+  if(t === 'cjk') return '汉字';
+  if(t === 'digit') return '数字';
+  if(t === 'letter') return ch === ch.toUpperCase() ? '大写字母' : '小写字母';
+  return '符号';
+}
+
+function analyzeChar(){
+  const input = document.getElementById('ceziInput').value.trim();
+  if(!input){
+    document.getElementById('ceziResult').innerHTML = '<p style="text-align:center;color:var(--text-dim)">请输入汉字、数字或英文字母</p>';
+    return;
+  }
+
+  // Filter valid characters
+  const chars = [];
+  for(const ch of input){
+    const t = getCharType(ch);
+    if(t !== 'other') chars.push(ch);
+  }
+  if(chars.length === 0){
+    document.getElementById('ceziResult').innerHTML = '<p style="text-align:center;color:var(--text-dim)">请输入有效的汉字、数字或英文字母</p>';
+    return;
+  }
+
+  // Compute per-character data
+  const charData = chars.map(ch => {
+    const strokes = getCharStrokes(ch);
+    const code = ch.charCodeAt(0);
+    const wuxingIdx = (strokes - 1) % 5;
+    const wuxing = WUXING[wuxingIdx];
+    const yinyang = strokes % 2 === 0 ? '阴' : '阳';
+    const triIdx = strokes % 8;
+    const triNames = ['乾（天）','兑（泽）','离（火）','震（雷）','巽（风）','坎（水）','艮（山）','坤（地）'];
+    return { ch, strokes, code, wuxing, yinyang, tri: triNames[triIdx], type: getCharTypeName(ch) };
+  });
+
+  // Aggregate
+  const totalStrokes = charData.reduce((s,d) => s + d.strokes, 0);
+  const totalCode = charData.reduce((s,d) => s + d.code, 0);
+  const aggWuxingIdx = (totalStrokes - 1) % 5;
+  const aggWuxing = WUXING[aggWuxingIdx];
+  const aggWx = WUXING_ATTR[aggWuxing];
+  const aggYinyang = totalStrokes % 2 === 0 ? '阴' : '阳';
+  const aggTriIdx = totalStrokes % 8;
+  const triNames = ['乾（天）','兑（泽）','离（火）','震（雷）','巽（风）','坎（水）','艮（山）','坤（地）'];
+  const aggTri = triNames[aggTriIdx];
+
+  // Fortune
+  const fortuneNum = (totalStrokes * 7 + totalCode) % 81 + 1;
+  let fortuneLevel, fortuneClass;
+  if(fortuneNum % 8 <= 2){ fortuneLevel = '大吉'; fortuneClass = 'fortune-ji'; }
+  else if(fortuneNum % 8 <= 4){ fortuneLevel = '吉'; fortuneClass = 'fortune-ji'; }
+  else if(fortuneNum % 8 <= 5){ fortuneLevel = '中平'; fortuneClass = 'fortune-zhong'; }
+  else if(fortuneNum % 8 <= 6){ fortuneLevel = '小凶'; fortuneClass = 'fortune-xiong'; }
+  else { fortuneLevel = '平'; fortuneClass = 'fortune-zhong'; }
+
+  const poem = FORTUNE_POEMS[(totalStrokes + totalCode) % FORTUNE_POEMS.length];
+
+  // Build character detail rows
+  let charDetailHTML = '';
+  if(chars.length > 1){
+    charDetailHTML = `<div style="margin:20px 0"><h4 style="font-family:'Ma Shan Zheng',cursive;color:var(--gold);margin-bottom:12px;font-size:1.1rem">逐字解析</h4>
+    <div style="display:grid;gap:8px">`;
+    for(const d of charData){
+      const wx = WUXING_ATTR[d.wuxing];
+      charDetailHTML += `<div style="display:grid;grid-template-columns:60px 1fr;gap:12px;padding:10px 14px;background:rgba(201,168,76,.04);border:1px solid var(--border);border-radius:6px;align-items:center">
+        <div style="font-family:'Ma Shan Zheng',cursive;font-size:1.8rem;color:var(--gold);text-align:center">${d.ch}</div>
+        <div style="font-size:.82rem;color:var(--text-main);line-height:1.7">
+          <span style="color:var(--text-dim)">${d.type}</span> · ${d.strokes}画 · 五行<strong style="color:var(--gold)">${d.wuxing}</strong> · ${d.yinyang} · ${d.tri} · ${wx.nature}
+        </div>
+      </div>`;
+    }
+    charDetailHTML += '</div></div>';
+  }
+
+  const displayText = chars.join('');
+  const el = document.getElementById('ceziResult');
+  el.innerHTML = `
+    <div class="card">
+      <div class="big-char" style="font-size:${chars.length > 4 ? '2.5rem' : chars.length > 2 ? '3.5rem' : '5rem'};word-break:break-all">${displayText}</div>
+      <div class="attr-grid">
+        <div class="attr-item"><div class="attr-label">总笔画数</div><div class="attr-value">${totalStrokes} 画</div></div>
+        <div class="attr-item"><div class="attr-label">五行属性</div><div class="attr-value">${aggWuxing}</div></div>
+        <div class="attr-item"><div class="attr-label">阴阳</div><div class="attr-value">${aggYinyang}</div></div>
+        <div class="attr-item"><div class="attr-label">对应卦象</div><div class="attr-value">${aggTri}</div></div>
+        <div class="attr-item"><div class="attr-label">方位季节</div><div class="attr-value">${aggWx.element}</div></div>
+        <div class="attr-item"><div class="attr-label">五行性质</div><div class="attr-value">${aggWx.nature}</div></div>
+        <div class="attr-item"><div class="attr-label">代表颜色</div><div class="attr-value">${aggWx.color}</div></div>
+        <div class="attr-item"><div class="attr-label">对应脏腑</div><div class="attr-value">${aggWx.organ}</div></div>
+      </div>
+      ${charDetailHTML}
+      <div class="cezi-fortune">
+        <div class="fortune-level ${fortuneClass}">${fortuneLevel}</div>
+        <div class="fortune-text">
+          <strong>"${displayText}"</strong>，共${totalStrokes}画，五行属<strong>${aggWuxing}</strong>，${aggWx.fortune}。<br>
+          ${aggYinyang}数之象，合${aggTri}之理。<br><br>
+          ${poem}
+        </div>
+      </div>
+    </div>`;
+}
+
+document.getElementById('ceziInput').addEventListener('keydown',e=>{if(e.key==='Enter')analyzeChar()});
+
+/* ============================================================
+   生辰八字 · 五行命格
+   ============================================================ */
+/* --- 农历数据 1900-2100 --- */
+const LUNAR_INFO=[
+0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
+0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x05ac0,0x0ab60,0x096d5,0x092e0,
+0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
+0x14b63,0x09370,0x049f8,0x04970,0x064b0,0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,
+0x092e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,
+0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,
+0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,
+0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,0x04ae0,0x0a9d4,0x0a4d0,0x0d150,0x0f252,
+0x0d520
+];
+
+function lunarMonthDays(y,m){return(LUNAR_INFO[y-1900]&(0x10000>>m))?30:29}
+function lunarYearDays(y){let s=348;for(let i=0x8000;i>0x8;i>>=1)s+=(LUNAR_INFO[y-1900]&i)?1:0;return s+lunarLeapDays(y)}
+function lunarLeapMonth(y){return LUNAR_INFO[y-1900]&0xf}
+function lunarLeapDays(y){return lunarLeapMonth(y)?((LUNAR_INFO[y-1900]&0x10000)?30:29):0}
+
+function solarToLunar(sy,sm,sd){
+  let offset=Math.floor((Date.UTC(sy,sm-1,sd)-Date.UTC(1900,0,31))/86400000);
+  let ly=1900;
+  for(;ly<2101&&offset>0;ly++){let d=lunarYearDays(ly);if(offset<d)break;offset-=d;}
+  let lm=1,isLeap=false,leap=lunarLeapMonth(ly);
+  for(;lm<13&&offset>0;lm++){
+    let d;
+    if(leap>0&&lm===(leap+1)&&!isLeap){--lm;isLeap=true;d=lunarLeapDays(ly);}
+    else{d=lunarMonthDays(ly,lm);if(isLeap)isLeap=false;}
+    if(offset<d)break;
+    offset-=d;
+  }
+  return{year:ly,month:lm,day:offset+1,isLeap};
+}
+
+function lunarToSolar(ly,lm,ld,isLeap){
+  let offset=0;
+  for(let y=1900;y<ly;y++)offset+=lunarYearDays(y);
+  let leap=lunarLeapMonth(ly);
+  let jumped=false;
+  for(let m=1;m<lm;m++){
+    if(leap>0&&m===leap&&!jumped){offset+=lunarLeapDays(ly);jumped=true;}
+    offset+=lunarMonthDays(ly,m);
+  }
+  if(isLeap&&leap===lm)offset+=lunarMonthDays(ly,lm);
+  offset+=ld-1;
+  let base=Date.UTC(1900,0,31);
+  let d=new Date(base+offset*86400000);
+  return{year:d.getUTCFullYear(),month:d.getUTCMonth()+1,day:d.getUTCDate()};
+}
+
+const TG='甲乙丙丁戊己庚辛壬癸'.split('');
+const DZ='子丑寅卯辰巳午未申酉戌亥'.split('');
+const WX_TG={甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水'};
+const WX_DZ={子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+const WX_COLOR={木:'#27ae60',火:'#e74c3c',土:'#c9a84c',金:'#bdc3c7',水:'#3498db'};
+const SHICHEN=['子','丑','丑','寅','寅','卯','卯','辰','辰','巳','巳','午','午','未','未','申','申','酉','酉','戌','戌','亥','亥','子'];
+const SHICHEN_LABEL=['子时 23-1点','丑时 1-3点','寅时 3-5点','卯时 5-7点','辰时 7-9点','巳时 9-11点','午时 11-13点','未时 13-15点','申时 15-17点','酉时 17-19点','戌时 19-21点','亥时 21-23点'];
+
+const NAYIN={
+'甲子':'海中金','乙丑':'海中金','丙寅':'炉中火','丁卯':'炉中火','戊辰':'大林木','己巳':'大林木',
+'庚午':'路旁土','辛未':'路旁土','壬申':'剑锋金','癸酉':'剑锋金','甲戌':'山头火','乙亥':'山头火',
+'丙子':'涧下水','丁丑':'涧下水','戊寅':'城头土','己卯':'城头土','庚辰':'白蜡金','辛巳':'白蜡金',
+'壬午':'杨柳木','癸未':'杨柳木','甲申':'泉中水','乙酉':'泉中水','丙戌':'屋上土','丁亥':'屋上土',
+'戊子':'霹雳火','己丑':'霹雳火','庚寅':'松柏木','辛卯':'松柏木','壬辰':'长流水','癸巳':'长流水',
+'甲午':'砂石金','乙未':'砂石金','丙申':'山下火','丁酉':'山下火','戊戌':'平地木','己亥':'平地木',
+'庚子':'壁上土','辛丑':'壁上土','壬寅':'金箔金','癸卯':'金箔金','甲辰':'覆灯火','乙巳':'覆灯火',
+'丙午':'天河水','丁未':'天河水','戊申':'大驿土','己酉':'大驿土','庚戌':'钗钏金','辛亥':'钗钏金',
+'壬子':'桑柘木','癸丑':'桑柘木','甲寅':'大溪水','乙卯':'大溪水','丙辰':'沙中土','丁巳':'沙中土',
+'戊午':'天上火','己未':'天上火','庚申':'石榴木','辛酉':'石榴木','壬戌':'大海水','癸亥':'大海水'
+};
+
+/* 节气数据用于确定月柱 */
+const JIEQI_DATA=[
+[6,21],[20,4],[4,19],[21,5],[6,21],[21,6],[7,23],[23,8],[8,23],[24,8],[7,22],[22,7]
+];
+
+function yearGanZhi(ly){
+  let idx=(ly-4)%60;if(idx<0)idx+=60;
+  return TG[idx%10]+DZ[idx%12];
+}
+
+/* 月柱：根据农历年干推月干 */
+function monthGanZhi(yearGan,lunarMonth){
+  const baseMap={甲:2,乙:4,丙:6,丁:8,戊:0,己:2,庚:4,辛:6,壬:8,癸:0};
+  let mGanIdx=(baseMap[yearGan]+(lunarMonth-1))%10;
+  let mDzIdx=(lunarMonth+1)%12;
+  return TG[mGanIdx]+DZ[mDzIdx];
+}
+
+/* 日柱：利用公式计算 */
+function dayGanZhi(sy,sm,sd){
+  let y=sy,m=sm,d=sd;
+  if(m===1||m===2){m+=12;y--;}
+  let C=Math.floor(y/100),Y=y%100;
+  let G=(4*C+Math.floor(C/4)+5*Y+Math.floor(Y/4)+Math.floor(3*(m+1)/5)+d-3)%10;
+  if(G<0)G+=10;
+  let Z=(8*C+Math.floor(C/4)+5*Y+Math.floor(Y/4)+Math.floor(3*(m+1)/5)+d+7+1)%12;
+  if(Z<0)Z+=12;
+  return TG[G]+DZ[Z];
+}
+
+/* 时柱 */
+function hourGanZhi(dayGan,hourIdx){
+  const baseMap={甲:0,乙:2,丙:4,丁:6,戊:8,己:0,庚:2,辛:4,壬:6,癸:8};
+  let hGanIdx=(baseMap[dayGan]+hourIdx)%10;
+  return TG[hGanIdx]+DZ[hourIdx];
+}
+
+/* 初始化下拉 */
+function initBaziSelects(){
+  const yS=document.getElementById('baziYear');
+  const mS=document.getElementById('baziMonth');
+  const dS=document.getElementById('baziDay');
+  const hS=document.getElementById('baziHour');
+  for(let y=1940;y<=2030;y++){let o=document.createElement('option');o.value=y;o.textContent=y+'年';yS.appendChild(o);}
+  yS.value=1990;
+  for(let m=1;m<=12;m++){let o=document.createElement('option');o.value=m;o.textContent=m+'月';mS.appendChild(o);}
+  for(let d=1;d<=30;d++){let o=document.createElement('option');o.value=d;o.textContent=d+'日';dS.appendChild(o);}
+  updateDayOptions();
+  SHICHEN_LABEL.forEach((l,i)=>{let o=document.createElement('option');o.value=i;o.textContent=l;hS.appendChild(o);});
+  mS.addEventListener('change',updateDayOptions);
+  yS.addEventListener('change',updateDayOptions);
+}
+
+function updateDayOptions(){
+  const cal=document.querySelector('input[name="calType"]:checked').value;
+  const y=+document.getElementById('baziYear').value;
+  const m=+document.getElementById('baziMonth').value;
+  const dS=document.getElementById('baziDay');
+  const cur=+dS.value;
+  let maxD;
+  if(cal==='solar'){maxD=new Date(y,m,0).getDate();}
+  else{maxD=lunarMonthDays(y,m);}
+  dS.innerHTML='';
+  for(let d=1;d<=maxD;d++){let o=document.createElement('option');o.value=d;o.textContent=d+'日';dS.appendChild(o);}
+  dS.value=Math.min(cur,maxD);
+}
+
+function toggleCalType(){
+  const cal=document.querySelector('input[name="calType"]:checked').value;
+  document.getElementById('lunarLeapWrap').style.display=cal==='lunar'?'block':'none';
+  updateDayOptions();
+}
+
+function calcBazi(){
+  const cal=document.querySelector('input[name="calType"]:checked').value;
+  const inputY=+document.getElementById('baziYear').value;
+  const inputM=+document.getElementById('baziMonth').value;
+  const inputD=+document.getElementById('baziDay').value;
+  const hourIdx=+document.getElementById('baziHour').value;
+  const isLeap=document.getElementById('lunarLeap').checked;
+
+  let solarY,solarM,solarD,lunarY,lunarM,lunarD;
+
+  if(cal==='solar'){
+    solarY=inputY;solarM=inputM;solarD=inputD;
+    const lun=solarToLunar(solarY,solarM,solarD);
+    lunarY=lun.year;lunarM=lun.month;lunarD=lun.day;
+  }else{
+    lunarY=inputY;lunarM=inputM;lunarD=inputD;
+    const sol=lunarToSolar(lunarY,lunarM,lunarD,isLeap);
+    solarY=sol.year;solarM=sol.month;solarD=sol.day;
+  }
+
+  const yGZ=yearGanZhi(lunarY);
+  const mGZ=monthGanZhi(yGZ[0],lunarM);
+  const dGZ=dayGanZhi(solarY,solarM,solarD);
+  const hGZ=hourGanZhi(dGZ[0],hourIdx);
+
+  /* 五行统计 */
+  const allGZ=[yGZ,mGZ,dGZ,hGZ];
+  const wxCount={木:0,火:0,土:0,金:0,水:0};
+  allGZ.forEach(gz=>{wxCount[WX_TG[gz[0]]]++;wxCount[WX_DZ[gz[1]]]++;});
+  const total=8;
+  const dayMaster=yGZ[0]; // 日主
+  const dayMasterWx=WX_TG[dGZ[0]];
+  const nayinYear=NAYIN[yGZ]||'';
+
+  /* 判断五行强弱 */
+  let strongest='',weakest='',maxV=0,minV=9;
+  for(let k in wxCount){if(wxCount[k]>maxV){maxV=wxCount[k];strongest=k;}if(wxCount[k]<minV){minV=wxCount[k];weakest=k;}}
+  const missing=Object.keys(wxCount).filter(k=>wxCount[k]===0);
+
+  /* 生克关系 */
+  const sheng={木:'火',火:'土',土:'金',金:'水',水:'木'};
+  const ke={木:'土',火:'金',土:'水',金:'木',水:'火'};
+  const beiKe={木:'金',火:'水',土:'木',金:'火',水:'土'};
+
+  /* 分析文本 */
+  let analysis='';
+  analysis+=`<b>日主：</b>${dGZ[0]}（${dayMasterWx}）— 日干代表命主自身。\n`;
+  if(nayinYear)analysis+=`<b>纳音：</b>年柱纳音为「${nayinYear}」，民间常以此称命，如"${nayinYear}命"。\n`;
+  analysis+=`\n<b>五行分布：</b>`;
+  const wxStrArr=Object.entries(wxCount).map(([k,v])=>`${k}:${v}`);
+  analysis+=wxStrArr.join('　')+`（共${total}字）\n`;
+  if(missing.length>0){
+    analysis+=`\n<b style="color:#e74c3c;">五行缺${missing.join('、')}：</b>`;
+    missing.forEach(m=>{
+      const tips={木:'宜用绿色、植物、东方补益',火:'宜用红色、灯光、南方补益',土:'宜用黄色、陶瓷、居中补益',金:'宜用白色、金属饰品、西方补益',水:'宜用黑蓝色、鱼缸、北方补益'};
+      analysis+=`${tips[m]}。`;
+    });
+    analysis+='\n';
+  }
+  analysis+=`\n<b>最旺五行：</b>${strongest}（${maxV}个）— `;
+  const wangTips={木:'主仁慈、正直，旺则固执',火:'主礼仪、热情，旺则急躁',土:'主信用、厚重，旺则固执迟缓',金:'主义气、果断，旺则刚愎自用',水:'主智慧、灵动，旺则多虑不定'};
+  analysis+=wangTips[strongest]+'\n';
+  analysis+=`<b>最弱五行：</b>${weakest}（${minV}个）— 此方面能量不足，可适当补益。\n`;
+  analysis+=`\n<b>日主${dayMasterWx}的关系：</b>\n`;
+  analysis+=`· ${dayMasterWx}生${sheng[dayMasterWx]}（我生者为食伤，主才华输出）\n`;
+  analysis+=`· ${ke[beiKe[dayMasterWx]]}生${dayMasterWx}（生我者为印星，主庇护学识）\n`;
+  analysis+=`· ${dayMasterWx}克${ke[dayMasterWx]}（我克者为财星，主财运）\n`;
+  analysis+=`· ${beiKe[dayMasterWx]}克${dayMasterWx}（克我者为官杀，主压力与权力）\n`;
+
+  /* 建议 */
+  analysis+=`\n<b>命格建议：</b>`;
+  if(wxCount[dayMasterWx]>=2)analysis+=`日主${dayMasterWx}有根基，命格偏强，宜以食伤（${sheng[dayMasterWx]}）与财星（${ke[dayMasterWx]}）泄耗为用。`;
+  else analysis+=`日主${dayMasterWx}力量偏弱，宜以印星（${ke[beiKe[dayMasterWx]]}）与比劫（${dayMasterWx}）生扶为用。`;
+
+  /* 渲染 */
+  const pillars=[
+    {label:'年柱',gz:yGZ},
+    {label:'月柱',gz:mGZ},
+    {label:'日柱',gz:dGZ},
+    {label:'时柱',gz:hGZ}
+  ];
+
+  let html=`<div style="text-align:center;color:var(--text-dim);margin-bottom:16px;font-size:0.9rem;">
+    公历：${solarY}年${solarM}月${solarD}日　农历：${lunarY}年${lunarM}月${lunarD}日　${SHICHEN_LABEL[hourIdx]}
+  </div>`;
+
+  /* 四柱展示 */
+  html+=`<div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:24px;">`;
+  pillars.forEach(p=>{
+    const g=p.gz[0],z=p.gz[1];
+    const gWx=WX_TG[g],zWx=WX_DZ[z];
+    html+=`<div style="text-align:center;background:rgba(30,26,20,0.9);border:1px solid var(--border);border-radius:8px;padding:14px 20px;min-width:90px;">
+      <div style="color:var(--text-dim);font-size:0.8rem;margin-bottom:8px;">${p.label}</div>
+      <div style="font-size:1.8rem;font-family:'Ma Shan Zheng',cursive;color:${WX_COLOR[gWx]};line-height:1.3;">${g}</div>
+      <div style="font-size:0.7rem;color:${WX_COLOR[gWx]};margin-bottom:4px;">${gWx}</div>
+      <div style="width:40px;height:1px;background:var(--border);margin:4px auto;"></div>
+      <div style="font-size:1.8rem;font-family:'Ma Shan Zheng',cursive;color:${WX_COLOR[zWx]};line-height:1.3;">${z}</div>
+      <div style="font-size:0.7rem;color:${WX_COLOR[zWx]};">${zWx}</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  /* 五行柱状图 */
+  html+=`<div style="margin-bottom:24px;"><h4 style="color:var(--gold);text-align:center;margin-bottom:12px;">五行分布</h4>`;
+  html+=`<div style="display:flex;justify-content:center;align-items:flex-end;gap:18px;height:120px;">`;
+  ['木','火','土','金','水'].forEach(wx=>{
+    const c=wxCount[wx];
+    const h=c/total*100;
+    html+=`<div style="text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;">
+      <div style="font-size:0.8rem;color:${WX_COLOR[wx]};margin-bottom:4px;">${c}</div>
+      <div style="width:36px;height:${Math.max(h,4)}%;background:${WX_COLOR[wx]};border-radius:4px 4px 0 0;opacity:${c===0?0.15:0.8};transition:height .5s;"></div>
+      <div style="font-size:0.9rem;color:${WX_COLOR[wx]};margin-top:6px;">${wx}</div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+
+  /* 分析文字 */
+  html+=`<div style="background:rgba(30,26,20,0.7);border:1px solid var(--border);border-radius:8px;padding:20px;line-height:2.2;color:var(--text-main);font-size:0.93rem;white-space:pre-line;">`;
+  html+=analysis;
+  html+=`</div>`;
+
+  document.getElementById('baziResult').innerHTML=html;
+}
+
+initBaziSelects();
+
+/* ============================================================
+   INIT
+   ============================================================ */
+buildGuaGrid();
+buildDreamCats();
+</script>
+</body>
+</html>
